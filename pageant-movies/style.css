@@ -575,9 +575,11 @@ img.bio-photo {
 .bio-sidebar { position: sticky; top: 88px; }
 
 .bio-photo {
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1;
   width: 100%;
   margin-bottom: 32px;
+  object-fit: cover;
+  display: block;
 }
 
 .bio-sidebar-info { display: flex; flex-direction: column; gap: 22px; }

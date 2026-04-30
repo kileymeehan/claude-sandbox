@@ -13,7 +13,10 @@
       "Bash(cp \"/Users/kiley/Desktop/Vin Ordinaire-Final.jpg\" /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)",
       "Bash(sips -g pixelWidth -g pixelHeight /Users/kiley/claude-sandbox/pageant-movies/images/chemistry-cover.png)",
       "Bash(sips -g pixelWidth -g pixelHeight /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)",
-      "Bash(sips -Z 800 /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)"
+      "Bash(sips -Z 800 /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)",
+      "Bash(cp '/Volumes/Movies and Media/Music Marketing and Album Art/Pageant Movies/bandcamp_profile.png' /Users/kiley/claude-sandbox/pageant-movies/images/press-photo.png)",
+      "Bash(cp '/Volumes/Movies and Media/Music Marketing and Album Art/Planet News Records/Planet-News-logo.png' /Users/kiley/claude-sandbox/pageant-movies/images/planet-news-logo.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/kiley/claude-sandbox/pageant-movies/images/press-photo.png)"
     ]
   }
 }
