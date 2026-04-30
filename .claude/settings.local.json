@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(open *)"
+      "Bash(open *)",
+      "WebFetch(domain:music.apple.com)",
+      "Bash(cp \"/Volumes/Movies and Media/Art/Album Covers/Pageant Movies/Pageant Movies – Chemistry 3.png\" /Users/kiley/claude-sandbox/pageant-movies/images/chemistry-cover.png)",
+      "Bash(cp \"/Volumes/Movies and Media/Art/Album Covers/Pageant Movies/Pageant_Movies_Chemistry.png\" /Users/kiley/claude-sandbox/pageant-movies/images/chemistry-cover.png)",
+      "Bash(cp \"/Volumes/Movies and Media/Art/Album Covers/Pageant Movies/chemistry-single-cover.png\" /Users/kiley/claude-sandbox/pageant-movies/images/chemistry-cover.png)",
+      "Bash(sips -Z 800 chemistry-cover.png)",
+      "Bash(sips -Z 800 playboys-cover.png)",
+      "Bash(sips -Z 800 the-letter-cover.jpg)",
+      "Bash(sips -Z 300 planet-news-logo.png)",
+      "Bash(cp \"/Users/kiley/Desktop/Vin Ordinaire-Final.jpg\" /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/kiley/claude-sandbox/pageant-movies/images/chemistry-cover.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)",
+      "Bash(sips -Z 800 /Users/kiley/claude-sandbox/pageant-movies/images/vin-ordinaire-cover.jpg)"
     ]
   }
 }
