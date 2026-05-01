@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,500;1,700&family=Cormorant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 
 /* ─────────────────────────────────────────────
    RESET & BASE
@@ -11,22 +11,25 @@
 }
 
 :root {
-  --bg:           #181b21;
-  --bg-card:      #1e2128;
-  --bg-hover:     #23262e;
-  --text:         #ede8de;
-  --text-mid:     #b2aba0;
-  --text-muted:   #7a7570;
-  --border:       #272b34;
-  --border-mid:   #31353f;
-  --accent:       #c4a052;
+  --bg:           #292626;
+  --bg-alt:       #211e1e;
+  --bg-card:      #332e2e;
+  --bg-hover:     #3d3838;
+  --text-bright:  #F4EDE8;
+  --text:         #CFC8C7;
+  --text-mid:     #a89e9d;
+  --text-muted:   #6e6565;
+  --border:       #3d3535;
+  --border-mid:   #4a4040;
+  --accent:       #E9B4A9;
+  --accent-warm:  #D07830;
 
-  --font-display: 'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif;
+  --font-display: 'Cormorant', 'Cormorant Garamond', Garamond, Georgia, serif;
   --font-body:    'EB Garamond', Garamond, Georgia, serif;
 }
 
 html {
-  font-size: 18px;
+  font-size: 20px;
   scroll-behavior: smooth;
 }
 
@@ -160,13 +163,13 @@ img.bio-photo {
 }
 
 .footer-label-logo {
-  height: 28px;
+  height: 52px;
   width: auto;
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.8;
   transition: opacity 0.2s;
 }
-.footer-label-logo:hover { opacity: 0.85; }
+.footer-label-logo:hover { opacity: 1; }
 
 /* ─────────────────────────────────────────────
    SHARED COMPONENTS
@@ -177,10 +180,10 @@ img.bio-photo {
   align-items: center;
   gap: 16px;
   font-family: var(--font-body);
-  font-size: 0.6rem;
-  letter-spacing: 0.32em;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--text-mid);
+  color: var(--text);
   margin-bottom: 52px;
 }
 .section-label::after {
@@ -207,6 +210,7 @@ img.bio-photo {
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.025em;
+  color: var(--text-bright);
 }
 
 .read-more {
@@ -216,12 +220,12 @@ img.bio-photo {
   font-size: 0.62rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--text-mid);
+  color: var(--accent-warm);
   margin-top: 24px;
   transition: color 0.2s;
 }
 .read-more .arrow { display: inline-block; transition: transform 0.2s; }
-.read-more:hover { color: var(--text); }
+.read-more:hover { color: var(--text-bright); }
 .read-more:hover .arrow { transform: translateX(5px); }
 
 /* Placeholder blocks */
@@ -288,13 +292,30 @@ img.bio-photo {
 .hero {
   padding: 96px 0 80px;
   border-bottom: 1px solid var(--border);
+  position: relative;
+  background-image: url('images/hero-bg.jpg');
+  background-size: cover;
+  background-position: center 40%;
+  isolation: isolate;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(41, 38, 38, 0.55) 0%,
+    rgba(41, 38, 38, 0.38) 50%,
+    rgba(41, 38, 38, 0.72) 100%
+  );
+  z-index: -1;
 }
 
 .hero-inner {
-  display: grid;
-  grid-template-columns: 180px 1fr;
-  gap: 48px;
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .hero-meta {
@@ -312,25 +333,22 @@ img.bio-photo {
 .hero-meta span::before { content: '— '; }
 
 .hero-title-block h1 {
-  font-family: var(--font-display);
-  line-height: 0.9;
-  letter-spacing: -0.03em;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
   margin-bottom: 36px;
-  font-optical-sizing: auto;
+  color: var(--text-bright);
+  text-shadow: 0 2px 24px rgba(20, 15, 15, 0.7), 0 1px 4px rgba(20, 15, 15, 0.5);
 }
-.hero-title-block h1 .line-1 {
-  display: block;
-  font-size: clamp(4.5rem, 13vw, 11.5rem);
-  font-weight: 400;
-  font-style: italic;
-  font-variation-settings: 'opsz' 96;
-}
+.hero-title-block h1 .line-1,
 .hero-title-block h1 .line-2 {
-  display: block;
-  font-size: clamp(4.5rem, 13vw, 11.5rem);
-  font-weight: 900;
+  display: inline;
+  font-size: inherit;
+  font-weight: inherit;
   font-style: normal;
-  font-variation-settings: 'opsz' 96;
 }
 
 .hero-tagline {
@@ -354,6 +372,7 @@ img.bio-photo {
 .latest-release {
   padding: 80px 0;
   border-bottom: 1px solid var(--border);
+  background-color: var(--bg-alt);
 }
 
 .release-grid {
@@ -382,6 +401,7 @@ img.bio-photo {
   line-height: 1.05;
   letter-spacing: -0.02em;
   margin-bottom: 10px;
+  color: var(--text-bright);
 }
 .release-year {
   font-size: 0.7rem;
@@ -472,6 +492,7 @@ img.bio-photo {
 .blog-preview {
   padding: 80px 0;
   border-bottom: 1px solid var(--border);
+  background-color: var(--bg-alt);
 }
 
 .blog-grid {
@@ -491,7 +512,7 @@ img.bio-photo {
   font-size: 0.56rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-warm);
 }
 .blog-card-date {
   font-size: 0.62rem;
@@ -633,6 +654,7 @@ img.bio-photo {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.05;
+  color: var(--text-bright);
 }
 .release-row-year {
   font-size: 0.62rem;
@@ -644,7 +666,7 @@ img.bio-photo {
   font-size: 0.58rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-warm);
   margin-bottom: 18px;
 }
 .release-row-desc {
@@ -699,7 +721,7 @@ img.bio-photo {
   font-size: 0.56rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-warm);
   margin-bottom: 10px;
 }
 .post-title {
@@ -732,7 +754,7 @@ img.bio-photo {
   font-size: 0.58rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-warm);
   margin-bottom: 22px;
 }
 .article-title {
@@ -742,6 +764,7 @@ img.bio-photo {
   line-height: 1.0;
   letter-spacing: -0.03em;
   margin-bottom: 28px;
+  color: var(--text-bright);
 }
 .article-meta {
   display: flex;
