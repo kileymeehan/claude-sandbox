@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { newChord } from '../db';
 
-export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteLines }) {
+export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteLines, onInsertAfter, shouldFocus }) {
   const [showChordInput, setShowChordInput] = useState(false);
   const [chordPos, setChordPos] = useState(0);
   const [chordPixelX, setChordPixelX] = useState(0);
   const [chordValue, setChordValue] = useState('');
   const [editingChordId, setEditingChordId] = useState(null);
+  const [pickerRoot, setPickerRoot] = useState('');
   const textareaRef = useRef(null);
   const mirrorRef = useRef(null);
   const chordInputRef = useRef(null);
@@ -24,6 +25,13 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';
   }, [line.lyric]);
+
+  useEffect(() => {
+    if (shouldFocus && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(0, 0);
+    }
+  }, [shouldFocus]);
 
   const getCharPositionFromX = useCallback((x) => {
     const mirror = mirrorRef.current;
@@ -71,6 +79,7 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
     setChordPixelX(pixX);
     setChordValue('');
     setEditingChordId(null);
+    setPickerRoot('');
     setShowChordInput(true);
   };
 
@@ -81,6 +90,7 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
     setChordPixelX(pixX);
     setChordValue(chord.chord);
     setEditingChordId(chord.id);
+    setPickerRoot('');
     setShowChordInput(true);
   };
 
@@ -182,45 +192,41 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
 
       {/* Chord input popover */}
       {showChordInput && (
-        <div
-          className="popover fade-in"
-          style={{ left: Math.max(0, chordPixelX - 20), top: '-2px', zIndex: 120 }}
-          onMouseDown={e => e.stopPropagation()}
-        >
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-            {editingChordId ? 'Edit chord' : 'Add chord'}
-          </div>
-          <input
-            ref={chordInputRef}
-            value={chordValue}
-            onChange={e => setChordValue(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter') { e.preventDefault(); commitChord(); }
-              if (e.key === 'Escape') setShowChordInput(false);
-            }}
-            placeholder="e.g. Am, G7, Cmaj7"
-            style={{
-              width: '130px',
-              background: 'var(--bg-base)',
-              border: '1px solid var(--border)',
-              borderRadius: '5px',
-              padding: '5px 9px',
-              fontSize: '13px',
-              color: 'var(--text-primary)',
-              fontFamily: 'var(--font-sans)',
-            }}
-          />
-          <div style={{ display: 'flex', gap: '6px', marginTop: '8px' }}>
-            <button className="btn btn-accent" onClick={commitChord} style={{ fontSize: '12px', padding: '4px 10px' }}>Set</button>
-            {editingChordId && (
-              <button className="btn" onClick={removeChord} style={{ fontSize: '12px', padding: '4px 10px', color: '#c46060', borderColor: 'transparent' }}>Remove</button>
-            )}
-            <button className="btn" onClick={() => setShowChordInput(false)} style={{ fontSize: '12px', padding: '4px 10px' }}>✕</button>
-          </div>
-        </div>
+        <ChordPopover
+          chordInputRef={chordInputRef}
+          chordValue={chordValue}
+          setChordValue={setChordValue}
+          pickerRoot={pickerRoot}
+          setPickerRoot={setPickerRoot}
+          editingChordId={editingChordId}
+          pixelX={chordPixelX}
+          onCommit={commitChord}
+          onRemove={removeChord}
+          onClose={() => setShowChordInput(false)}
+          onPickChord={(chord) => {
+            setChordValue(chord);
+            // commit inline without going through state flush delay
+            const isEditing = editingChordId;
+            if (isEditing) {
+              onUpdate(line.id, {
+                chords: line.chords.map(c => c.id === isEditing ? { ...c, chord } : c),
+              });
+            } else {
+              const existing = line.chords.find(c => Math.abs(c.position - chordPos) < 2);
+              if (existing) {
+                onUpdate(line.id, {
+                  chords: line.chords.map(c => c.id === existing.id ? { ...c, chord } : c),
+                });
+              } else {
+                onUpdate(line.id, { chords: [...line.chords, newChord(chord, chordPos)] });
+              }
+            }
+            setShowChordInput(false);
+          }}
+        />
       )}
 
-      {/* Lyric input */}
+      {/* Lyric input (below chord popover) */}
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
         <textarea
           ref={textareaRef}
@@ -229,6 +235,25 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
           onChange={e => onUpdate(line.id, { lyric: e.target.value })}
           onPaste={handlePaste}
           onFocus={() => onFocus && onFocus()}
+          onKeyDown={e => {
+            if (e.key === 'Backspace' && line.lyric === '') {
+              e.preventDefault();
+              onDelete();
+              return;
+            }
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              const cursor = textareaRef.current.selectionStart;
+              const before = line.lyric.slice(0, cursor);
+              const after = line.lyric.slice(cursor);
+              const chordsKept = line.chords.filter(c => c.position <= cursor);
+              const chordsMoving = line.chords
+                .filter(c => c.position > cursor)
+                .map(c => ({ ...c, id: crypto.randomUUID(), position: c.position - cursor }));
+              onUpdate(line.id, { lyric: before, chords: chordsKept });
+              onInsertAfter(line.id, { id: crypto.randomUUID(), lyric: after, chords: chordsMoving });
+            }
+          }}
           placeholder="Write a line…"
           rows={1}
           style={{ flex: 1 }}
@@ -236,15 +261,146 @@ export default function LineEditor({ line, onUpdate, onDelete, onFocus, onPasteL
         <button
           className="icon-btn"
           onClick={onDelete}
-          style={{ opacity: 0, transition: 'opacity 0.1s', marginTop: '4px' }}
+          style={{
+            opacity: line.lyric === '' ? 0.5 : 0,
+            transition: 'opacity 0.1s',
+            marginTop: '4px',
+          }}
           onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '0'}
+          onMouseLeave={e => e.currentTarget.style.opacity = line.lyric === '' ? '0.5' : '0'}
           title="Delete line"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
           </svg>
         </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Chord Popover ────────────────────────────────────────────────────────────
+
+const ROOTS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+const QUALITIES = [
+  { label: 'maj', value: '' },
+  { label: 'm', value: 'm' },
+  { label: '7', value: '7' },
+  { label: 'maj7', value: 'maj7' },
+  { label: 'm7', value: 'm7' },
+  { label: 'sus2', value: 'sus2' },
+  { label: 'sus4', value: 'sus4' },
+  { label: 'dim', value: 'dim' },
+  { label: 'aug', value: 'aug' },
+  { label: 'add9', value: 'add9' },
+  { label: '9', value: '9' },
+  { label: '6', value: '6' },
+];
+
+function ChordPopover({ chordInputRef, chordValue, setChordValue, pickerRoot, setPickerRoot, editingChordId, pixelX, onCommit, onRemove, onClose, onPickChord }) {
+  return (
+    <div
+      className="popover fade-in"
+      style={{ left: Math.max(0, pixelX - 20), top: '-2px', zIndex: 120, width: '232px' }}
+      onMouseDown={e => e.stopPropagation()}
+    >
+      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+        {editingChordId ? 'Edit chord' : 'Add chord'}
+      </div>
+
+      {/* Free-text input */}
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+        <input
+          ref={chordInputRef}
+          value={chordValue}
+          onChange={e => { setChordValue(e.target.value); setPickerRoot(''); }}
+          onKeyDown={e => {
+            if (e.key === 'Enter') { e.preventDefault(); onCommit(); }
+            if (e.key === 'Escape') onClose();
+          }}
+          placeholder="e.g. Am, G7, Cmaj7"
+          style={{
+            flex: 1,
+            background: 'var(--bg-base)',
+            border: '1px solid var(--border)',
+            borderRadius: '5px',
+            padding: '5px 9px',
+            fontSize: '13px',
+            color: 'var(--text-primary)',
+            fontFamily: 'var(--font-sans)',
+          }}
+        />
+        <button className="btn btn-accent" onClick={onCommit} style={{ fontSize: '12px', padding: '4px 10px', flexShrink: 0 }}>Set</button>
+      </div>
+
+      {/* Divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+        <span style={{ fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>or pick</span>
+        <div style={{ flex: 1, height: '1px', background: 'var(--border-light)' }} />
+      </div>
+
+      {/* Root note grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginBottom: '8px' }}>
+        {ROOTS.map(root => (
+          <button
+            key={root}
+            onMouseDown={() => {
+              setPickerRoot(root);
+              setChordValue(root);
+            }}
+            style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              padding: '5px 0',
+              borderRadius: '5px',
+              border: `1px solid ${pickerRoot === root ? 'var(--accent)' : 'var(--border)'}`,
+              background: pickerRoot === root ? 'var(--accent-glow)' : 'var(--bg-base)',
+              color: pickerRoot === root ? 'var(--accent)' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              transition: 'all 0.1s',
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            {root}
+          </button>
+        ))}
+      </div>
+
+      {/* Quality row */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '4px', marginBottom: '10px' }}>
+        {QUALITIES.map(q => (
+          <button
+            key={q.label}
+            onMouseDown={() => {
+              const chord = (pickerRoot || chordValue.replace(/m.*|7.*|sus.*|dim|aug|add.*|maj.*|[0-9].*/g, '') || '') + q.value;
+              if (chord) onPickChord(chord);
+            }}
+            style={{
+              fontSize: '10px',
+              fontWeight: 500,
+              padding: '4px 0',
+              borderRadius: '5px',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-base)',
+              color: 'var(--text-secondary)',
+              cursor: pickerRoot ? 'pointer' : 'default',
+              opacity: pickerRoot ? 1 : 0.45,
+              transition: 'all 0.1s',
+              fontFamily: 'var(--font-sans)',
+            }}
+          >
+            {q.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Remove / close */}
+      <div style={{ display: 'flex', gap: '6px' }}>
+        {editingChordId && (
+          <button className="btn" onClick={onRemove} style={{ fontSize: '12px', padding: '4px 10px', color: '#c46060', borderColor: 'transparent' }}>Remove</button>
+        )}
+        <button className="btn" onClick={onClose} style={{ fontSize: '12px', padding: '4px 10px', marginLeft: 'auto' }}>✕</button>
       </div>
     </div>
   );

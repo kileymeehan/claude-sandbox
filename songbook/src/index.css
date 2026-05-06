@@ -17,6 +17,8 @@
   --accent: #c4583a;
   --accent-dim: #a34a30;
   --accent-glow: rgba(196, 88, 58, 0.13);
+  --tag-bg: rgba(255, 255, 255, 0.06);
+  --tag-border: rgba(255, 255, 255, 0.12);
   --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -35,6 +37,8 @@
   --accent: #a84228;           /* darker for light-bg contrast: 5.2:1 */
   --accent-dim: #8a3218;
   --accent-glow: rgba(168, 66, 40, 0.1);
+  --tag-bg: rgba(0, 0, 0, 0.05);
+  --tag-border: rgba(0, 0, 0, 0.12);
   --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
@@ -417,4 +421,70 @@ select {
   border-radius: 5px;
   padding: 4px 8px;
   font-size: 13px;
+}
+
+/* Print overlay */
+.print-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: #e8e8e8;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.print-overlay-chrome {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid #d0d0d0;
+  width: 100%;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
+
+.print-content {
+  background: white;
+  width: 8.5in;
+  min-height: 11in;
+  padding: 0.8in 0.85in;
+  margin: 28px auto 48px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+}
+
+/* Editor toolbar */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+@media print {
+  .app-root { display: none !important; }
+  .print-overlay-chrome { display: none !important; }
+  .print-overlay {
+    position: static;
+    background: white;
+    overflow: visible;
+    display: block;
+  }
+  .print-content {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: unset;
+  }
+  @page { size: letter portrait; margin: 0.75in; }
 }

@@ -30,7 +30,7 @@ export default function AlbumDetail({ album, songs, onUpdate, onDelete, onOpenSo
   };
 
   return (
-    <div style={{ flex: 1, overflow: 'auto', padding: '40px 52px', maxWidth: '760px' }}>
+    <div style={{ flex: 1, overflow: 'auto' }}><div style={{ padding: '40px 52px', maxWidth: '760px' }}>
       <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start', marginBottom: '40px', flexWrap: 'wrap' }}>
         {/* Cover art */}
         <label style={{ cursor: 'pointer', flexShrink: 0 }} title="Click to upload cover art">
@@ -134,6 +134,6 @@ export default function AlbumDetail({ album, songs, onUpdate, onDelete, onOpenSo
           Delete album
         </button>
       </div>
-    </div>
+    </div></div>
   );
 }

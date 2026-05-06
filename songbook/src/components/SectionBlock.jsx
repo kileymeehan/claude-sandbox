@@ -6,9 +6,42 @@ import LineEditor from './LineEditor';
 
 const SECTION_TYPES = ['verse', 'chorus', 'pre-chorus', 'bridge', 'intro', 'outro', 'hook', 'middle-eight', 'custom'];
 
+// ─── Chord transposition ──────────────────────────────────────────────────────
+
+const SHARP_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FLAT_NAMES  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const NOTE_SEMITONE = {
+  C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11
+};
+
+function transposeChord(chord, semitones, flats) {
+  const m = chord.match(/^([A-G][#b]?)(.*)/);
+  if (!m) return chord;
+  const [, root, quality] = m;
+  if (NOTE_SEMITONE[root] === undefined) return chord;
+  const next = ((NOTE_SEMITONE[root] + semitones) % 12 + 12) % 12;
+  return (flats ? FLAT_NAMES : SHARP_NAMES)[next] + quality;
+}
+
+function transposeSectionChords(section, semitones, flats) {
+  return {
+    ...section,
+    lines: section.lines.map(l => ({
+      ...l,
+      chords: l.chords.map(c => ({ ...c, chord: transposeChord(c.chord, semitones, flats) })),
+    })),
+  };
+}
+
+function clearSectionChords(section) {
+  return { ...section, lines: section.lines.map(l => ({ ...l, chords: [] })) };
+}
+
 export default function SectionBlock({ section, onUpdate, onDelete, onDuplicate, onLineSelect }) {
   const [editingLabel, setEditingLabel] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [useFlats, setUseFlats] = useState(false);
+  const [focusLineId, setFocusLineId] = useState(null);
   const menuRef = useRef(null);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
@@ -39,6 +72,11 @@ export default function SectionBlock({ section, onUpdate, onDelete, onDuplicate,
     const lines = [...section.lines];
     lines.splice(idx + 1, 0, ...newLines);
     onUpdate(section.id, { lines });
+  };
+
+  const insertLineAfter = (lineId, newLine) => {
+    insertLinesAfter(lineId, [newLine]);
+    setFocusLineId(newLine.id);
   };
 
   const displayLabel = sectionDisplayLabel(section);
@@ -110,13 +148,43 @@ export default function SectionBlock({ section, onUpdate, onDelete, onDuplicate,
             </svg>
           </button>
           {showMenu && (
-            <div className="popover fade-in" style={{ right: 0, top: '100%', minWidth: '140px' }}>
+            <div className="popover fade-in" style={{ right: 0, top: '100%', minWidth: '160px' }}>
               <SectionTypeMenu
                 current={section.type}
                 onChange={type => { onUpdate(section.id, { type, customLabel: type === 'custom' ? section.customLabel : '' }); setShowMenu(false); }}
               />
               <div style={{ height: '1px', background: 'var(--border-light)', margin: '6px 0' }} />
+
+              {/* Transpose */}
+              <div style={{ padding: '2px 10px 4px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '6px' }}>
+                  Transpose
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <button
+                    onClick={() => onUpdate(section.id, transposeSectionChords(section, -1, useFlats))}
+                    style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, padding: '3px 8px', borderRadius: '5px', border: '1px solid var(--border)', background: 'var(--bg-base)', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                    title="Down one semitone"
+                  >−1</button>
+                  <button
+                    onClick={() => onUpdate(section.id, transposeSectionChords(section, 1, useFlats))}
+                    style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, padding: '3px 8px', borderRadius: '5px', border: '1px solid var(--border)', background: 'var(--bg-base)', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                    title="Up one semitone"
+                  >+1</button>
+                  <button
+                    onClick={() => setUseFlats(f => !f)}
+                    title={useFlats ? 'Using flats — click for sharps' : 'Using sharps — click for flats'}
+                    style={{ fontFamily: 'var(--font-sans)', fontSize: '11px', fontWeight: 600, padding: '3px 7px', borderRadius: '5px', border: `1px solid ${useFlats ? 'var(--accent)' : 'var(--border)'}`, background: useFlats ? 'var(--accent-glow)' : 'var(--bg-base)', color: useFlats ? 'var(--accent)' : 'var(--text-muted)', cursor: 'pointer', marginLeft: 'auto' }}
+                  >{useFlats ? '♭' : '♯'}</button>
+                </div>
+              </div>
+
+              <div style={{ height: '1px', background: 'var(--border-light)', margin: '6px 0' }} />
               <button className="type-picker-item" onClick={() => { onDuplicate(section.id); setShowMenu(false); }}>Duplicate</button>
+              <button
+                className="type-picker-item"
+                onClick={() => { onUpdate(section.id, clearSectionChords(section)); setShowMenu(false); }}
+              >Clear chords</button>
               <button
                 className="type-picker-item"
                 style={{ color: '#c46060' }}
@@ -138,6 +206,8 @@ export default function SectionBlock({ section, onUpdate, onDelete, onDuplicate,
           onDelete={() => deleteLine(line.id)}
           onFocus={() => onLineSelect(line.lyric)}
           onPasteLines={insertLinesAfter}
+          onInsertAfter={insertLineAfter}
+          shouldFocus={focusLineId === line.id}
         />
       ))}
 

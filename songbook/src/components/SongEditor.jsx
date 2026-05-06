@@ -5,6 +5,8 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 import SectionBlock from './SectionBlock';
 import RhymePanel from './RhymePanel';
 import AudioPlayer from './AudioPlayer';
+import NotesPanel from './NotesPanel';
+import PrintView from './PrintView';
 
 const SECTION_TYPES = ['verse', 'chorus', 'pre-chorus', 'bridge', 'intro', 'outro', 'hook', 'middle-eight', 'custom'];
 
@@ -62,10 +64,12 @@ function parseLyricsIntoSections(text) {
   return sections;
 }
 
-export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCircle }) {
+export default function SongEditor({ song, albums, allTags = [], onUpdate, onDelete, onShowCircle }) {
   const [local, setLocal] = useState(song);
   const [audioUrl, setAudioUrl] = useState(null);
   const [showRhyme, setShowRhyme] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [showPrint, setShowPrint] = useState(false);
   const [showAddSection, setShowAddSection] = useState(false);
   const [showLyricsImport, setShowLyricsImport] = useState(false);
   const [showPasteSong, setShowPasteSong] = useState(false);
@@ -194,8 +198,9 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
   };
 
   return (
-    <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      <div style={{ flex: 1, overflow: 'auto', padding: '40px 52px', maxWidth: '820px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+      <div style={{ flex: 1, overflow: 'auto' }}><div style={{ padding: '40px 52px', maxWidth: '820px' }}>
         {/* Header */}
         <input
           className="song-title-input"
@@ -230,6 +235,12 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
             {albums.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
           </select>
         </div>
+
+        <TagInput
+          tags={local.tags || []}
+          allTags={allTags}
+          onChange={tags => update({ tags })}
+        />
 
         {audioUrl && <AudioPlayer url={audioUrl} onRemove={handleAudioRemove} />}
 
@@ -306,32 +317,6 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
           </div>
         )}
 
-        {/* Footer bar */}
-        <div style={{ marginTop: '56px', paddingTop: '20px', borderTop: '1px solid var(--border-light)', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            className={`btn ${showRhyme ? 'btn-accent' : ''}`}
-            onClick={() => setShowRhyme(r => !r)}
-            style={{ fontSize: '12px', padding: '5px 12px' }}
-          >
-            Rhyme assistant
-          </button>
-          <button className="btn" onClick={onShowCircle} style={{ fontSize: '12px', padding: '5px 12px' }}>
-            Circle of fifths
-          </button>
-          {local.type === 'cover' && (
-            <button className="btn" onClick={() => setShowLyricsImport(true)} style={{ fontSize: '12px', padding: '5px 12px' }}>
-              Import lyrics
-            </button>
-          )}
-          <div style={{ flex: 1 }} />
-          <button
-            onClick={() => { if (confirm(`Delete "${local.title}"?`)) onDelete(); }}
-            style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'none', border: 'none', padding: '5px' }}
-          >
-            Delete song
-          </button>
-        </div>
-
         {local.type === 'cover' && (
           <div style={{ marginTop: '24px', padding: '14px 16px', background: 'var(--bg-surface)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
             <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.6 }}>
@@ -342,8 +327,8 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
           </div>
         )}
 
-        <div style={{ height: '80px' }} />
-      </div>
+        <div style={{ height: '40px' }} />
+      </div></div>
 
       {showRhyme && (
         <RhymePanel
@@ -351,6 +336,56 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
           onClose={() => setShowRhyme(false)}
         />
       )}
+
+      {showNotes && (
+        <NotesPanel
+          notes={local.notes || ''}
+          images={local.moodImages || []}
+          onNotesChange={notes => update({ notes })}
+          onImagesChange={moodImages => update({ moodImages })}
+          onClose={() => setShowNotes(false)}
+        />
+      )}
+      </div>
+
+      {/* Persistent toolbar */}
+      <div className="editor-toolbar">
+        <button
+          className={`btn ${showRhyme ? 'btn-accent' : ''}`}
+          onClick={() => setShowRhyme(r => !r)}
+          style={{ fontSize: '12px', padding: '5px 12px' }}
+        >Rhyme</button>
+        <button className="btn" onClick={onShowCircle} style={{ fontSize: '12px', padding: '5px 12px' }}>
+          Circle of fifths
+        </button>
+        <button
+          className={`btn ${showNotes ? 'btn-accent' : ''}`}
+          onClick={() => setShowNotes(n => !n)}
+          style={{ fontSize: '12px', padding: '5px 12px' }}
+        >Notes</button>
+        {local.type === 'cover' && (
+          <button className="btn" onClick={() => setShowLyricsImport(true)} style={{ fontSize: '12px', padding: '5px 12px' }}>
+            Import lyrics
+          </button>
+        )}
+        <button
+          className={`btn ${showPrint ? 'btn-accent' : ''}`}
+          onClick={() => setShowPrint(true)}
+          style={{ fontSize: '12px', padding: '5px 12px', display: 'flex', alignItems: 'center', gap: '5px' }}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <rect x="1.5" y="4" width="9" height="6" rx="1" stroke="currentColor" strokeWidth="1.2"/>
+            <path d="M3.5 4V2.5a.5.5 0 01.5-.5h4a.5.5 0 01.5.5V4" stroke="currentColor" strokeWidth="1.2"/>
+            <path d="M3.5 8.5h5M3.5 6.5h3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+          </svg>
+          Print
+        </button>
+        <div style={{ flex: 1 }} />
+        <button
+          onClick={() => { if (confirm(`Delete "${local.title}"?`)) onDelete(); }}
+          style={{ fontSize: '12px', color: 'var(--text-muted)', background: 'none', border: 'none', padding: '5px 8px' }}
+        >Delete song</button>
+      </div>
 
       {showLyricsImport && (
         <LyricsImport
@@ -365,6 +400,13 @@ export default function SongEditor({ song, albums, onUpdate, onDelete, onShowCir
         <FullSongPaste
           onConfirm={handlePasteSong}
           onClose={() => setShowPasteSong(false)}
+        />
+      )}
+
+      {showPrint && (
+        <PrintView
+          song={local}
+          onClose={() => setShowPrint(false)}
         />
       )}
     </div>
@@ -438,6 +480,109 @@ function ScratchPad({ onSections }) {
       <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '12px', opacity: 0.6 }}>
         Paste to auto-split into sections · ⌘↵ to structure what you've typed
       </p>
+    </div>
+  );
+}
+
+// ─── Tag Input ───────────────────────────────────────────────────────────────
+
+function TagInput({ tags, allTags, onChange }) {
+  const [inputVal, setInputVal] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef(null);
+
+  const suggestions = allTags.filter(t =>
+    !tags.includes(t) && t.toLowerCase().includes(inputVal.toLowerCase().trim())
+  );
+
+  const addTag = (tag) => {
+    const t = tag.trim().toLowerCase();
+    if (!t || tags.includes(t)) return;
+    onChange([...tags, t]);
+    setInputVal('');
+    setShowSuggestions(false);
+  };
+
+  const removeTag = (tag) => onChange(tags.filter(t => t !== tag));
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTag(inputVal);
+    } else if (e.key === 'Backspace' && !inputVal && tags.length > 0) {
+      removeTag(tags[tags.length - 1]);
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: '10px', position: 'relative' }}>
+      <div
+        style={{
+          display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center',
+          minHeight: '32px', padding: '4px 0',
+        }}
+        onClick={() => inputRef.current?.focus()}
+      >
+        {tags.map(tag => (
+          <span
+            key={tag}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              fontSize: '11px', fontWeight: 500,
+              padding: '3px 8px', borderRadius: '20px',
+              background: 'var(--accent-glow)',
+              border: '1px solid var(--accent)',
+              color: 'var(--accent)',
+            }}
+          >
+            {tag}
+            <button
+              onClick={e => { e.stopPropagation(); removeTag(tag); }}
+              style={{ background: 'none', border: 'none', color: 'var(--accent)', padding: '0 0 0 2px', lineHeight: 1, fontSize: '13px', cursor: 'pointer', opacity: 0.7 }}
+            >×</button>
+          </span>
+        ))}
+        <input
+          ref={inputRef}
+          value={inputVal}
+          onChange={e => { setInputVal(e.target.value); setShowSuggestions(true); }}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 120)}
+          placeholder={tags.length === 0 ? 'Add tags…' : ''}
+          style={{
+            background: 'transparent', border: 'none', outline: 'none',
+            fontSize: '12px', color: 'var(--text-secondary)',
+            padding: '2px 4px', minWidth: '80px', flex: 1,
+          }}
+        />
+      </div>
+      {showSuggestions && (inputVal.trim() || suggestions.length > 0) && (
+        <div
+          className="popover fade-in"
+          style={{ top: '100%', left: 0, minWidth: '160px', zIndex: 150 }}
+        >
+          {inputVal.trim() && !tags.includes(inputVal.trim().toLowerCase()) && (
+            <button
+              className="type-picker-item"
+              onMouseDown={() => addTag(inputVal)}
+            >
+              Add "<strong>{inputVal.trim()}</strong>"
+            </button>
+          )}
+          {suggestions.map(s => (
+            <button
+              key={s}
+              className="type-picker-item"
+              onMouseDown={() => addTag(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

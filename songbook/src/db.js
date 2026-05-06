@@ -50,7 +50,10 @@ export async function createSong({ title = 'Untitled', type = 'original', artist
     artist,
     type,
     albumId,
+    tags: [],
     sections: [],
+    notes: '',
+    moodImages: [],
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };

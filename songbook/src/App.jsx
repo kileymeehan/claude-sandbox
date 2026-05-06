@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getAllSongs, getAllAlbums, saveSong, createSong, deleteSong, saveAlbum, createAlbum, deleteAlbum } from './db';
+import { applyFont } from './fonts';
 import Sidebar from './components/Sidebar';
 import SongList from './components/SongList';
 import SongEditor from './components/SongEditor';
@@ -7,6 +8,7 @@ import AlbumGrid from './components/AlbumGrid';
 import AlbumDetail from './components/AlbumDetail';
 import QuickSearch from './components/QuickSearch';
 import CircleOfFifths from './components/CircleOfFifths';
+import Settings from './components/Settings';
 
 export default function App() {
   const [songs, setSongs] = useState([]);
@@ -18,11 +20,17 @@ export default function App() {
   const [showCircle, setShowCircle] = useState(false);
   const [loading, setLoading] = useState(true);
   const [theme, setTheme] = useState(() => localStorage.getItem('sb-theme') || 'dark');
+  const [font, setFont] = useState(() => localStorage.getItem('sb-font') || 'playfair');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('sb-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    applyFont(font);
+    localStorage.setItem('sb-font', font);
+  }, [font]);
 
   useEffect(() => {
     Promise.all([getAllSongs(), getAllAlbums()]).then(([s, a]) => {
@@ -46,6 +54,12 @@ export default function App() {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
+
+  const allTags = useMemo(() => {
+    const set = new Set();
+    songs.forEach(s => (s.tags || []).forEach(t => set.add(t)));
+    return [...set].sort();
+  }, [songs]);
 
   const handleSongUpdate = useCallback((updated) => {
     setSongs(prev => prev.map(s => s.id === updated.id ? updated : s));
@@ -110,21 +124,22 @@ export default function App() {
         albums={albums}
         onCreateSong={handleCreateSong}
         onCreateAlbum={handleCreateAlbum}
+        onSearch={() => setShowQuickSearch(true)}
         theme={theme}
         onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
       />
 
       <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {view === 'library' && (
-          <SongList songs={songs} albums={albums} filter="all"
+          <SongList songs={songs} albums={albums} allTags={allTags} filter="all"
             onOpenSong={openSong} onCreateSong={() => handleCreateSong()} onDeleteSong={handleDeleteSong} />
         )}
         {view === 'originals' && (
-          <SongList songs={songs.filter(s => s.type === 'original')} albums={albums} filter="originals"
+          <SongList songs={songs.filter(s => s.type === 'original')} albums={albums} allTags={allTags} filter="originals"
             onOpenSong={openSong} onCreateSong={() => handleCreateSong({ type: 'original' })} onDeleteSong={handleDeleteSong} />
         )}
         {view === 'covers' && (
-          <SongList songs={songs.filter(s => s.type === 'cover')} albums={albums} filter="covers"
+          <SongList songs={songs.filter(s => s.type === 'cover')} albums={albums} allTags={allTags} filter="covers"
             onOpenSong={openSong} onCreateSong={() => handleCreateSong({ type: 'cover' })} onDeleteSong={handleDeleteSong} />
         )}
         {view === 'albums' && (
@@ -135,6 +150,7 @@ export default function App() {
             key={selectedSong.id}
             song={selectedSong}
             albums={albums}
+            allTags={allTags}
             onUpdate={handleSongUpdate}
             onDelete={() => handleDeleteSong(selectedSong.id)}
             onShowCircle={() => setShowCircle(true)}
@@ -150,18 +166,12 @@ export default function App() {
           />
         )}
         {view === 'settings' && (
-          <div style={{ padding: '48px', maxWidth: '560px' }}>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '26px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>Settings</h2>
-            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-              All songbook data is stored locally in your browser using IndexedDB.
-              Nothing is sent to any server.
-            </p>
-            <div className="divider" />
-            <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-              Shortcuts: <strong style={{ color: 'var(--text-secondary)' }}>⌘K</strong> quick search &nbsp;·&nbsp;
-              <strong style={{ color: 'var(--text-secondary)' }}>⌘S</strong> force save
-            </p>
-          </div>
+          <Settings
+            font={font}
+            onFontChange={setFont}
+            theme={theme}
+            onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          />
         )}
         {(view === 'song' && !selectedSong) && (
           <div className="empty-state"><h3>Song not found</h3></div>
@@ -171,6 +181,7 @@ export default function App() {
       {showQuickSearch && (
         <QuickSearch
           songs={songs}
+          albums={albums}
           onSelect={(id) => { openSong(id); setShowQuickSearch(false); }}
           onClose={() => setShowQuickSearch(false)}
         />

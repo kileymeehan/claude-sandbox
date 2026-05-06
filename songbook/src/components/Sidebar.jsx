@@ -1,5 +1,3 @@
-const SECTION_TYPES = ['verse', 'chorus', 'pre-chorus', 'bridge', 'intro', 'outro', 'hook', 'middle-eight', 'custom'];
-
 const icons = {
   library: (
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
@@ -38,9 +36,15 @@ const icons = {
       <path d="M6.5 2v9M2 6.5h9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
     </svg>
   ),
+  search: (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <circle cx="6.2" cy="6.2" r="4.2" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M9.5 9.5l3.2 3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+    </svg>
+  ),
 };
 
-export default function Sidebar({ view, setView, songs, albums, onCreateSong, onCreateAlbum, theme, onToggleTheme }) {
+export default function Sidebar({ view, setView, songs, albums, onCreateSong, onCreateAlbum, onSearch, theme, onToggleTheme }) {
   const counts = {
     library: songs.length,
     originals: songs.filter(s => s.type === 'original').length,
@@ -87,6 +91,12 @@ export default function Sidebar({ view, setView, songs, albums, onCreateSong, on
           )}
         </button>
       ))}
+
+      <button className="nav-item" onClick={onSearch} style={{ marginTop: '4px' }}>
+        {icons.search}
+        <span style={{ flex: 1 }}>Search</span>
+        <kbd style={{ fontSize: '10px', color: 'var(--text-muted)', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '3px', padding: '1px 5px', fontFamily: 'var(--font-sans)' }}>⌘K</kbd>
+      </button>
 
       <div style={{ flex: 1 }} />
 
