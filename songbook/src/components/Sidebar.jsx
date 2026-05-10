@@ -44,7 +44,7 @@ const icons = {
   ),
 };
 
-export default function Sidebar({ view, setView, songs, albums, onCreateSong, onCreateAlbum, onSearch, theme, onToggleTheme }) {
+export default function Sidebar({ view, setView, songs, albums, onCreateSong, onCreateAlbum, onSearch, onSignOut, userEmail, theme, onToggleTheme }) {
   const counts = {
     library: songs.length,
     originals: songs.filter(s => s.type === 'original').length,
@@ -124,11 +124,26 @@ export default function Sidebar({ view, setView, songs, albums, onCreateSong, on
             </svg>
           ) : (
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M12.5 9.5A5.5 5.5 0 015.5 2.5a5.5 5.5 0 100 10 5.5 5.5 0 007-3z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
+              <path d="M13 8A5.5 5.5 0 1 1 7 2A4 4 0 0 0 13 8Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round"/>
             </svg>
           )}
           {theme === 'dark' ? 'Light mode' : 'Dark mode'}
         </button>
+
+        {/* Account */}
+        <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '8px', paddingTop: '10px' }}>
+          {userEmail && (
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', padding: '2px 10px 6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {userEmail}
+            </div>
+          )}
+          <button className="nav-item" onClick={onSignOut}>
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path d="M6 2H3a1 1 0 00-1 1v9a1 1 0 001 1h3M10 10l3-3-3-3M13 7.5H6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Sign out
+          </button>
+        </div>
       </div>
     </div>
   );

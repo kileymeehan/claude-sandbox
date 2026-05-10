@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getAllSongs, getAllAlbums, saveSong, createSong, deleteSong, saveAlbum, createAlbum, deleteAlbum } from './db';
+import { getAllSongs, getAllAlbums, createSong, deleteSong, createAlbum, deleteAlbum } from './db';
+import { supabase } from './lib/supabase';
 import { applyFont } from './fonts';
 import Sidebar from './components/Sidebar';
 import SongList from './components/SongList';
@@ -9,8 +10,14 @@ import AlbumDetail from './components/AlbumDetail';
 import QuickSearch from './components/QuickSearch';
 import CircleOfFifths from './components/CircleOfFifths';
 import Settings from './components/Settings';
+import AuthScreen from './components/AuthScreen';
+import MigratePrompt from './components/MigratePrompt';
 
 export default function App() {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [showMigrate, setShowMigrate] = useState(false);
+
   const [songs, setSongs] = useState([]);
   const [albums, setAlbums] = useState([]);
   const [view, setView] = useState('library');
@@ -18,9 +25,23 @@ export default function App() {
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const [showCircle, setShowCircle] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('sb-theme') || 'dark');
   const [font, setFont] = useState(() => localStorage.getItem('sb-font') || 'playfair');
+
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setAuthLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      const u = session?.user ?? null;
+      setUser(u);
+      if (u) setShowMigrate(true);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -32,24 +53,21 @@ export default function App() {
     localStorage.setItem('sb-font', font);
   }, [font]);
 
+  // Load data when user is authenticated
   useEffect(() => {
+    if (!user) return;
+    setLoading(true);
     Promise.all([getAllSongs(), getAllAlbums()]).then(([s, a]) => {
-      setSongs(s.sort((a, b) => b.updatedAt - a.updatedAt));
-      setAlbums(a.sort((a, b) => b.createdAt - a.createdAt));
+      setSongs(s);
+      setAlbums(a);
       setLoading(false);
     });
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const handler = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setShowQuickSearch(true);
-      }
-      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-        e.preventDefault();
-        window.dispatchEvent(new CustomEvent('force-save'));
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setShowQuickSearch(true); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); window.dispatchEvent(new CustomEvent('force-save')); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -75,10 +93,7 @@ export default function App() {
   const handleDeleteSong = useCallback(async (id) => {
     await deleteSong(id);
     setSongs(prev => prev.filter(s => s.id !== id));
-    if (selectedSongId === id) {
-      setSelectedSongId(null);
-      setView('library');
-    }
+    if (selectedSongId === id) { setSelectedSongId(null); setView('library'); }
   }, [selectedSongId]);
 
   const handleCreateAlbum = async () => {
@@ -95,22 +110,46 @@ export default function App() {
   const handleDeleteAlbum = useCallback(async (id) => {
     await deleteAlbum(id);
     setAlbums(prev => prev.filter(a => a.id !== id));
-    if (selectedAlbumId === id) {
-      setSelectedAlbumId(null);
-      setView('albums');
-    }
+    if (selectedAlbumId === id) { setSelectedAlbumId(null); setView('albums'); }
   }, [selectedAlbumId]);
 
-  const openSong = (id) => { setSelectedSongId(id); setView('song'); };
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setSongs([]);
+    setAlbums([]);
+    setView('library');
+    setSelectedSongId(null);
+    setSelectedAlbumId(null);
+  };
+
+  const openSong  = (id) => { setSelectedSongId(id);  setView('song'); };
   const openAlbum = (id) => { setSelectedAlbumId(id); setView('album'); };
 
-  const selectedSong = songs.find(s => s.id === selectedSongId);
+  const selectedSong  = songs.find(s => s.id === selectedSongId);
   const selectedAlbum = albums.find(a => a.id === selectedAlbumId);
 
-  if (loading) {
+  // Auth loading
+  if (authLoading) {
     return (
       <div className="app-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
         <span style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--text-muted)' }}>Opening songbook…</span>
+      </div>
+    );
+  }
+
+  // Not signed in
+  if (!user) return <AuthScreen />;
+
+  // Migration check (first sign-in with local data)
+  if (showMigrate) {
+    return <MigratePrompt userId={user.id} onDone={() => { setShowMigrate(false); }} />;
+  }
+
+  // Data loading
+  if (loading) {
+    return (
+      <div className="app-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <span style={{ fontFamily: 'var(--font-serif)', fontSize: '18px', color: 'var(--text-muted)' }}>Loading your songs…</span>
       </div>
     );
   }
@@ -125,6 +164,8 @@ export default function App() {
         onCreateSong={handleCreateSong}
         onCreateAlbum={handleCreateAlbum}
         onSearch={() => setShowQuickSearch(true)}
+        onSignOut={handleSignOut}
+        userEmail={user.email}
         theme={theme}
         onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
       />

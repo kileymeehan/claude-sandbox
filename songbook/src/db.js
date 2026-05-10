@@ -1,119 +1,163 @@
-import { openDB } from 'idb';
+import { supabase } from './lib/supabase';
 
-const DB_NAME = 'songbook-db';
-const DB_VERSION = 1;
+// ── Row mappers ───────────────────────────────────────────────────────────────
 
-let dbPromise = null;
-
-function getDB() {
-  if (!dbPromise) {
-    dbPromise = openDB(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        if (!db.objectStoreNames.contains('songs')) {
-          const songs = db.createObjectStore('songs', { keyPath: 'id' });
-          songs.createIndex('albumId', 'albumId', { unique: false });
-          songs.createIndex('type', 'type', { unique: false });
-        }
-        if (!db.objectStoreNames.contains('albums')) {
-          db.createObjectStore('albums', { keyPath: 'id' });
-        }
-        if (!db.objectStoreNames.contains('audio')) {
-          db.createObjectStore('audio', { keyPath: 'songId' });
-        }
-      },
-    });
-  }
-  return dbPromise;
+function songToDb(song) {
+  return {
+    id: song.id,
+    title: song.title || 'Untitled',
+    artist: song.artist || '',
+    type: song.type || 'original',
+    album_id: song.albumId || null,
+    tags: song.tags || [],
+    notes: song.notes || '',
+    mood_images: song.moodImages || [],
+    sections: song.sections || [],
+    updated_at: new Date().toISOString(),
+  };
 }
 
+function dbToSong(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    artist: row.artist,
+    type: row.type,
+    albumId: row.album_id,
+    tags: row.tags || [],
+    notes: row.notes || '',
+    moodImages: row.mood_images || [],
+    sections: row.sections || [],
+    createdAt: new Date(row.created_at).getTime(),
+    updatedAt: new Date(row.updated_at).getTime(),
+  };
+}
+
+function albumToDb(album) {
+  return {
+    id: album.id,
+    title: album.title || 'Untitled Album',
+    artist: album.artist || '',
+    year: album.year || new Date().getFullYear(),
+    cover_art: album.coverArt || null,
+    song_ids: album.songIds || [],
+  };
+}
+
+function dbToAlbum(row) {
+  return {
+    id: row.id,
+    title: row.title,
+    artist: row.artist,
+    year: row.year,
+    coverArt: row.cover_art,
+    songIds: row.song_ids || [],
+    createdAt: new Date(row.created_at).getTime(),
+  };
+}
+
+// ── Songs ─────────────────────────────────────────────────────────────────────
+
 export async function getAllSongs() {
-  const db = await getDB();
-  return db.getAll('songs');
+  const { data, error } = await supabase
+    .from('songs')
+    .select('*')
+    .order('updated_at', { ascending: false });
+  if (error) throw error;
+  return data.map(dbToSong);
 }
 
 export async function getSong(id) {
-  const db = await getDB();
-  return db.get('songs', id);
+  const { data, error } = await supabase
+    .from('songs').select('*').eq('id', id).single();
+  if (error) throw error;
+  return dbToSong(data);
 }
 
 export async function saveSong(song) {
-  const db = await getDB();
-  const updated = { ...song, updatedAt: Date.now() };
-  await db.put('songs', updated);
-  return updated;
+  const { data, error } = await supabase
+    .from('songs').upsert(songToDb(song)).select().single();
+  if (error) throw error;
+  return dbToSong(data);
 }
 
 export async function createSong({ title = 'Untitled', type = 'original', artist = '', albumId = null } = {}) {
   const song = {
     id: crypto.randomUUID(),
-    title,
-    artist,
-    type,
-    albumId,
-    tags: [],
-    sections: [],
-    notes: '',
-    moodImages: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    title, artist, type, albumId,
+    tags: [], notes: '', moodImages: [], sections: [],
+    createdAt: Date.now(), updatedAt: Date.now(),
   };
-  const db = await getDB();
-  await db.put('songs', song);
-  return song;
+  return saveSong(song);
 }
 
 export async function deleteSong(id) {
-  const db = await getDB();
-  await db.delete('songs', id);
-  try { await db.delete('audio', id); } catch {}
+  const { error } = await supabase.from('songs').delete().eq('id', id);
+  if (error) throw error;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.storage.from('audio').remove([`${user.id}/${id}`]);
+  } catch {}
 }
 
+// ── Albums ────────────────────────────────────────────────────────────────────
+
 export async function getAllAlbums() {
-  const db = await getDB();
-  return db.getAll('albums');
+  const { data, error } = await supabase
+    .from('albums')
+    .select('*')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data.map(dbToAlbum);
 }
 
 export async function saveAlbum(album) {
-  const db = await getDB();
-  await db.put('albums', album);
-  return album;
+  const { data, error } = await supabase
+    .from('albums').upsert(albumToDb(album)).select().single();
+  if (error) throw error;
+  return dbToAlbum(data);
 }
 
 export async function createAlbum({ title = 'Untitled Album', artist = '', year = new Date().getFullYear() } = {}) {
   const album = {
     id: crypto.randomUUID(),
-    title,
-    artist,
-    year,
-    coverArt: null,
-    songIds: [],
+    title, artist, year,
+    coverArt: null, songIds: [],
     createdAt: Date.now(),
   };
-  const db = await getDB();
-  await db.put('albums', album);
-  return album;
+  return saveAlbum(album);
 }
 
 export async function deleteAlbum(id) {
-  const db = await getDB();
-  await db.delete('albums', id);
+  const { error } = await supabase.from('albums').delete().eq('id', id);
+  if (error) throw error;
 }
 
+// ── Audio (Supabase Storage) ──────────────────────────────────────────────────
+
 export async function saveAudio(songId, blob) {
-  const db = await getDB();
-  await db.put('audio', { songId, blob, savedAt: Date.now() });
+  const { data: { user } } = await supabase.auth.getUser();
+  const { error } = await supabase.storage
+    .from('audio')
+    .upload(`${user.id}/${songId}`, blob, { upsert: true });
+  if (error) throw error;
 }
 
 export async function getAudio(songId) {
-  const db = await getDB();
-  const entry = await db.get('audio', songId);
-  return entry?.blob ?? null;
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data, error } = await supabase.storage
+    .from('audio')
+    .download(`${user.id}/${songId}`);
+  if (error) return null;
+  return data;
 }
 
 export async function deleteAudio(songId) {
-  const db = await getDB();
-  await db.delete('audio', songId);
+  const { data: { user } } = await supabase.auth.getUser();
+  await supabase.storage.from('audio').remove([`${user.id}/${songId}`]);
 }
+
+// ── Pure helpers (unchanged) ──────────────────────────────────────────────────
 
 export function newSection(type = 'verse') {
   return { id: crypto.randomUUID(), type, customLabel: '', lines: [] };
