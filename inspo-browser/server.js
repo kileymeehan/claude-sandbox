@@ -2,11 +2,13 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const Anthropic = require('@anthropic-ai/sdk');
+const archiver = require('archiver');
 
 const app = express();
 const PORT = 3001;
 const IMAGES_BASE = '/Users/kiley/Documents/Design Inspiration';
 const TAGS_FILE = path.join(__dirname, 'tags.json');
+const PROJECTS_FILE = path.join(__dirname, 'projects.json');
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif']);
@@ -209,6 +211,62 @@ app.post('/api/sync-inbox', async (req, res) => {
   }
 
   res.end();
+});
+
+function loadProjects() {
+  try { return JSON.parse(fs.readFileSync(PROJECTS_FILE, 'utf8')); }
+  catch { return {}; }
+}
+
+function saveProjects(projects) {
+  fs.writeFileSync(PROJECTS_FILE, JSON.stringify(projects, null, 2));
+}
+
+app.get('/api/projects', (req, res) => {
+  res.json(loadProjects());
+});
+
+app.post('/api/projects', (req, res) => {
+  const { id, name, images } = req.body;
+  if (!id) return res.status(400).json({ error: 'id required' });
+  const all = loadProjects();
+  if (!all[id]) all[id] = { name: name || 'Untitled', created: Date.now(), images: [] };
+  if (name !== undefined) all[id].name = name;
+  if (images !== undefined) all[id].images = images;
+  saveProjects(all);
+  res.json({ ok: true });
+});
+
+app.delete('/api/projects/:id', (req, res) => {
+  const all = loadProjects();
+  delete all[req.params.id];
+  saveProjects(all);
+  res.json({ ok: true });
+});
+
+app.get('/api/projects/:id/download', (req, res) => {
+  const all = loadProjects();
+  const project = all[req.params.id];
+  if (!project) return res.status(404).send('Project not found');
+
+  const safeName = (project.name || 'project').replace(/[^a-z0-9_\- ]/gi, '').trim() || 'project';
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', `attachment; filename="${safeName}.zip"`);
+
+  const archive = archiver('zip', { zlib: { level: 6 } });
+  archive.on('error', err => console.error('Archive error:', err));
+  archive.pipe(res);
+
+  const base = path.resolve(IMAGES_BASE);
+  for (const imageId of project.images || []) {
+    const fullPath = path.resolve(path.join(IMAGES_BASE, imageId));
+    if (!fullPath.startsWith(base)) continue;
+    if (fs.existsSync(fullPath)) {
+      archive.file(fullPath, { name: path.basename(fullPath) });
+    }
+  }
+
+  archive.finalize();
 });
 
 app.get('/download', (req, res) => {

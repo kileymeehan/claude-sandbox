@@ -5,6 +5,10 @@ let folderFilter = 'all';
 let tagFilter = null;
 let searchQuery = '';
 let lightboxIndex = -1; // index into getFiltered()
+let viewMode = localStorage.getItem('inspo-view') || 'grid-small';
+let projects = {}; // { id: { name, created, images[] } }
+let projectFilter = null;
+let projectModalCallback = null; // called with new project id after creation
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
@@ -39,12 +43,14 @@ async function loadData() {
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
   try {
-    const [imgData, tagData] = await Promise.all([
+    const [imgData, tagData, projData] = await Promise.all([
       fetch('/api/images').then(r => r.json()),
-      fetch('/api/tags').then(r => r.json())
+      fetch('/api/tags').then(r => r.json()),
+      fetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({}))
     ]);
     images = imgData;
     tags = tagData;
+    projects = projData;
     renderAll();
   } catch (err) {
     console.error('Failed to load data:', err);
@@ -74,6 +80,10 @@ function getFiltered() {
     if (tagFilter) {
       const imgTags = tags[img.id] || [];
       if (!imgTags.includes(tagFilter)) return false;
+    }
+    if (projectFilter) {
+      const proj = projects[projectFilter];
+      if (!proj || !(proj.images || []).includes(img.id)) return false;
     }
     if (q && !img.filename.toLowerCase().includes(q)) return false;
     return true;
@@ -145,6 +155,45 @@ function renderSidebar() {
     });
   });
 
+  // Projects
+  const projectNav = document.getElementById('project-nav');
+  const projectList = Object.entries(projects).sort((a, b) => b[1].created - a[1].created);
+  projectNav.innerHTML = projectList.map(([id, proj]) => {
+    const active = projectFilter === id ? 'active' : '';
+    const count = (proj.images || []).length;
+    return `<div class="project-nav-item ${active}" data-id="${id}">
+      <span class="nav-label">${escHtml(proj.name)}</span>
+      <span class="nav-count">${count}</span>
+      <div class="project-nav-actions">
+        <a href="/api/projects/${id}/download" title="Download zip" data-dl-proj>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
+        </a>
+        <button title="Delete project" data-delete-id="${id}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  projectNav.querySelectorAll('.project-nav-item').forEach(item => {
+    item.addEventListener('click', e => {
+      if (e.target.closest('[data-dl-proj]') || e.target.closest('[data-delete-id]')) return;
+      const id = item.dataset.id;
+      projectFilter = projectFilter === id ? null : id;
+      if (projectFilter) { folderFilter = 'all'; tagFilter = null; }
+      renderAll();
+    });
+    item.querySelector('[data-delete-id]')?.addEventListener('click', async e => {
+      e.stopPropagation();
+      const id = e.currentTarget.dataset.deleteId;
+      if (!confirm(`Delete project "${projects[id]?.name}"?`)) return;
+      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      delete projects[id];
+      if (projectFilter === id) projectFilter = null;
+      renderAll();
+    });
+  });
+
   const allTagsList = getAllTags();
   if (!allTagsList.length) {
     tagSection.style.display = 'none';
@@ -169,11 +218,20 @@ function renderSidebar() {
   });
 }
 
+function applyViewMode() {
+  const gallery = document.getElementById('gallery');
+  gallery.className = `view-${viewMode}`;
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === viewMode);
+  });
+}
+
 function renderGallery() {
   const gallery = document.getElementById('gallery');
   const countEl = document.getElementById('image-count');
   const emptyEl = document.getElementById('empty-state');
   const filtered = getFiltered();
+  applyViewMode();
 
   countEl.textContent = `${filtered.length} image${filtered.length !== 1 ? 's' : ''}`;
 
@@ -264,6 +322,28 @@ function renderLightbox() {
       const newTags = (tags[img.id] || []).filter(t => t !== btn.dataset.tag);
       await saveTags(img.id, newTags);
       renderLightbox();
+    });
+  });
+
+  // Projects
+  const lbProjects = document.getElementById('lb-projects');
+  const projectList = Object.entries(projects).sort((a, b) => b[1].created - a[1].created);
+  lbProjects.innerHTML = projectList.map(([id, proj]) => {
+    const assigned = (proj.images || []).includes(img.id);
+    return `<div class="lb-project-row ${assigned ? 'assigned' : ''}" data-proj-id="${id}">
+      <div class="lb-project-check">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <span>${escHtml(proj.name)}</span>
+    </div>`;
+  }).join('');
+
+  lbProjects.querySelectorAll('.lb-project-row').forEach(row => {
+    row.addEventListener('click', async () => {
+      const projId = row.dataset.projId;
+      await toggleImageInProject(projId, img.id);
+      renderLightbox();
+      renderSidebar();
     });
   });
 
@@ -380,6 +460,96 @@ function escAttr(str) {
   return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// ── Projects ──
+
+async function toggleImageInProject(projectId, imageId) {
+  const proj = projects[projectId];
+  if (!proj) return;
+  const imgs = proj.images || [];
+  const newImgs = imgs.includes(imageId)
+    ? imgs.filter(id => id !== imageId)
+    : [...imgs, imageId];
+  projects[projectId].images = newImgs;
+  await fetch('/api/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: projectId, images: newImgs })
+  });
+}
+
+function openProjectModal(callback) {
+  projectModalCallback = callback || null;
+  const modal = document.getElementById('project-modal');
+  const input = document.getElementById('project-modal-input');
+  modal.classList.remove('hidden');
+  input.value = '';
+  input.focus();
+}
+
+function closeProjectModal() {
+  document.getElementById('project-modal').classList.add('hidden');
+  projectModalCallback = null;
+}
+
+async function createProject(name) {
+  const id = `proj-${Date.now()}`;
+  projects[id] = { name, created: Date.now(), images: [] };
+  await fetch('/api/projects', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, name, images: [] })
+  });
+  return id;
+}
+
+function initProjectModal() {
+  const input = document.getElementById('project-modal-input');
+
+  async function submit() {
+    const name = input.value.trim();
+    if (!name) return;
+    const id = await createProject(name);
+    closeProjectModal();
+    renderSidebar();
+    if (projectModalCallback) {
+      await projectModalCallback(id);
+      renderLightbox();
+      renderSidebar();
+    }
+  }
+
+  document.getElementById('project-modal-create').addEventListener('click', submit);
+  document.getElementById('project-modal-cancel').addEventListener('click', closeProjectModal);
+  document.getElementById('project-modal-overlay').addEventListener('click', closeProjectModal);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submit();
+    if (e.key === 'Escape') closeProjectModal();
+  });
+
+  document.getElementById('new-project-btn').addEventListener('click', () => openProjectModal(null));
+
+  document.getElementById('lb-new-project-btn').addEventListener('click', () => {
+    openProjectModal(async newId => {
+      const filtered = getFiltered();
+      const img = filtered[lightboxIndex];
+      if (img) await toggleImageInProject(newId, img.id);
+    });
+  });
+}
+
+// ── View toggle ──
+
+function initViewToggle() {
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      viewMode = btn.dataset.view;
+      localStorage.setItem('inspo-view', viewMode);
+      applyViewMode();
+    });
+  });
+  applyViewMode();
+}
+
 // ── Sync inbox ──
 
 function showToast(msg) {
@@ -483,6 +653,8 @@ function init() {
   document.getElementById('lb-next').addEventListener('click', () => navigateLightbox(1));
   document.getElementById('refresh-btn').addEventListener('click', loadData);
   initTheme();
+  initViewToggle();
+  initProjectModal();
   initSync();
 
   document.getElementById('search').addEventListener('input', e => {

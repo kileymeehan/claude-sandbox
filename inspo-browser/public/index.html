@@ -33,6 +33,16 @@
         <nav id="folder-nav"></nav>
       </div>
 
+      <div class="sidebar-section" id="project-nav-section">
+        <div class="section-label-row">
+          <span class="section-label">Projects</span>
+          <button id="new-project-btn" title="New project">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <nav id="project-nav"></nav>
+      </div>
+
       <div class="sidebar-section" id="tag-nav-section" style="display:none">
         <div class="section-label">Tags</div>
         <nav id="tag-nav"></nav>
@@ -46,6 +56,17 @@
           <input id="search" type="text" placeholder="Search images…" autocomplete="off" spellcheck="false">
         </div>
         <span id="image-count"></span>
+        <div class="view-toggle">
+          <button class="view-btn" data-view="grid-small" title="Small grid">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-btn" data-view="grid-large" title="Large grid">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="9" height="9"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button class="view-btn" data-view="list" title="List view">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <div id="gallery"></div>
       <div id="empty-state" class="hidden">
@@ -80,6 +101,14 @@
           <div id="lb-filename"></div>
           <div id="lb-folder-badge-wrap"></div>
         </div>
+        <div id="lb-projects-section">
+          <div class="section-label">Projects</div>
+          <div id="lb-projects"></div>
+          <button id="lb-new-project-btn" class="lb-new-project-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New project…
+          </button>
+        </div>
         <div id="lb-tags-section">
           <div class="section-label">Tags</div>
           <div id="lb-tags"></div>
@@ -95,6 +124,19 @@
           </a>
         </div>
         <div id="lb-counter"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Project Modal -->
+  <div id="project-modal" class="hidden">
+    <div id="project-modal-overlay"></div>
+    <div id="project-modal-box">
+      <div id="project-modal-title">New Project</div>
+      <input id="project-modal-input" type="text" placeholder="Project name…" autocomplete="off" spellcheck="false">
+      <div id="project-modal-actions">
+        <button id="project-modal-cancel">Cancel</button>
+        <button id="project-modal-create">Create</button>
       </div>
     </div>
   </div>
