@@ -13,7 +13,7 @@ const TAGS_FILE = path.join(__dirname, 'tags.json');
 const PROJECTS_FILE = path.join(__dirname, 'projects.json');
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif']);
-const MAX_IMAGES = 8;
+const MAX_IMAGES = 4;
 
 const MIME_MAP = {
   '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
@@ -65,7 +65,7 @@ function imageToBase64(filePath) {
   // Resize to max 1200px with sips (macOS built-in), fall back to original
   const tmpFile = path.join(os.tmpdir(), `inspo-${crypto.randomBytes(8).toString('hex')}${ext === '.tiff' || ext === '.tif' ? '.jpg' : ext}`);
   try {
-    const result = spawnSync('sips', ['-Z', '1200', filePath, '--out', tmpFile], { timeout: 10000 });
+    const result = spawnSync('sips', ['-Z', '600', filePath, '--out', tmpFile], { timeout: 10000 });
     if (result.status === 0 && fs.existsSync(tmpFile)) {
       const data = fs.readFileSync(tmpFile).toString('base64');
       fs.unlinkSync(tmpFile);
