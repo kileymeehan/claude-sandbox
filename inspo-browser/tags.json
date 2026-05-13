@@ -1,0 +1,28 @@
+{
+  "components/Screenshot 2025-09-25 at 3.40.10 PM.png": [
+    "#onboarding",
+    "#checklist"
+  ],
+  "components/Screenshot 2025-09-25 at 3.39.42 PM.png": [
+    "#onboarding"
+  ],
+  "empty-states/Screenshot 2025-09-25 at 3.41.29 PM.png": [
+    "#onboarding"
+  ],
+  "layouts/Screenshot 2025-09-25 at 3.42.14 PM.png": [
+    "#onboarding",
+    "#checklist"
+  ],
+  "empty-states/Slack.png": [
+    "#onboarding",
+    "#valuetiles"
+  ],
+  "components/Screenshot 2025-11-24 at 1.03.08 PM.png": [
+    "#in-app-notification",
+    "#upgrade"
+  ],
+  "components/Screenshot 2025-09-07 at 7.16.00 PM.png": [
+    "#notifications",
+    "#plg"
+  ]
+}
