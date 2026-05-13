@@ -4,12 +4,24 @@ const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio
 const { CallToolRequestSchema, ListToolsRequestSchema } = require('@modelcontextprotocol/sdk/types.js');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const crypto = require('crypto');
+const { spawnSync } = require('child_process');
 
 const IMAGES_BASE = '/Users/kiley/Documents/Design Inspiration';
 const TAGS_FILE = path.join(__dirname, 'tags.json');
 const PROJECTS_FILE = path.join(__dirname, 'projects.json');
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif', '.bmp', '.tiff', '.tif']);
+const MAX_IMAGES = 8;
+
+const MIME_MAP = {
+  '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.png': 'image/png', '.gif': 'image/gif',
+  '.webp': 'image/webp', '.svg': 'image/svg+xml',
+  '.avif': 'image/avif', '.bmp': 'image/bmp',
+  '.tiff': 'image/tiff', '.tif': 'image/tiff'
+};
 
 function loadTags() {
   try { return JSON.parse(fs.readFileSync(TAGS_FILE, 'utf8')); } catch { return {}; }
@@ -42,6 +54,43 @@ function scanImages() {
   return imgs.sort((a, b) => b.mtime - a.mtime);
 }
 
+function imageToBase64(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const mimeType = MIME_MAP[ext] || 'image/jpeg';
+
+  if (ext === '.svg') {
+    return { data: fs.readFileSync(filePath).toString('base64'), mimeType };
+  }
+
+  // Resize to max 1200px with sips (macOS built-in), fall back to original
+  const tmpFile = path.join(os.tmpdir(), `inspo-${crypto.randomBytes(8).toString('hex')}${ext === '.tiff' || ext === '.tif' ? '.jpg' : ext}`);
+  try {
+    const result = spawnSync('sips', ['-Z', '1200', filePath, '--out', tmpFile], { timeout: 10000 });
+    if (result.status === 0 && fs.existsSync(tmpFile)) {
+      const data = fs.readFileSync(tmpFile).toString('base64');
+      fs.unlinkSync(tmpFile);
+      return { data, mimeType };
+    }
+  } catch {}
+
+  return { data: fs.readFileSync(filePath).toString('base64'), mimeType };
+}
+
+function imageContentBlocks(imageIds, tags) {
+  const blocks = [];
+  for (const id of imageIds.slice(0, MAX_IMAGES)) {
+    const fullPath = path.join(IMAGES_BASE, id);
+    if (!fs.existsSync(fullPath)) continue;
+    const imgTags = tags[id] || [];
+    try {
+      const { data, mimeType } = imageToBase64(fullPath);
+      blocks.push({ type: 'text', text: `**${path.basename(id)}**${imgTags.length ? ` — ${imgTags.join(', ')}` : ''}` });
+      blocks.push({ type: 'image', data, mimeType });
+    } catch {}
+  }
+  return blocks;
+}
+
 // ── Server ──
 
 const server = new Server(
@@ -58,25 +107,26 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     },
     {
       name: 'get_project_images',
-      description: 'Get all images in a named project, including their local file paths (so you can read/view them), folder, and tags.',
+      description: 'Get images from a named project. Returns the actual images so you can see and analyze them, plus tags and metadata.',
       inputSchema: {
         type: 'object',
         properties: {
-          project_name: { type: 'string', description: 'Project name — partial match is fine, e.g. "blog" matches "Blog Inspo"' }
+          project_name: { type: 'string', description: 'Project name — partial match is fine, e.g. "blog" matches "Blog Inspo"' },
+          limit: { type: 'number', description: `Max images to return visually (default ${MAX_IMAGES})` }
         },
         required: ['project_name']
       }
     },
     {
       name: 'search_images',
-      description: 'Search design inspiration images by folder category, tag, or filename keyword. Returns file paths so you can view them.',
+      description: 'Search design inspiration images by folder category, tag, or filename keyword. Returns the actual images so you can see them.',
       inputSchema: {
         type: 'object',
         properties: {
           query:  { type: 'string', description: 'Keyword to match against filenames' },
           folder: { type: 'string', description: 'Filter by folder: components, layouts, typography, motion, color, empty-states, misc, inbox' },
           tag:    { type: 'string', description: 'Filter by tag (exact match)' },
-          limit:  { type: 'number', description: 'Max results to return (default 10)' }
+          limit:  { type: 'number', description: `Max results to return (default ${MAX_IMAGES})` }
         }
       }
     },
@@ -116,28 +166,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return { content: [{ type: 'text', text: `No project matching "${args.project_name}". Available: ${names || 'none'}` }] };
     }
     const [, proj] = match;
-    const imageIds = proj.images || [];
-    const details = imageIds
-      .map(id => {
-        const fullPath = path.join(IMAGES_BASE, id);
-        if (!fs.existsSync(fullPath)) return null;
-        const parts = id.split('/');
-        return { filename: parts[parts.length - 1], folder: parts.length > 1 ? parts[0] : 'root', tags: tags[id] || [], path: fullPath };
-      })
-      .filter(Boolean);
-
-    if (!details.length) {
-      return { content: [{ type: 'text', text: `Project "${proj.name}" has no accessible images.` }] };
-    }
-    const lines = details.map(img =>
-      `• **${img.filename}**\n  Folder: ${img.folder}${img.tags.length ? `\n  Tags: ${img.tags.join(', ')}` : ''}\n  Path: \`${img.path}\``
-    );
-    return { content: [{ type: 'text', text: `**${proj.name}** — ${details.length} image${details.length !== 1 ? 's' : ''}:\n\n${lines.join('\n\n')}` }] };
+    const imageIds = (proj.images || []).filter(id => fs.existsSync(path.join(IMAGES_BASE, id)));
+    const limit = Math.min(args.limit || MAX_IMAGES, MAX_IMAGES);
+    const shown = imageIds.slice(0, limit);
+    const header = `**${proj.name}** — ${imageIds.length} image${imageIds.length !== 1 ? 's' : ''}${imageIds.length > limit ? ` (showing first ${limit})` : ''}:`;
+    return { content: [{ type: 'text', text: header }, ...imageContentBlocks(shown, tags)] };
   }
 
   if (name === 'search_images') {
     const tags = loadTags();
-    const limit = args.limit || 10;
+    const limit = Math.min(args.limit || MAX_IMAGES, MAX_IMAGES);
     const q = (args.query || '').toLowerCase();
     const filtered = scanImages().filter(img => {
       if (args.folder && img.folder !== args.folder) return false;
@@ -149,11 +187,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     if (!filtered.length) {
       return { content: [{ type: 'text', text: 'No images found matching your search.' }] };
     }
-    const lines = filtered.map(img => {
-      const imgTags = tags[img.id] || [];
-      return `• **${img.filename}** (${img.folder})${imgTags.length ? ` — ${imgTags.join(', ')}` : ''}\n  Path: \`${path.join(IMAGES_BASE, img.id)}\``;
-    });
-    return { content: [{ type: 'text', text: `${filtered.length} result${filtered.length !== 1 ? 's' : ''}:\n\n${lines.join('\n\n')}` }] };
+    const header = `${filtered.length} result${filtered.length !== 1 ? 's' : ''}:`;
+    return { content: [{ type: 'text', text: header }, ...imageContentBlocks(filtered.map(i => i.id), tags)] };
   }
 
   if (name === 'list_tags') {
