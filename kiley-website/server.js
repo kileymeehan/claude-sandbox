@@ -320,5 +320,5 @@ function escHtml(str) {
   return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server → http://localhost:${PORT}`));
