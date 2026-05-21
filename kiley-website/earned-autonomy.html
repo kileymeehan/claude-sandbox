@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Earned Autonomy · Of Quality</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EEDB;
+    --cream-soft: #F9F4E4;
+    --ink: #0C0805;
+    --ink-soft: #1A1610;
+    --ink-mute: rgba(12, 8, 5, 0.72);
+    --ink-quiet: rgba(12, 8, 5, 0.46);
+    --terracotta: #BB5E3E;
+    --rule: #1A1610;
+    --rule-soft: rgba(26, 22, 16, 0.18);
+    --dark-green: #0C1A14;
+    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ink); color: var(--ink); }
+  body {
+    font-family: var(--mono);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============ HEADER (matches portfolio) ============ */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-bottom: 1px solid #F5EEDB;
+  }
+  .hdr-inner {
+    display: grid;
+    grid-template-columns: 56px 1fr auto 56px;
+    align-items: stretch;
+    height: 72px;
+  }
+  .hdr-brand, .hdr-nav {
+    display: flex; align-items: center;
+    font-family: var(--mono);
+    font-size: 13px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .hdr-brand { grid-column: 2; gap: 16px; padding: 0 28px; }
+  .hdr-brand a { color: inherit; text-decoration: none; }
+  .hdr-nav { grid-column: 3; justify-content: flex-end; padding: 0; height: 100%; }
+  .hdr-nav a {
+    color: #F5EEDB; text-decoration: none;
+    display: flex; align-items: center; height: 100%;
+    padding: 0 28px;
+    border-left: 1px solid rgba(245, 238, 219, 0.55);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .hdr-nav a:hover { background: var(--terracotta); color: #FBF5E2; }
+  .hdr-nav a.active { color: var(--terracotta); }
+
+  /* ============ SHELL ============ */
+  .shell {
+    background: color-mix(in oklab, var(--cream), white 18%);
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    min-height: calc(100vh - 72px);
+  }
+  .rail {
+    position: relative;
+    background: inherit;
+    overflow: hidden;
+  }
+  .rail.left  {
+    grid-column: 1;
+    border-right: 1px solid var(--rule);
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 9px,
+      rgba(26, 22, 16, 0.07) 9px 10px
+    );
+  }
+  .rail.right { grid-column: 3; border-left: 1px solid var(--rule); }
+  .rail .vlabel {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-90deg);
+    transform-origin: center;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .rail.right .vlabel {
+    top: auto;
+    bottom: 80px;
+    transform: translateX(-50%) rotate(-90deg);
+  }
+
+  .article-shell { grid-column: 2; }
+
+  /* ============ CRUMB ============ */
+  .crumb {
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 22px 56px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .crumb a {
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: color 0.2s ease;
+  }
+  .crumb a:hover { color: var(--terracotta); }
+  .crumb-right { color: var(--ink-mute); }
+
+  /* ============ COVER ============ */
+  .cover {
+    border-bottom: 1px solid var(--rule);
+    padding: 96px 56px 80px;
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    gap: 48px;
+    align-items: end;
+    position: relative;
+    background-color: color-mix(in oklab, var(--cream), white 18%);
+    background-image: radial-gradient(
+      rgba(26, 22, 16, 0.36) 1px,
+      transparent 1.2px
+    );
+    background-size: 8px 8px;
+  }
+  .cover-eyebrow,
+  .cover-title,
+  .cover-deck,
+  .cover-meta > div {
+    background: color-mix(in oklab, var(--cream), white 18%);
+    padding: 4px 10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    width: fit-content;
+    max-width: calc(100% + 20px);
+  }
+  .cover-eyebrow .num { background: none; padding: 0; margin: 0; width: auto; max-width: none; }
+  .cover-eyebrow {
+    grid-column: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    align-self: start;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .cover-eyebrow .num {
+    font-family: var(--serif);
+    font-size: 56px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--terracotta);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .cover-title-wrap { grid-column: 2; }
+  .cover-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(64px, 8.4vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .cover-title em { font-style: italic; font-weight: 300; }
+  .cover-deck {
+    margin-top: 36px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 1.8vw, 28px);
+    line-height: 1.35;
+    color: var(--ink-soft);
+    max-width: 28ch;
+  }
+  .cover-meta {
+    grid-column: 3;
+    align-self: start;
+    display: flex; flex-direction: column; gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    padding-left: 24px;
+    border-left: 1px solid var(--rule-soft);
+  }
+  .cover-meta b {
+    color: var(--ink);
+    font-weight: 500;
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ============ ARTICLE BODY ============ */
+  .article {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 720px) 200px 1fr;
+    column-gap: 48px;
+    row-gap: 0;
+    padding: 88px 56px 96px;
+    position: relative;
+    background: color-mix(in oklab, var(--cream), white 48%);
+  }
+  .marg {
+    grid-column: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    line-height: 1.7;
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid var(--rule-soft);
+    align-self: start;
+  }
+  .marg .marg-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 36px;
+    color: var(--terracotta);
+    text-transform: none;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .marg .marg-label { display: block; color: var(--ink); margin-bottom: 6px; }
+  .marg .marg-sub { display: block; color: var(--ink-mute); text-transform: none; letter-spacing: 0.04em; font-size: 11px; }
+
+  .prose {
+    grid-column: 2;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .prose p {
+    margin: 0 0 1.1em;
+    text-wrap: pretty;
+    hanging-punctuation: first last;
+  }
+  .prose p + p { text-indent: 1.6em; }
+  .prose p.lead, .prose p.no-indent { text-indent: 0; }
+  .prose em { font-style: italic; }
+  .prose strong { font-weight: 600; }
+  .prose a {
+    color: var(--ink);
+    text-decoration: none;
+    background-image: linear-gradient(transparent 70%, color-mix(in oklab, var(--terracotta), white 65%) 0);
+    background-size: 100% 100%;
+    padding: 0 1px;
+    transition: background-color 0.2s ease;
+  }
+  .prose a:hover { color: var(--terracotta); }
+
+  /* drop cap */
+  .prose .dropcap::first-letter {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 5.6em;
+    line-height: 0.82;
+    float: left;
+    padding: 0.06em 0.12em 0 0;
+    color: var(--terracotta);
+  }
+
+  /* section break */
+  .section-break {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 28px;
+    margin: 36px 0 28px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .section-break::before,
+  .section-break::after {
+    content: '';
+    height: 1px;
+    background: var(--rule-soft);
+    display: block;
+  }
+  .section-break .roman {
+    font-size: 32px;
+    color: var(--terracotta);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+
+  /* pull quote */
+  .pullquote {
+    grid-column: 2;
+    margin: 8px 0 36px -32px;
+    padding: 4px 0 4px 32px;
+    border-left: 2px solid var(--terracotta);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1.25;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+  .pullquote .attr {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* footnote/aside in margin */
+  .side-note {
+    grid-column: 3;
+    align-self: start;
+    margin-top: 8px;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--ink-mute);
+    letter-spacing: 0.02em;
+  }
+  .side-note .marker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 8px;
+  }
+  .side-note em { font-style: italic; color: var(--ink); }
+
+  /* end mark */
+  .endmark {
+    grid-column: 2;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .endmark .sq {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: var(--terracotta);
+  }
+
+  /* author block */
+  .byline-block {
+    grid-column: 2;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .byline-block .avatar {
+    width: 96px; height: 96px;
+    background: var(--terracotta);
+    color: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .byline-block .meta { display: flex; flex-direction: column; gap: 8px; }
+  .byline-block .meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .byline-block .meta-name {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .byline-block .meta-bio {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-mute);
+    max-width: 52ch;
+    margin-top: 4px;
+  }
+
+  /* ============ RELATED ============ */
+  .related {
+    border-top: 1px solid var(--rule);
+    padding: 64px 56px 56px;
+    background: var(--cream);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 56px;
+  }
+  .related-head {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .related-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .related-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .related-title em { font-style: italic; }
+  .related-list {
+    list-style: none;
+    display: flex; flex-direction: column;
+  }
+  .related-list li {
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .related-list li:last-child { border-bottom: none; }
+  .rel-link {
+    display: grid;
+    grid-template-columns: 64px 1fr 32px;
+    align-items: start;
+    gap: 28px;
+    padding: 26px 0;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .rel-link:hover { color: var(--terracotta); }
+  .rel-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink-quiet);
+    padding-top: 6px;
+  }
+  .rel-body { display: flex; flex-direction: column; gap: 6px; }
+  .rel-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .rel-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .rel-arrow { font-size: 18px; color: var(--terracotta); padding-top: 6px; }
+
+  /* ============ FOOTER ============ */
+  .site-footer {
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-top: 1px solid #F5EEDB;
+    padding: 80px 0 32px;
+    font-family: var(--mono);
+  }
+  .foot-inner {
+    padding: 0 56px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .foot-col {
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .foot-col a { color: #F5EEDB; text-decoration: none; transition: color 0.2s ease; }
+  .foot-col a:hover { color: var(--terracotta); }
+  .foot-label {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: rgba(245, 238, 219, 0.45);
+    margin-bottom: 8px;
+  }
+  .foot-brand .foot-name {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: #F5EEDB;
+    margin-bottom: 6px;
+  }
+  .foot-brand .foot-tag {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgba(245, 238, 219, 0.65);
+  }
+  .foot-rule {
+    margin-top: 80px;
+    padding: 24px 56px 0;
+    border-top: 1px solid rgba(245, 238, 219, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245, 238, 219, 0.65);
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .cover { grid-template-columns: 1fr; gap: 24px; padding: 64px 32px 56px; }
+    .cover-eyebrow, .cover-title-wrap, .cover-meta { grid-column: 1; }
+    .cover-meta { border-left: none; padding-left: 0; flex-direction: row; flex-wrap: wrap; gap: 20px 28px; }
+    .article { grid-template-columns: 1fr; gap: 24px; padding: 56px 32px 72px; }
+    .marg, .side-note { grid-column: 1; position: static; }
+    .prose, .section-break, .pullquote, .endmark, .byline-block { grid-column: 1; }
+    .pullquote { margin-left: 0; }
+    .related { grid-template-columns: 1fr; gap: 28px; padding: 48px 32px; }
+    .foot-inner { grid-template-columns: 1fr 1fr; gap: 32px; padding: 0 32px; }
+    .foot-rule { padding: 24px 32px 0; flex-direction: column; gap: 12px; align-items: flex-start; }
+  }
+  @media (max-width: 640px) {
+    .shell { grid-template-columns: 24px 1fr 24px; }
+    .crumb { padding: 16px 24px; font-size: 10px; letter-spacing: 0.22em; }
+    .cover { padding: 48px 24px 40px; }
+    .cover-title { font-size: clamp(44px, 12vw, 72px); }
+    .article { padding: 40px 24px 56px; }
+    .prose { font-size: 19px; }
+    .related { padding: 40px 24px; }
+    .foot-inner { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header" data-screen-label="Earned Autonomy">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <a href="index.html">KILEY&nbsp;MEEHAN</a>
+      <span>·</span>
+      <span>OF&nbsp;QUALITY</span>
+    </div>
+    <nav class="hdr-nav">
+      <a href="index.html#work">WORK</a>
+      <a href="index.html#writing" class="active">WRITING</a>
+      <a href="cv.html">CV</a>
+      <a href="index.html#about">ABOUT</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail left"><span class="vlabel">II · WRITING · ESSAY №01</span></aside>
+
+  <main class="article-shell">
+
+    <nav class="crumb" aria-label="breadcrumb">
+      <a href="index.html#writing">← Back to writing</a>
+      <span class="crumb-right">Of Quality · Volume MMXXVI</span>
+    </nav>
+
+    <header class="cover">
+      <div class="cover-eyebrow">
+        <span class="num">№ 01</span>
+        <span>Essay · On building&nbsp;with&nbsp;AI</span>
+      </div>
+      <div class="cover-title-wrap">
+        <h1 class="cover-title">Earned <em>Autonomy</em>.</h1>
+        <p class="cover-deck">A framework for working with AI without quietly handing it the keys.</p>
+      </div>
+      <div class="cover-meta">
+        <div>
+          Published
+          <b>May 21, 2026</b>
+        </div>
+        <div>
+          Reading
+          <b>8 minutes</b>
+        </div>
+        <div>
+          Filed under
+          <b>Craft · Leadership</b>
+        </div>
+      </div>
+    </header>
+
+    <article class="article">
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">I.</span>
+        <span class="marg-label">The premise</span>
+        <span class="marg-sub">In which we hire a six-foot slab of aluminum named Shirley, and learn the hidden cost of relief.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="lead dropcap">Imagine you run a small cat grooming business. You'd happily spend every hour brushing, shaving, and shampooing fur, but there's also a business to run. Staff to pay. Leases to renew. Taxes to file. The list of worries gnawing at the back of your mind is endless. You want to focus on clients, but the business can't be a black box.</p>
+
+        <p class="no-indent">So when you're introduced to an AI assistant named Shirley — a six-foot gleaming slab of aluminum that promises to quietly handle the administrative load — it sounds like a dream. You set Shirley up in the back office with a computer, some sticky notes, and a coffee machine. Shirley gives a confident nod, tucks into a pile of invoices, and you close the door, relieved.</p>
+
+        <p>For a while, it's great. You can hear aggressive typing from the next room — <em>bam! bam! bam!</em> — and a steaming mug mysteriously appears on your desk every so often. What a purchase.</p>
+
+        <p>Then, a few weeks in, things start to go sideways. Customers get double-booked. Your landlord mentions a late lease payment. Five thousand bottles of shampoo arrive at your door.</p>
+      </div>
+
+      <aside class="side-note">
+        <span class="marker">Field note</span>
+        A café in Stockholm promoted an AI named <em>Mona</em> to management, and 15 kilograms of canned tomatoes showed up unannounced. A drive-through implemented AI to take orders and ended up adding hundreds of nuggets to a single order — and bacon as an ice-cream topping.
+      </aside>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent">This isn't just a hypothetical. Funny in retrospect, alarming in the moment. Both stories point to the same risk: giving AI too much autonomy, too soon.</p>
+
+        <p>Running a business is an art as well as a science. When you offload decisions without fully understanding what the AI is doing or why, you don't eliminate the black box. You just move it. Everything looks fine until it isn't — and by then, you've lost the context to course-correct.</p>
+      </div>
+
+      <div class="section-break">
+        <span class="roman">II</span>
+      </div>
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">II.</span>
+        <span class="marg-label">The framework</span>
+        <span class="marg-sub">A name for the thing we keep forgetting to do: make trust incremental.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="no-indent">This is what led me to a framework I call <strong>Earned&nbsp;Autonomy</strong>.</p>
+
+        <p class="no-indent">The idea is simple: rather than handing AI the keys and hoping for the best, make it earn your trust incrementally — and only delegate what you genuinely understand yourself.</p>
+
+        <p>Instead of letting Shirley loose on your supply orders from day one, sit down with it first. Work through your expenses together. Understand where the shortfalls are and what problems are worth solving. Maybe Shirley spots a cheaper vendor for combs and brushes and can show you exactly how much you'd save over a year. Maybe it flags which services have become unprofitable and helps you rethink your offering. That's genuinely useful — and you're still in the loop.</p>
+      </div>
+
+      <blockquote class="pullquote">
+        AI should remove friction <em>as a partner</em>, not as a proxy — and it should help you understand why the friction existed in the first place.
+        <span class="attr">— On collaboration, not delegation</span>
+      </blockquote>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent">The trap is the relief. Relief is seductive. Relief is also, very often, the first symptom of having given away the part of the job you most needed to keep.</p>
+      </div>
+
+      <div class="section-break">
+        <span class="roman">III</span>
+      </div>
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">III.</span>
+        <span class="marg-label">For the builders</span>
+        <span class="marg-sub">What this means if you're the one designing the AI, not just living with&nbsp;it.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="no-indent">What does this mean for those of us building AI into software?</p>
+
+        <p class="no-indent">The instinct is often to make AI do as much as possible, as automatically as possible. But there's a better approach — one that builds user confidence alongside capability.</p>
+
+        <p>Take a personal finance app. Instead of having AI silently tag all of a user's expenses in the background, surface changes before they're executed. Let users see what's happening, and why. The AI notices a laptop logged as a regular expense could be classified as a depreciating asset. Rather than reclassifying it unilaterally, it could say:</p>
+      </div>
+
+      <blockquote class="pullquote">
+        “I noticed this. Here's what I'd suggest, and here's why. Want me to make this change?”
+        <span class="attr">— The shape of a good handoff</span>
+      </blockquote>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent">At first, the user might adjust the action. Over time, as they see good results, they'll naturally grant more autonomy. <em>Trust compounds.</em></p>
+
+        <p>This matters especially when introducing AI into an existing product. A sudden paradigm shift raises expectations fast, and the higher the initial autonomy, the steeper the cost when something goes wrong. Easing AI in through small, transparent, approvable tasks is a much more durable path to adoption.</p>
+      </div>
+
+      <div class="section-break">
+        <span class="roman">IV</span>
+      </div>
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">IV.</span>
+        <span class="marg-label">In closing</span>
+        <span class="marg-sub">Keep Shirley. But hold the keys.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="no-indent">So keep Shirley. The kids love giving it high fives, and it's very good at data entry. But Shirley is a hire, not a silver bullet.</p>
+
+        <p>Invest in some quality time upfront. Help it understand what you need. Make sure you understand what <em>it</em> is doing. And hold onto your authority over the decisions that matter.</p>
+
+        <p>That way, when something does go sideways, you won't wake up to a pile of cat toothbrushes and no idea how they got there.</p>
+      </div>
+
+      <div class="endmark">
+        <span class="sq" aria-hidden="true"></span>
+        <span>End · Of Quality №&nbsp;01</span>
+      </div>
+
+    </article>
+
+    <section class="related" aria-labelledby="rel-h">
+      <div class="related-head">
+        <div class="related-eyebrow">Continue reading</div>
+        <h2 id="rel-h" class="related-title">More <em>essays</em>.</h2>
+      </div>
+      <ol class="related-list">
+        <li>
+          <a class="rel-link" href="ux-career.html">
+            <div class="rel-num">02</div>
+            <div class="rel-body">
+              <div class="rel-meta">2018 · 9 min · Essay</div>
+              <div class="rel-title">A UX Career is a Business Career</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+        <li>
+          <a class="rel-link" href="late-bloomers.html">
+            <div class="rel-num">03</div>
+            <div class="rel-body">
+              <div class="rel-meta">2020 · 6 min · Essay</div>
+              <div class="rel-title">Late Bloomers and Product Design</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+        <li>
+          <a class="rel-link" href="email-love-story.html">
+            <div class="rel-num">04</div>
+            <div class="rel-body">
+              <div class="rel-meta">Jun 2020 · 4 min · Essay</div>
+              <div class="rel-title">An Email Love Story</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </main>
+
+  <aside class="rail right"><span class="vlabel">MMXXVI · OF QUALITY</span></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="foot-inner">
+    <div class="foot-col foot-brand">
+      <div class="foot-name">Kiley Meehan</div>
+      <div class="foot-tag">Product design leader · FreshBooks</div>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Site</div>
+      <a href="index.html#work">Work</a>
+      <a href="index.html#writing">Writing</a>
+      <a href="cv.html">CV</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Elsewhere</div>
+      <a href="#">Read.cv</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Are.na</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Get in touch</div>
+      <a href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+      <div class="foot-tag" style="margin-top: 8px;">Toronto, Ontario</div>
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>© MMXXVI · Set in Cormorant &amp; Plex Mono</span>
+    <span>Of Quality · A working notebook</span>
+  </div>
+</footer>
+
+</body>
+</html>

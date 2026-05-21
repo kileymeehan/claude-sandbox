@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CV · Kiley Meehan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EEDB;
+    --cream-2: #EEE7CF;
+    --ink: #1A1610;
+    --terracotta: #BB5E3E;
+    --rule: #1A1610;
+    --dark-green: #0C1A14;
+    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); color: var(--ink); font-family: var(--mono); }
+
+  /* ======= STICKY DARK HEADER (matches Portfolio) ======= */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-bottom: 1px solid #F5EEDB;
+  }
+  .hdr-inner {
+    display: grid;
+    grid-template-columns: 56px 1fr auto 56px;
+    align-items: stretch;
+    height: 72px;
+  }
+  .hdr-brand,
+  .hdr-nav {
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .hdr-brand { grid-column: 2; gap: 16px; padding-left: 28px; }
+  .hdr-nav   { grid-column: 3; justify-content: flex-end; gap: 0; padding: 0; height: 100%; }
+  .hdr-nav a { color: #F5EEDB; text-decoration: none; display: flex; align-items: center; height: 100%; padding: 0 28px; border-left: 1px solid rgba(245, 238, 219, 0.55); transition: background 0.2s ease, color 0.2s ease; }
+  .hdr-nav a:hover { background: var(--terracotta); color: #FBF5E2; }
+  .hdr-nav a.current { color: var(--terracotta); }
+  .hdr-nav a.current:hover { color: #FBF5E2; }
+
+  /* ======= CV SHELL ======= */
+  .shell {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+  .rail {
+    border-right: 1px solid var(--rule);
+    background: var(--cream);
+    position: relative;
+    min-height: 100%;
+  }
+  .rail-left {
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 9px,
+      rgba(26, 22, 16, 0.07) 9px 10px
+    );
+  }
+  .rail.right { border-right: none; border-left: 1px solid var(--rule); }
+  .vlabel {
+    position: absolute;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-90deg);
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+  .vlabel-bottom {
+    position: absolute;
+    bottom: 64px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-90deg);
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+  .rail-left { grid-column: 1; }
+  .rail-right { grid-column: 3; }
+  .main { grid-column: 2; padding: 0; }
+
+  /* ======= INTRO BAND ======= */
+  .intro {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .intro-left {
+    padding: 80px 64px 64px;
+    border-right: 1px solid var(--rule);
+  }
+  .intro-eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 28px;
+  }
+  .intro-title {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(56px, 6vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .intro-title em { font-style: italic; }
+  .intro-sub {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-top: 36px;
+    max-width: 46ch;
+  }
+  .intro-right {
+    padding: 80px 56px 64px;
+    background-color: var(--cream);
+    background-image: radial-gradient(
+      rgba(26, 22, 16, 0.45) 1px,
+      transparent 1.2px
+    );
+    background-size: 8px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .intro-right .meta-block {
+    background: var(--cream);
+    padding: 14px 16px;
+    margin: 0 -16px;
+  }
+  .meta-block { display: flex; flex-direction: column; gap: 6px; }
+  .meta-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(26,22,16,0.55);
+  }
+  .meta-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .meta-value a { color: var(--ink); text-decoration: none; border-bottom: 1px solid rgba(26,22,16,0.3); }
+  .meta-value a:hover { color: var(--terracotta); border-color: var(--terracotta); }
+
+  /* ======= SECTION HEAD ======= */
+  .sec-head {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .sec-head-num {
+    padding: 32px 64px;
+    border-right: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink);
+    display: flex; align-items: center; gap: 28px;
+  }
+  .sec-head-num .roman {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-style: italic;
+    color: var(--terracotta);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .sec-head-meta {
+    padding: 32px 56px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(26,22,16,0.55);
+    display: flex; align-items: center;
+  }
+
+  /* ======= EXPERIENCE LIST ======= */
+  .company {
+    border-bottom: 1px solid var(--rule);
+  }
+  .company-head {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-bottom: 1px solid rgba(26,22,16,0.15);
+  }
+  .company-name {
+    padding: 36px 64px;
+    border-right: 1px solid var(--rule);
+    font-family: var(--serif);
+    font-size: clamp(40px, 4vw, 64px);
+    line-height: 1;
+    color: var(--ink);
+  }
+  .company-meta {
+    padding: 36px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+  }
+  .company-tenure {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .company-place {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: rgba(26,22,16,0.6);
+  }
+
+  .role {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-top: 1px solid rgba(26,22,16,0.15);
+  }
+  .role:first-of-type { border-top: none; }
+  .role-title-cell {
+    padding: 28px 64px;
+    border-right: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .role-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 1.8vw, 28px);
+    font-style: italic;
+    line-height: 1.2;
+    color: var(--ink);
+  }
+  .role-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .role-bullets li {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink);
+    padding-left: 18px;
+    position: relative;
+    max-width: 60ch;
+  }
+  .role-bullets li::before {
+    content: '\2014';
+    position: absolute;
+    left: 0;
+    color: var(--terracotta);
+  }
+  .role-meta-cell {
+    padding: 28px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--cream-2);
+  }
+  .role-dates {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .role-duration {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: rgba(26,22,16,0.55);
+  }
+  .role-type {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: rgba(26,22,16,0.55);
+  }
+
+  /* ======= SKILLS / FOCUS ======= */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .grid-2 > div {
+    padding: 56px 64px;
+  }
+  .grid-2 > div:first-child {
+    border-right: 1px solid var(--rule);
+  }
+  .grid-2 > div:last-child {
+    background: var(--cream-2);
+    padding: 56px;
+  }
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .chip {
+    border: 1px solid var(--rule);
+    padding: 10px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: transparent;
+  }
+  .focus-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .focus-list li {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink);
+    padding-left: 24px;
+    position: relative;
+  }
+  .focus-list li::before {
+    content: '\2014';
+    position: absolute;
+    left: 0;
+    color: var(--terracotta);
+  }
+  .lead {
+    font-family: var(--serif);
+    font-size: clamp(28px, 2.4vw, 40px);
+    font-style: italic;
+    line-height: 1.2;
+    color: var(--ink);
+    max-width: 22ch;
+  }
+
+  /* ======= QUIET BOTTOM ======= */
+  .download {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .download-text {
+    padding: 56px 64px;
+    border-right: 1px solid var(--rule);
+  }
+  .download-text p {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ink);
+    max-width: 46ch;
+  }
+  .download-cta {
+    padding: 56px;
+    background: var(--terracotta);
+    color: #FBF5E2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+  }
+  .download-cta .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .download-cta .big {
+    font-family: var(--serif);
+    font-size: clamp(28px, 2.6vw, 40px);
+    line-height: 1.05;
+  }
+  .download-cta a {
+    color: #FBF5E2;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-decoration: none;
+    margin-top: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ======= DARK FOOTER (matches Portfolio) ======= */
+  .site-footer {
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-top: 1px solid #F5EEDB;
+    padding: 80px 0 32px;
+    font-family: var(--mono);
+  }
+  .foot-inner {
+    padding: 0 56px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .foot-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .foot-col a { color: #F5EEDB; text-decoration: none; transition: color 0.2s; }
+  .foot-col a:hover { color: var(--terracotta); }
+  .foot-label {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: rgba(245,238,219,0.45);
+    margin-bottom: 8px;
+  }
+  .foot-muted { color: rgba(245,238,219,0.55); text-transform: none; letter-spacing: 0.06em; font-size: 12px; }
+  .foot-brand .foot-name {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: #F5EEDB;
+    margin-bottom: 6px;
+  }
+  .foot-brand .foot-tag {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgba(245,238,219,0.65);
+  }
+  .foot-rule {
+    margin-top: 80px;
+    padding: 24px 56px 0;
+    border-top: 1px solid rgba(245,238,219,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245,238,219,0.65);
+  }
+  .foot-colophon span { display: block; }
+
+  @media (max-width: 1100px) {
+    .shell { grid-template-columns: 40px 1fr 40px; }
+    .intro, .sec-head, .company-head, .role, .grid-2, .download {
+      grid-template-columns: 1fr;
+    }
+    .intro-left, .intro-right,
+    .sec-head-num, .sec-head-meta,
+    .company-name, .company-meta,
+    .role-title-cell, .role-meta-cell,
+    .grid-2 > div,
+    .download-text, .download-cta {
+      border-right: none;
+      padding: 32px 28px;
+    }
+    .hdr-inner { grid-template-columns: 1fr auto; padding: 0 14px; height: 60px; }
+    .hdr-brand { grid-column: 1; padding-left: 14px; }
+    .hdr-nav { grid-column: 2; padding: 0 14px; gap: 16px; font-size: 11px; }
+    .foot-inner { grid-template-columns: 1fr 1fr; gap: 32px; padding: 0 24px; }
+    .foot-rule { padding: 24px 24px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <span>KILEY MEEHAN</span>
+    </div>
+    <nav class="hdr-nav">
+      <a href="index.html">WORK</a>
+      <a href="#writing">WRITING</a>
+      <a class="current" href="cv.html">CV</a>
+      <a href="index.html#about">ABOUT</a>
+      <a class="email" href="mailto:kileymeehan@gmail.com">CONTACT ME</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+
+  <aside class="rail rail-left">
+    <div class="vlabel">CURRICULUM VITAE</div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ===== INTRO ===== -->
+    <section class="intro">
+      <div class="intro-left">
+        <div class="intro-eyebrow">CV · MMXXVI</div>
+        <h1 class="intro-title">Kiley<br /><em>Meehan</em></h1>
+        <p class="intro-sub">
+          Product design leader with twelve years building software that earns the trust of people who use it daily. Currently leading product design at FreshBooks across the full platform; previously a designer, then a manager, then a director within the same company &mdash; growing the team and the craft together.
+        </p>
+      </div>
+      <aside class="intro-right">
+        <div class="meta-block">
+          <div class="meta-label">Based in</div>
+          <div class="meta-value">Toronto, Ontario</div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">Currently</div>
+          <div class="meta-value">Senior Director, Product Design<br />FreshBooks</div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">Email</div>
+          <div class="meta-value"><a href="mailto:kileymeehan@gmail.com">Contact me &rarr;</a></div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">Writing</div>
+          <div class="meta-value"><a href="#">Of Quality &mdash; a newsletter</a></div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-label">Building</div>
+          <div class="meta-value"><a href="index.html">Blupi &mdash; blueprinting for teams</a></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== EXPERIENCE HEAD ===== -->
+    <section class="sec-head">
+      <div class="sec-head-num">
+        <span class="roman">I.</span>
+        <span>Experience</span>
+      </div>
+      <div class="sec-head-meta">
+        Five roles &middot; one company &middot; twelve years
+      </div>
+    </section>
+
+    <!-- ===== FRESHBOOKS BLOCK ===== -->
+    <article class="company">
+      <header class="company-head">
+        <div class="company-name">FreshBooks</div>
+        <div class="company-meta">
+          <div class="company-tenure">Sep 2014 &mdash; Present &middot; 11 yrs 9 mos</div>
+          <div class="company-place">Toronto, Ontario &middot; Hybrid</div>
+        </div>
+      </header>
+
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Senior Director, Product Design</div>
+          <ul class="role-bullets">
+            <li>Lead product design across the full FreshBooks platform &mdash; web, mobile, payments, and the AI surface area.</li>
+            <li>Set the design organization&rsquo;s operating model, hiring bar, and growth ladder.</li>
+            <li>Partner with Product and Engineering leadership on long-range platform strategy.</li>
+            <li>Sponsor of Blupi, a blueprinting practice that has reshaped how teams scope cross-functional work.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">Jun 2023 &mdash; Present</div>
+          <div class="role-duration">3 years</div>
+          <div class="role-type">Permanent, Full-time</div>
+        </aside>
+      </div>
+
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Director, Product Design</div>
+          <ul class="role-bullets">
+            <li>Stewarded design quality and consistency across all product areas through a period of rapid platform expansion.</li>
+            <li>Built the design management layer &mdash; coaching the first generation of Product Design Managers at FreshBooks.</li>
+            <li>Led the modernization of the design system and the operating cadence between Design, Product and Research.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">Apr 2021 &mdash; Jun 2023</div>
+          <div class="role-duration">2 years, 3 months</div>
+          <div class="role-type">Permanent, Full-time</div>
+        </aside>
+      </div>
+
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Associate Director, Product Design</div>
+          <ul class="role-bullets">
+            <li>Owned design for the platform pillar &mdash; payments, banking, accounting surfaces.</li>
+            <li>Drove the shift from feature-team thinking to outcome-team thinking across the org.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">Jun 2020 &mdash; Apr 2021</div>
+          <div class="role-duration">11 months</div>
+          <div class="role-type">Full-time</div>
+        </aside>
+      </div>
+
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Product Design Lead &amp; Manager</div>
+          <ul class="role-bullets">
+            <li>Coached and managed a team of world-class Product Designers.</li>
+            <li>Design strategy and leadership across major business mandates.</li>
+            <li>Stood up the first cross-team design crit, research ops, and hiring rubric.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">Sep 2018 &mdash; Jun 2020</div>
+          <div class="role-duration">1 year, 10 months</div>
+          <div class="role-type">Full-time</div>
+        </aside>
+      </div>
+
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Senior Product Designer</div>
+          <ul class="role-bullets">
+            <li>Lead UX designer for the new FreshBooks iOS and Android apps.</li>
+            <li>Lead UX designer for the FreshBooks Card Reader mobile payments experience.</li>
+            <li>Designed and conducted research to drive product strategy and roadmaps.</li>
+            <li>Active in shaping UX research practices and initiatives across the org.</li>
+            <li>Interim Product Manager (May &mdash; July 2018).</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">Sep 2014 &mdash; Sep 2018</div>
+          <div class="role-duration">4 years, 1 month</div>
+          <div class="role-type">Full-time</div>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ===== FOCUS + SKILLS ===== -->
+    <section class="sec-head">
+      <div class="sec-head-num">
+        <span class="roman">II.</span>
+        <span>Focus &amp; Craft</span>
+      </div>
+      <div class="sec-head-meta">
+        What I&rsquo;ve been practicing
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div>
+        <div class="lead">Building teams that <em>compound</em> &mdash; where craft, clarity, and care are the operating system.</div>
+        <ul class="focus-list">
+          <li>Org design for product design &mdash; ladders, rituals, hiring bars, growth maps.</li>
+          <li>Translating fuzzy business mandates into legible, sequenced product bets.</li>
+          <li>Coaching managers and senior ICs through ambiguity and scale.</li>
+          <li>Bridging Product, Engineering and Design at the platform and roadmap level.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="meta-label">Skills &amp; Practices</div>
+        <div class="chip-row">
+          <span class="chip">Org Design</span>
+          <span class="chip">Design Systems</span>
+          <span class="chip">Product Strategy</span>
+          <span class="chip">Service Blueprinting</span>
+          <span class="chip">Hiring &amp; Calibration</span>
+          <span class="chip">Coaching</span>
+          <span class="chip">Research Ops</span>
+          <span class="chip">Cross-functional Leadership</span>
+          <span class="chip">Roadmap Shaping</span>
+          <span class="chip">Writing &amp; Storytelling</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TEACHING ===== -->
+    <section class="sec-head">
+      <div class="sec-head-num">
+        <span class="roman">III.</span>
+        <span>Teaching &amp; Writing</span>
+      </div>
+      <div class="sec-head-meta">
+        On the side
+      </div>
+    </section>
+
+    <article class="company">
+      <header class="company-head">
+        <div class="company-name">BrainStation</div>
+        <div class="company-meta">
+          <div class="company-tenure">UX Design Educator</div>
+          <div class="company-place">Toronto, Ontario</div>
+        </div>
+      </header>
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Educator, User Experience Design</div>
+          <ul class="role-bullets">
+            <li>Taught working professionals the fundamentals and applied craft of UX design.</li>
+            <li>Recognized for bringing positive energy and a different outlook to the classroom.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">2015 &mdash; 2016</div>
+          <div class="role-duration">Adjunct</div>
+          <div class="role-type">Evenings &amp; weekends</div>
+        </aside>
+      </div>
+    </article>
+
+    <article class="company">
+      <header class="company-head">
+        <div class="company-name">Of Quality</div>
+        <div class="company-meta">
+          <div class="company-tenure">Newsletter &middot; ongoing</div>
+          <div class="company-place">Independent</div>
+        </div>
+      </header>
+      <div class="role">
+        <div class="role-title-cell">
+          <div class="role-title">Writer &amp; Editor</div>
+          <ul class="role-bullets">
+            <li>A newsletter on craft, leadership, and what it means to build things that last.</li>
+            <li>Topics: design organizations at scale, the decisions underneath the interface, the long game of product quality.</li>
+          </ul>
+        </div>
+        <aside class="role-meta-cell">
+          <div class="role-dates">2022 &mdash; Present</div>
+          <div class="role-duration">~Monthly cadence</div>
+          <div class="role-type">Independent</div>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ===== DOWNLOAD / CONTACT ===== -->
+    <section class="download">
+      <div class="download-text">
+        <p>If you&rsquo;d like a print-ready version of this CV, or want to talk about a role, advising, or just compare notes on running a design org &mdash; I&rsquo;m an email away.</p>
+      </div>
+      <div class="download-cta">
+        <span class="label">Get in touch</span>
+        <div class="big">Let&rsquo;s <em>talk</em>.</div>
+        <a href="mailto:kileymeehan@gmail.com">Contact me &rarr;</a>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="rail rail-right right">
+    <div class="vlabel-bottom">UPDATED MAY 2026</div>
+  </aside>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="foot-inner">
+    <div class="foot-col foot-brand">
+      <div class="foot-name">Kiley Meehan</div>
+      <div class="foot-tag">PRODUCT DESIGN LEADER &middot; FRESHBOOKS</div>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Elsewhere</div>
+      <a href="#">Read &mdash; Of Quality</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Are.na</a>
+      <a href="#">Read.cv</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Say hello</div>
+      <a href="mailto:kileymeehan@gmail.com">Contact me &rarr;</a>
+      <span class="foot-muted">Toronto · Ontario</span>
+      <span class="foot-muted">Open to advising</span>
+    </div>
+    <div class="foot-col foot-colophon">
+      <div class="foot-label">Colophon</div>
+      <span class="foot-muted">Set in Cormorant Garamond &amp; IBM Plex Mono.</span>
+      <span class="foot-muted">Hand-built. No cookies, no trackers.</span>
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>© 2026 Kiley Meehan</span>
+    <span class="foot-muted">All work shown with permission.</span>
+  </div>
+</footer>
+
+</body>
+</html>

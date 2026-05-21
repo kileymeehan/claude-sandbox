@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>A UX Career is a Business Career · Of Quality</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EEDB;
+    --cream-soft: #F9F4E4;
+    --ink: #0C0805;
+    --ink-soft: #1A1610;
+    --ink-mute: rgba(12, 8, 5, 0.72);
+    --ink-quiet: rgba(12, 8, 5, 0.46);
+    --terracotta: #BB5E3E;
+    --rule: #1A1610;
+    --rule-soft: rgba(26, 22, 16, 0.18);
+    --dark-green: #0C1A14;
+    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--ink); color: var(--ink); }
+  body {
+    font-family: var(--mono);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ============ HEADER (matches portfolio) ============ */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-bottom: 1px solid #F5EEDB;
+  }
+  .hdr-inner {
+    display: grid;
+    grid-template-columns: 56px 1fr auto 56px;
+    align-items: stretch;
+    height: 72px;
+  }
+  .hdr-brand, .hdr-nav {
+    display: flex; align-items: center;
+    font-family: var(--mono);
+    font-size: 13px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .hdr-brand { grid-column: 2; gap: 16px; padding: 0 28px; }
+  .hdr-brand a { color: inherit; text-decoration: none; }
+  .hdr-nav { grid-column: 3; justify-content: flex-end; padding: 0; height: 100%; }
+  .hdr-nav a {
+    color: #F5EEDB; text-decoration: none;
+    display: flex; align-items: center; height: 100%;
+    padding: 0 28px;
+    border-left: 1px solid rgba(245, 238, 219, 0.55);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .hdr-nav a:hover { background: var(--terracotta); color: #FBF5E2; }
+  .hdr-nav a.active { color: var(--terracotta); }
+
+  /* ============ SHELL ============ */
+  .shell {
+    background: color-mix(in oklab, var(--cream), white 18%);
+    display: grid;
+    grid-template-columns: 56px 1fr 56px;
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    min-height: calc(100vh - 72px);
+  }
+  .rail {
+    position: relative;
+    background: inherit;
+    overflow: hidden;
+  }
+  .rail.left  {
+    grid-column: 1;
+    border-right: 1px solid var(--rule);
+    background-image: repeating-linear-gradient(
+      135deg,
+      transparent 0 9px,
+      rgba(26, 22, 16, 0.07) 9px 10px
+    );
+  }
+  .rail.right { grid-column: 3; border-left: 1px solid var(--rule); }
+  .rail .vlabel {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-90deg);
+    transform-origin: center;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .rail.right .vlabel {
+    top: auto;
+    bottom: 80px;
+    transform: translateX(-50%) rotate(-90deg);
+  }
+
+  .article-shell { grid-column: 2; }
+
+  /* ============ CRUMB ============ */
+  .crumb {
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 22px 56px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .crumb a {
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: color 0.2s ease;
+  }
+  .crumb a:hover { color: var(--terracotta); }
+  .crumb-right { color: var(--ink-mute); }
+
+  /* ============ COVER ============ */
+  .cover {
+    border-bottom: 1px solid var(--rule);
+    padding: 96px 56px 80px;
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    gap: 48px;
+    align-items: end;
+    position: relative;
+    background-color: color-mix(in oklab, var(--cream), white 18%);
+    background-image: radial-gradient(
+      rgba(26, 22, 16, 0.36) 1px,
+      transparent 1.2px
+    );
+    background-size: 8px 8px;
+  }
+  .cover-eyebrow,
+  .cover-title,
+  .cover-deck,
+  .cover-meta > div {
+    background: color-mix(in oklab, var(--cream), white 18%);
+    padding: 4px 10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    width: fit-content;
+    max-width: calc(100% + 20px);
+  }
+  .cover-eyebrow .num { background: none; padding: 0; margin: 0; width: auto; max-width: none; }
+  .cover-eyebrow {
+    grid-column: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    align-self: start;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .cover-eyebrow .num {
+    font-family: var(--serif);
+    font-size: 56px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--terracotta);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .cover-title-wrap { grid-column: 2; }
+  .cover-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(64px, 8.4vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  .cover-title em { font-style: italic; font-weight: 300; }
+  .cover-deck {
+    margin-top: 36px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 1.8vw, 28px);
+    line-height: 1.35;
+    color: var(--ink-soft);
+    max-width: 28ch;
+  }
+  .cover-meta {
+    grid-column: 3;
+    align-self: start;
+    display: flex; flex-direction: column; gap: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    padding-left: 24px;
+    border-left: 1px solid var(--rule-soft);
+  }
+  .cover-meta b {
+    color: var(--ink);
+    font-weight: 500;
+    display: block;
+    margin-top: 4px;
+  }
+
+  /* ============ ARTICLE BODY ============ */
+  .article {
+    display: grid;
+    grid-template-columns: 200px minmax(0, 720px) 200px 1fr;
+    column-gap: 48px;
+    row-gap: 0;
+    padding: 88px 56px 96px;
+    position: relative;
+    background: color-mix(in oklab, var(--cream), white 48%);
+  }
+  .marg {
+    grid-column: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    line-height: 1.7;
+    padding-top: 8px;
+    margin-top: 8px;
+    border-top: 1px solid var(--rule-soft);
+    align-self: start;
+  }
+  .marg .marg-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 36px;
+    color: var(--terracotta);
+    text-transform: none;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .marg .marg-label { display: block; color: var(--ink); margin-bottom: 6px; }
+  .marg .marg-sub { display: block; color: var(--ink-mute); text-transform: none; letter-spacing: 0.04em; font-size: 11px; }
+
+  .prose {
+    grid-column: 2;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .prose p {
+    margin: 0 0 1.1em;
+    text-wrap: pretty;
+    hanging-punctuation: first last;
+  }
+  .prose p + p { text-indent: 1.6em; }
+  .prose p.lead, .prose p.no-indent { text-indent: 0; }
+  .prose em { font-style: italic; }
+  .prose strong { font-weight: 600; }
+  .prose a {
+    color: var(--ink);
+    text-decoration: none;
+    background-image: linear-gradient(transparent 70%, color-mix(in oklab, var(--terracotta), white 65%) 0);
+    background-size: 100% 100%;
+    padding: 0 1px;
+    transition: background-color 0.2s ease;
+  }
+  .prose a:hover { color: var(--terracotta); }
+
+  /* drop cap */
+  .prose .dropcap::first-letter {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 5.6em;
+    line-height: 0.82;
+    float: left;
+    padding: 0.06em 0.12em 0 0;
+    color: var(--terracotta);
+  }
+
+  /* section break */
+  .section-break {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 28px;
+    margin: 36px 0 28px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .section-break::before,
+  .section-break::after {
+    content: '';
+    height: 1px;
+    background: var(--rule-soft);
+    display: block;
+  }
+  .section-break .roman {
+    font-size: 32px;
+    color: var(--terracotta);
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .section-break .section-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-break .label {
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* book / reading entry */
+  .book {
+    grid-column: 2;
+    margin: 36px 0 4px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .book + .prose { margin-top: 8px; }
+  .book-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 4px;
+  }
+  .book-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+  }
+  .book-author {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--ink-mute);
+    margin-top: 6px;
+  }
+
+  /* pull quote */
+  .pullquote {
+    grid-column: 2;
+    margin: 8px 0 36px -32px;
+    padding: 4px 0 4px 32px;
+    border-left: 2px solid var(--terracotta);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 34px;
+    line-height: 1.25;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+  .pullquote .attr {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-style: normal;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  /* footnote/aside in margin */
+  .side-note {
+    grid-column: 3;
+    align-self: start;
+    margin-top: 8px;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--ink-mute);
+    letter-spacing: 0.02em;
+  }
+  .side-note .marker {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 8px;
+  }
+  .side-note em { font-style: italic; color: var(--ink); }
+
+  /* end mark */
+  .endmark {
+    grid-column: 2;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .endmark .sq {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: var(--terracotta);
+  }
+
+  /* author block */
+  .byline-block {
+    grid-column: 2;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .byline-block .avatar {
+    width: 96px; height: 96px;
+    background: var(--terracotta);
+    color: var(--cream);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .byline-block .meta { display: flex; flex-direction: column; gap: 8px; }
+  .byline-block .meta-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .byline-block .meta-name {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .byline-block .meta-bio {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ink-mute);
+    max-width: 52ch;
+    margin-top: 4px;
+  }
+
+  /* ============ RELATED ============ */
+  .related {
+    border-top: 1px solid var(--rule);
+    padding: 64px 56px 56px;
+    background: var(--cream);
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 56px;
+  }
+  .related-head {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .related-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+  }
+  .related-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .related-title em { font-style: italic; }
+  .related-list {
+    list-style: none;
+    display: flex; flex-direction: column;
+  }
+  .related-list li {
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .related-list li:last-child { border-bottom: none; }
+  .rel-link {
+    display: grid;
+    grid-template-columns: 64px 1fr 32px;
+    align-items: start;
+    gap: 28px;
+    padding: 26px 0;
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .rel-link:hover { color: var(--terracotta); }
+  .rel-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--ink-quiet);
+    padding-top: 6px;
+  }
+  .rel-body { display: flex; flex-direction: column; gap: 6px; }
+  .rel-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .rel-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .rel-arrow { font-size: 18px; color: var(--terracotta); padding-top: 6px; }
+
+  /* ============ FOOTER ============ */
+  .site-footer {
+    background: var(--dark-green);
+    color: #F5EEDB;
+    border-top: 1px solid #F5EEDB;
+    padding: 80px 0 32px;
+    font-family: var(--mono);
+  }
+  .foot-inner {
+    padding: 0 56px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .foot-col {
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #F5EEDB;
+  }
+  .foot-col a { color: #F5EEDB; text-decoration: none; transition: color 0.2s ease; }
+  .foot-col a:hover { color: var(--terracotta); }
+  .foot-label {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: rgba(245, 238, 219, 0.45);
+    margin-bottom: 8px;
+  }
+  .foot-brand .foot-name {
+    font-family: var(--serif);
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: #F5EEDB;
+    margin-bottom: 6px;
+  }
+  .foot-brand .foot-tag {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: rgba(245, 238, 219, 0.65);
+  }
+  .foot-rule {
+    margin-top: 80px;
+    padding: 24px 56px 0;
+    border-top: 1px solid rgba(245, 238, 219, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245, 238, 219, 0.65);
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1100px) {
+    .cover { grid-template-columns: 1fr; gap: 24px; padding: 64px 32px 56px; }
+    .cover-eyebrow, .cover-title-wrap, .cover-meta { grid-column: 1; }
+    .cover-meta { border-left: none; padding-left: 0; flex-direction: row; flex-wrap: wrap; gap: 20px 28px; }
+    .article { grid-template-columns: 1fr; gap: 24px; padding: 56px 32px 72px; }
+    .marg, .side-note { grid-column: 1; position: static; }
+    .prose, .section-break, .pullquote, .endmark, .byline-block { grid-column: 1; }
+    .pullquote { margin-left: 0; }
+    .related { grid-template-columns: 1fr; gap: 28px; padding: 48px 32px; }
+    .foot-inner { grid-template-columns: 1fr 1fr; gap: 32px; padding: 0 32px; }
+    .foot-rule { padding: 24px 32px 0; flex-direction: column; gap: 12px; align-items: flex-start; }
+  }
+  @media (max-width: 640px) {
+    .shell { grid-template-columns: 24px 1fr 24px; }
+    .crumb { padding: 16px 24px; font-size: 10px; letter-spacing: 0.22em; }
+    .cover { padding: 48px 24px 40px; }
+    .cover-title { font-size: clamp(44px, 12vw, 72px); }
+    .article { padding: 40px 24px 56px; }
+    .prose { font-size: 19px; }
+    .related { padding: 40px 24px; }
+    .foot-inner { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header" data-screen-label="A UX Career is a Business Career">
+  <div class="hdr-inner">
+    <div class="hdr-brand">
+      <a href="index.html">KILEY&nbsp;MEEHAN</a>
+      <span>·</span>
+      <span>OF&nbsp;QUALITY</span>
+    </div>
+    <nav class="hdr-nav">
+      <a href="index.html#work">WORK</a>
+      <a href="index.html#writing" class="active">WRITING</a>
+      <a href="cv.html">CV</a>
+      <a href="index.html#about">ABOUT</a>
+    </nav>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="rail left"><span class="vlabel">II · WRITING · ESSAY №02</span></aside>
+
+  <main class="article-shell">
+
+    <nav class="crumb" aria-label="breadcrumb">
+      <a href="index.html#writing">← Back to writing</a>
+      <span class="crumb-right">Of Quality · Volume MMXVIII</span>
+    </nav>
+
+    <header class="cover">
+      <div class="cover-eyebrow">
+        <span class="num">№ 02</span>
+        <span>Essay · On career &amp; craft</span>
+      </div>
+      <div class="cover-title-wrap">
+        <h1 class="cover-title">A UX Career is a <em>Business</em> Career.</h1>
+        <p class="cover-deck">A mini-curriculum to boost your business savviness.</p>
+      </div>
+      <div class="cover-meta">
+        <div>
+          Published
+          <b>2018</b>
+        </div>
+        <div>
+          Reading
+          <b>9 minutes</b>
+        </div>
+        <div>
+          Filed under
+          <b>Craft · Strategy</b>
+        </div>
+      </div>
+    </header>
+
+    <article class="article">
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">I.</span>
+        <span class="marg-label">The Venn diagram</span>
+        <span class="marg-sub">In which we revisit the holy trinity of UX, and ask which corner gets shortest shrift.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="lead dropcap">There's this Venn diagram I'm sure you've seen many times. It's in just about every article ever written about UX design, because it does a good job summing up the field at a glance. UX lives right at the intersection of <em>technology</em>, <em>user needs</em>, and <em>business goals</em>. That seems about right.</p>
+
+        <p class="no-indent">Many designers are attracted to the career because of their empathetic natures. We're in it because we want to help people and solve problems. It's natural, then, that understanding <em>user needs</em> is imperative to solving the right problems and designing the best experience.</p>
+
+        <p>Designers also tend to get really jazzed about <em>technology</em>. As tech advances, so do our possibilities. Years ago, designing an experience tailored to a person's physical location would have been unthinkable. Today we're on the cusp of designing entire virtual worlds — blink and you'll miss a new blog post on VR, augmented reality, or automation.</p>
+
+        <p>Which takes us to <em>business goals</em>. Hmm.</p>
+
+        <p>Yes, designers recognize the importance of considering business implications. But, well — we aimed for a <em>creative</em> career, and the last thing we want to do is stare at Gantt charts all day. OKR? More like "OK, whatever." With expertise in user needs and technology under our belt, we're in pretty good shape to design solutions for substantial problems. Right?</p>
+
+        <p>Sure. But you'll risk selling yourself short. Designers function as an integral part of a business. Every project you work on, every little decision you make — it all has a dollar value attached. It's in your best interest to have an understanding not just of your end-user's needs, but of how your decisions influence the business at a higher level.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">II</span>
+          <span class="label">Market Signals</span>
+        </div>
+      </div>
+
+      <aside class="marg" aria-hidden="true">
+        <span class="marg-num">II.</span>
+        <span class="marg-label">Listening, two ways</span>
+        <span class="marg-sub">On the difference between knowing the user and knowing the market they live inside.</span>
+      </aside>
+
+      <div class="prose">
+        <p class="no-indent">As Jon Kolko writes, outlining the difference between the designer and product management roles:</p>
+      </div>
+
+      <blockquote class="pullquote">
+        You will be highly successful and extraordinarily employable if you can simultaneously drive specific empathy and broad empathy — gather signals from individuals and from a market, and synthesise them into a compelling, achievable vision of the future.
+        <span class="attr">— Jon Kolko</span>
+      </blockquote>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent">Many designers are naturally attuned to the <em>specific market</em> — the end user — but have less awareness of the <em>broader market</em>: those people out there who will actually pay for your product.</p>
+
+        <p>For many designers, business knowledge feels out of their domain — the expertise of MBAs or entrepreneurs who've cut their teeth as startup founders. It often seems the most realistic option is to just focus on making the product work, and behave beautifully.</p>
+
+        <p>But it doesn't have to be this way. Below is a curated list of media that can help you on the path to becoming a more business-savvy designer. This is only the beginning of a much longer journey — one I've only just begun myself. But at least when your colleagues talk about things like <em>red ocean</em> or <em>lifetime customer value</em>, you won't be nodding asleep. You'll be nodding along.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">III</span>
+          <span class="label">Start Here</span>
+        </div>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 01</span>
+        <h3 class="book-title">The Personal MBA</h3>
+        <span class="book-author">— Josh Kaufman</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">If you, like me, have never taken a business course in your life, this is a great place to start. Covering topics from value creation and value delivery to marketing and human psychology, Kaufman's business bible will arm you with the fundamental mental models.</p>
+
+        <p>The book is structured into small, digestible chapters, but I'd actually recommend reading it straight through — the concepts build on one another. Once you're done, keep it on your desk as a quick reference. And to make you look smart.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">IV</span>
+          <span class="label">Then Here</span>
+        </div>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 02</span>
+        <h3 class="book-title">Competing Against Luck</h3>
+        <span class="book-author">— Clayton Christensen</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">Have you ever heard a product manager say the words <em>disruptive innovation</em> before scrawling a hockey-stick graph on a whiteboard? You can thank Harvard Business Professor Clayton Christensen for that. Within his books <em>The Innovator's Solution</em> and <em>The Innovator's Dilemma</em>, he illustrates the process by which a business captures the low end of a market and moves upstream, replacing incumbent competitors. Airbnb, competing against cheap hotels at first, and then, a few years later, against luxury accommodations.</p>
+
+        <p>While it's great to understand how disruption works, the concept of <em>Jobs to be Done</em> is worth digging into if you have the time — and one Christensen covers in detail in his most recent book, <em>Competing Against Luck</em>.</p>
+      </div>
+
+      <aside class="side-note">
+        <span class="marker">Field note</span>
+        Christensen's best example is the JTBD of customers buying milkshakes at a famous fast-food chain. Through research, he found customers were hiring milkshakes not for a sugar spike, but for something easy to eat and hold during long commutes. The competition wasn't other milkshakes — it was anything that could fulfil the same need. <em>Like a banana.</em>
+      </aside>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent">In a nutshell, Jobs to be Done is the task your customer is motivated to accomplish, and the forces that determine the solution they hire or fire to accomplish it.</p>
+
+        <p>Through this framework you'll start to view your user's decisions — and your own — in a different light, and think more strategically about who is hiring and firing your product, and why.</p>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 03</span>
+        <h3 class="book-title">UX Strategy</h3>
+        <span class="book-author">— Jaime Levy</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">A resource written specifically for designers looking to make the leap into strategy, by a prominent UX strategist. It's a high-level introduction to the frameworks detailed in <em>The Lean Startup</em>, <em>Running Lean</em>, and <em>Blue Ocean Strategy</em>, while guiding you through Levy's four tenets of good UX strategy: business strategy, value innovation, killer UX, and validated user research.</p>
+
+        <p>The step-by-step process is sound and practical, but it was the in-depth interviews of <em>strategists in the wild</em> I found most interesting. The biggest takeaway? You definitely don't need an MBA to influence strategy.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">V</span>
+          <span class="label">Full Steam Ahead</span>
+        </div>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 04</span>
+        <h3 class="book-title">The Lean Startup</h3>
+        <span class="book-author">— Eric Ries</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">Ah, the startup bible. If you work at a tech company, chances are there's a copy of this sitting on the bookshelf just over to your left. Go ahead, take a look. It's there.</p>
+
+        <p>Building on the concepts in <em>UX Strategy</em>, Eric Ries lays out the framework for building products people need and will pay for. It's a punchy, readable overview of a typical startup product-development process. You'll learn how to formulate a hypothesis and experiment on your way to an MVP — and then, crucially, how to follow through by measuring success and deciding whether to pivot or persevere.</p>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 05</span>
+        <h3 class="book-title">Running Lean</h3>
+        <span class="book-author">— Ash Maurya</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">Ash Maurya uses <em>The Lean Startup</em> as the foundation to explore the creation of more effective, leaner business models using a document called the <em>lean canvas</em>. Rather than pouring your soul into a detailed business plan, dash out all your assumptions — early adopters, value proposition, prospective revenue streams — into the nine sections of the canvas, with an emphasis on experimentation and flexibility. Then interview prospective customers to validate or invalidate them.</p>
+
+        <p>When a business model is created in ten minutes, it's far less precious — and more amenable to change when needed. It's not just a business plan, Maurya explains. It's actually your product, at a glance.</p>
+
+        <p>At <strong>FreshBooks</strong> we use the lean canvas to kick off projects, especially for net-new features. It's a document the team frequently returns to, revises, and shares across the organization.</p>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 06</span>
+        <h3 class="book-title">Product Management</h3>
+        <span class="book-author">— Udemy Course</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">Ever wonder what your product manager colleagues are doing while away from their desks — which is about 90% of the time? Spoiler: they're not <em>just</em> drawing hockey-stick graphs on a whiteboard. (Sure, sometimes they are.)</p>
+
+        <p>The PM role is multi-disciplinary — the domain of the true generalist — often requiring a tacit understanding of everything from technical stacks to marketing to design. But it's a deep understanding of business that is the fundamental skill, because PMs hold substantial influence over what gets built, and what succeeds. Which is why some companies prefer to hire PMs with MBAs.</p>
+
+        <p>Created by a serial entrepreneur and a PM at Square, this Udemy course lays the groundwork for aspiring PMs who want to work in the field but are unsure what the role requires. As a designer, it's a fantastic overview of the business, technical, and communication requirements that make up the role — and a great way to demystify the process of shepherding good product ideas across the finish line.</p>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 07</span>
+        <h3 class="book-title">Blue Ocean Strategy</h3>
+        <span class="book-author">— W. Chan Kim &amp; Renée Mauborgne</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">A question for you: would you enjoy working on a product stuck in a <em>red ocean</em>, battling competitors in a bloodbath for market share? Or would you rather be sailing off into a <em>blue ocean</em> of uncontested market space? Yeah. Me too.</p>
+
+        <p>Kim and Mauborgne have written a business book that's surprisingly readable and jargon-free, introducing the concept of the blue ocean and the frameworks to achieve it. In a nutshell: a blue ocean is created when <em>value innovation</em> is achieved — when costs are decreased and customer value is increased. A way to increase customer value is to create value that's different from what your competitors are offering. Which means looking outside the immediate market to understand what consumers are <em>hiring</em> to accomplish their goals. (Aligning nicely with the JTBD theory above.)</p>
+      </div>
+
+      <aside class="side-note">
+        <span class="marker">Case in point</span>
+        In the 90s, high-end wine companies competed on flavour complexity, prestige, and aging quality. The market was a red ocean. Then <em>[yellow tail]</em> came along and looked instead at people who preferred beer and spirits, to see what <em>they</em> valued: casual fun and adventure, at low cost. They untapped a huge market — and became an instant leader.
+      </aside>
+
+      <div class="prose" style="grid-column: 2;">
+        <p class="no-indent"><em>Blue Ocean Strategy</em> will help you understand why some products break out as leaders while others seem to be gasping for air. Pairs nicely with the Jobs to Be Done theory from <em>Competing Against Luck</em>.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">VI</span>
+          <span class="label">Extra Curricular</span>
+        </div>
+      </div>
+
+      <div class="book">
+        <span class="book-eyebrow">Read № 08</span>
+        <h3 class="book-title">Stratechery</h3>
+        <span class="book-author">— Ben Thompson</span>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">Ben Thompson, a former Googler, is probably one of the most prolific bloggers out there — and a favourite among the product managers I know. Not only does he post about five times a week, he's incredibly smart and his articles are remarkably well-written and deep. The blog features one free post a week, but for $10 a month you'll get a weekly journal with a wider range of analysis.</p>
+
+        <p>Do you drive to work and prefer something to listen to? Check out his podcast <em>Exponent</em>, which is just as informative, but presented as a casual, opinionated conversation.</p>
+      </div>
+
+      <div class="section-break">
+        <div class="section-mark">
+          <span class="roman">VII</span>
+          <span class="label">In closing</span>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="no-indent">And there you have it: a mini-curriculum to work through and expand your business acumen and mental models. In time you may find an opportunity to introduce a lean canvas to start a brand-new project, launch a smoke-test to validate a market opportunity, or strategize new values on which to differentiate your product from others.</p>
+
+        <p>Even if you don't get those opportunities, hopefully you'll find business a little less mysterious and intimidating. And instead of being swept along in the current of executive-level decisions, you'll have more clarity on where it's all going — and the reasons behind it.</p>
+      </div>
+
+      <div class="endmark">
+        <span class="sq" aria-hidden="true"></span>
+        <span>End · Of Quality №&nbsp;02</span>
+      </div>
+
+    </article>
+
+    <section class="related" aria-labelledby="rel-h">
+      <div class="related-head">
+        <div class="related-eyebrow">Continue reading</div>
+        <h2 id="rel-h" class="related-title">More <em>essays</em>.</h2>
+      </div>
+      <ol class="related-list">
+        <li>
+          <a class="rel-link" href="earned-autonomy.html">
+            <div class="rel-num">01</div>
+            <div class="rel-body">
+              <div class="rel-meta">May 2026 · 8 min · Essay</div>
+              <div class="rel-title">Earned Autonomy</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+        <li>
+          <a class="rel-link" href="late-bloomers.html">
+            <div class="rel-num">03</div>
+            <div class="rel-body">
+              <div class="rel-meta">2020 · 6 min · Essay</div>
+              <div class="rel-title">Late Bloomers and Product Design</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+        <li>
+          <a class="rel-link" href="email-love-story.html">
+            <div class="rel-num">04</div>
+            <div class="rel-body">
+              <div class="rel-meta">Jun 2020 · 4 min · Essay</div>
+              <div class="rel-title">An Email Love Story</div>
+            </div>
+            <div class="rel-arrow" aria-hidden="true">→</div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </main>
+
+  <aside class="rail right"><span class="vlabel">MMXVIII · OF QUALITY</span></aside>
+</div>
+
+<footer class="site-footer">
+  <div class="foot-inner">
+    <div class="foot-col foot-brand">
+      <div class="foot-name">Kiley Meehan</div>
+      <div class="foot-tag">Product design leader · FreshBooks</div>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Site</div>
+      <a href="index.html#work">Work</a>
+      <a href="index.html#writing">Writing</a>
+      <a href="cv.html">CV</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Elsewhere</div>
+      <a href="#">Read.cv</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Are.na</a>
+    </div>
+    <div class="foot-col">
+      <div class="foot-label">Get in touch</div>
+      <a href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+      <div class="foot-tag" style="margin-top: 8px;">Toronto, Ontario</div>
+    </div>
+  </div>
+  <div class="foot-rule">
+    <span>© MMXXVI · Set in Cormorant &amp; Plex Mono</span>
+    <span>Of Quality · A working notebook</span>
+  </div>
+</footer>
+
+</body>
+</html>
