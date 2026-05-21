@@ -1,0 +1,18 @@
+{
+  "name": "kiley-website",
+  "version": "1.0.0",
+  "description": "Kiley Meehan portfolio with markdown CMS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "cookie-session": "^2.1.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "markdown-it": "^14.1.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}

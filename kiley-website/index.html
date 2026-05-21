@@ -616,67 +616,8 @@
       <p class="writing-sub">A working notebook. Essays on craft, leadership, and the long game of building software for humans.</p>
       <a class="writing-link" href="#writing">All essays &rarr;</a>
     </div>
-    <ol class="writing-list">
-      <li class="post">
-        <a href="earned-autonomy.html" class="post-link">
-          <div class="post-num">01</div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span>May 2026</span><span class="sep">·</span>
-              <span>Essay</span><span class="sep">·</span>
-              <span>8 min read</span>
-            </div>
-            <h3 class="post-title">Earned Autonomy</h3>
-            <p class="post-excerpt">A framework for working with AI without quietly handing it the keys — and what it means for the rest of us building software with it.</p>
-          </div>
-          <div class="post-arrow" aria-hidden="true">&rarr;</div>
-        </a>
-      </li>
-      <li class="post">
-        <a href="ux-career.html" class="post-link">
-          <div class="post-num">02</div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span>2018</span><span class="sep">·</span>
-              <span>Essay</span><span class="sep">·</span>
-              <span>9 min read</span>
-            </div>
-            <h3 class="post-title">A UX Career is a Business Career</h3>
-            <p class="post-excerpt">A mini-curriculum to boost your business savviness — the books, courses, and frameworks that turned business from a black box into a tool.</p>
-          </div>
-          <div class="post-arrow" aria-hidden="true">&rarr;</div>
-        </a>
-      </li>
-      <li class="post">
-        <a href="late-bloomers.html" class="post-link">
-          <div class="post-num">03</div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span>2020</span><span class="sep">·</span>
-              <span>Essay</span><span class="sep">·</span>
-              <span>6 min read</span>
-            </div>
-            <h3 class="post-title">Late Bloomers and Product Design</h3>
-            <p class="post-excerpt">On wandering paths, generalists, and the quiet virtue of arriving late — why product design is a destination for the well-travelled mind.</p>
-          </div>
-          <div class="post-arrow" aria-hidden="true">&rarr;</div>
-        </a>
-      </li>
-      <li class="post">
-        <a href="email-love-story.html" class="post-link">
-          <div class="post-num">04</div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span>Jun 2020</span><span class="sep">·</span>
-              <span>Essay</span><span class="sep">·</span>
-              <span>4 min read</span>
-            </div>
-            <h3 class="post-title">An Email Love Story</h3>
-            <p class="post-excerpt">My oddly passionate submission to HEY.com's invite request — on long emails, lonely libraries, and the inbox as an accidental archive of the self.</p>
-          </div>
-          <div class="post-arrow" aria-hidden="true">&rarr;</div>
-        </a>
-      </li>
+    <ol class="writing-list" id="writing-list">
+      <!-- loaded dynamically via /api/posts -->
     </ol>
   </section>
 
@@ -772,6 +713,39 @@ function advance() {
 showQuote();
 renderDots();
 setInterval(advance, 7500);
+
+// ── Writing list ──────────────────────────────────────────
+(async function loadWriting() {
+  const list = document.getElementById('writing-list');
+  try {
+    const res = await fetch('/api/posts');
+    const posts = await res.json();
+    if (!posts.length) { list.innerHTML = '<li style="padding:32px 56px;color:var(--ink-quiet);font-size:13px">No posts yet.</li>'; return; }
+    list.innerHTML = posts.map((p, i) => `
+      <li class="post">
+        <a href="${escHtml(p.href)}" class="post-link">
+          <div class="post-num">${String(i + 1).padStart(2, '0')}</div>
+          <div class="post-body">
+            <div class="post-meta">
+              <span>${escHtml(p.date)}</span><span class="sep">·</span>
+              <span>${escHtml(p.tag)}</span><span class="sep">·</span>
+              <span>${escHtml(p.read_time)}</span>
+            </div>
+            <h3 class="post-title">${escHtml(p.title)}</h3>
+            <p class="post-excerpt">${escHtml(p.excerpt)}</p>
+          </div>
+          <div class="post-arrow" aria-hidden="true">&rarr;</div>
+        </a>
+      </li>
+    `).join('');
+  } catch {
+    // fail silently — list stays empty
+  }
+})();
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — Kiley Meehan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5EEDB;
+      --cream-dark: #EDE3C8;
+      --ink: #1A1610;
+      --ink-soft: #3D3428;
+      --terracotta: #BB5E3E;
+      --dark-green: #0C1A14;
+      --muted: #8C7B5E;
+      --rule: rgba(26,22,16,0.12);
+      --success-bg: #f0f7f1;
+      --success-border: #a3cfac;
+      --success-text: #2d6b38;
+      --error-bg: #fdf0ed;
+      --error-border: #e8b4a4;
+      --error-text: #BB5E3E;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--dark-green);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .hdr-brand {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245,238,219,0.9);
+      flex: 1;
+    }
+
+    .hdr-brand span { color: rgba(245,238,219,0.35); margin: 0 8px; }
+
+    .hdr-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .hdr-nav a {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245,238,219,0.55);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .hdr-nav a:hover { color: rgba(245,238,219,0.9); }
+
+    .hdr-nav button {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(245,238,219,0.08);
+      border: 1px solid rgba(245,238,219,0.15);
+      color: rgba(245,238,219,0.55);
+      padding: 6px 14px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .hdr-nav button:hover {
+      background: rgba(245,238,219,0.14);
+      color: rgba(245,238,219,0.9);
+    }
+
+    /* ── Layout ── */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 56px 40px 80px;
+    }
+
+    /* ── Section headings ── */
+    .section-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+
+    .section-title em { font-style: italic; color: var(--terracotta); }
+
+    /* ── Upload form ── */
+    .upload-section {
+      border: 1px solid var(--rule);
+      background: white;
+      border-radius: 3px;
+      padding: 32px;
+      margin-bottom: 64px;
+    }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea,
+    select {
+      background: var(--cream);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 10px 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--terracotta);
+      background: white;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    .file-drop {
+      border: 2px dashed var(--rule);
+      border-radius: 3px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--cream);
+    }
+
+    .file-drop.dragover {
+      border-color: var(--terracotta);
+      background: #fdf8f3;
+    }
+
+    .file-drop input[type="file"] {
+      display: none;
+    }
+
+    .file-drop-label {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .file-drop-label strong {
+      display: block;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .file-name-display {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--terracotta);
+      font-weight: 500;
+    }
+
+    .auto-slug {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .upload-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .btn-primary {
+      background: var(--dark-green);
+      color: var(--cream);
+      border: none;
+      border-radius: 2px;
+      padding: 12px 24px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--ink); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 11px 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+
+    .toast {
+      font-size: 12px;
+      padding: 10px 16px;
+      border-radius: 2px;
+      display: none;
+    }
+
+    .toast.success {
+      display: block;
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+    }
+
+    .toast.error {
+      display: block;
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    /* ── Posts table ── */
+    .posts-section { }
+
+    .posts-table-wrap {
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--ink);
+    }
+
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245,238,219,0.6);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--rule);
+      background: white;
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #fffdf8; }
+
+    td {
+      padding: 14px 16px;
+      font-size: 12px;
+      color: var(--ink);
+      vertical-align: middle;
+    }
+
+    .td-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .td-meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .td-slug { color: var(--muted); font-size: 11px; }
+
+    /* publish toggle */
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--rule);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-track {
+      background: #2d6b38;
+    }
+
+    .toggle input:checked + .toggle-track::after {
+      transform: translateX(16px);
+    }
+
+    .td-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .action-link {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .action-link:hover { color: var(--ink); }
+
+    .action-btn-delete {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #cc4444;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 0;
+      transition: opacity 0.15s;
+    }
+
+    .action-btn-delete:hover { opacity: 0.7; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      background: white;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
+
+    .badge-published {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid var(--success-border);
+    }
+
+    .badge-draft {
+      background: #f5f2ec;
+      color: var(--muted);
+      border: 1px solid var(--rule);
+    }
+
+    .loading-row td {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hdr-brand">Kiley Meehan <span>/</span> Admin</div>
+    <nav class="hdr-nav">
+      <a href="/">View site</a>
+      <button id="logout-btn">Sign out</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Upload section -->
+    <div class="upload-section">
+      <div class="section-eyebrow">New Post</div>
+      <div class="section-title">Publish a <em>piece.</em></div>
+
+      <div id="upload-toast" class="toast"></div>
+
+      <form id="upload-form">
+        <div class="form-group full">
+          <label>Markdown file</label>
+          <div class="file-drop" id="file-drop">
+            <input type="file" id="md-file" accept=".md,text/markdown" required />
+            <div class="file-drop-label">
+              <strong>Drop a .md file here</strong>
+              or click to browse
+            </div>
+            <div class="file-name-display" id="file-name-display" style="display:none"></div>
+          </div>
+        </div>
+
+        <div class="upload-grid" style="margin-top:20px">
+          <div class="form-group full">
+            <label>Title</label>
+            <input type="text" id="post-title" name="title" placeholder="e.g. On Writing Well" required />
+            <div class="auto-slug" id="auto-slug"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Date</label>
+            <input type="text" id="post-date" name="date" placeholder="e.g. May 2026" required />
+          </div>
+
+          <div class="form-group">
+            <label>Read time</label>
+            <input type="text" id="post-read-time" name="read_time" placeholder="e.g. 6 min read" value="5 min read" required />
+          </div>
+
+          <div class="form-group">
+            <label>Tag</label>
+            <input type="text" id="post-tag" name="tag" placeholder="Essay" value="Essay" required />
+          </div>
+
+          <div class="form-group">
+            <label>Publish immediately</label>
+            <select id="post-published" name="published">
+              <option value="false">No — save as draft</option>
+              <option value="true">Yes — publish now</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label>Excerpt</label>
+            <textarea id="post-excerpt" name="excerpt" placeholder="One or two sentences that appear in the writing list…" required></textarea>
+          </div>
+        </div>
+
+        <div class="upload-actions">
+          <button type="submit" class="btn-primary" id="upload-btn">Upload post</button>
+          <button type="button" class="btn-secondary" id="reset-btn">Clear</button>
+          <div id="upload-progress" style="font-size:12px;color:var(--muted);display:none">Uploading…</div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Posts list -->
+    <div class="posts-section">
+      <div class="section-eyebrow">All Posts</div>
+      <div class="section-title">Your <em>writing.</em></div>
+      <div class="posts-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Tag</th>
+              <th>Status</th>
+              <th>Published</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="posts-tbody">
+            <tr class="loading-row"><td colspan="6">Loading posts…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ── Logout ──
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await fetch('/admin/logout', { method: 'POST' });
+      window.location.href = '/admin/login';
+    });
+
+    // ── Slug helper ──
+    function toSlug(s) {
+      return s.toLowerCase().replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-');
+    }
+
+    const titleInput = document.getElementById('post-title');
+    const autoSlugEl = document.getElementById('auto-slug');
+    titleInput.addEventListener('input', () => {
+      const slug = toSlug(titleInput.value);
+      autoSlugEl.textContent = slug ? `Slug: /posts/${slug}` : '';
+    });
+
+    // ── File drop ──
+    const fileDrop = document.getElementById('file-drop');
+    const fileInput = document.getElementById('md-file');
+    const fileNameDisplay = document.getElementById('file-name-display');
+
+    fileDrop.addEventListener('click', () => fileInput.click());
+
+    fileDrop.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileDrop.classList.add('dragover');
+    });
+
+    fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+
+    fileDrop.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileDrop.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) setFile(file);
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) setFile(fileInput.files[0]);
+    });
+
+    let selectedFile = null;
+    function setFile(file) {
+      if (!file.name.endsWith('.md')) {
+        showToast('Please select a .md file.', 'error');
+        return;
+      }
+      selectedFile = file;
+      fileNameDisplay.textContent = file.name;
+      fileNameDisplay.style.display = 'block';
+
+      // Auto-fill title from filename if empty
+      if (!titleInput.value) {
+        const base = file.name.replace(/\.md$/, '');
+        titleInput.value = base;
+        titleInput.dispatchEvent(new Event('input'));
+      }
+    }
+
+    // ── Upload form ──
+    const uploadForm = document.getElementById('upload-form');
+    const uploadBtn = document.getElementById('upload-btn');
+    const uploadProgress = document.getElementById('upload-progress');
+    const uploadToast = document.getElementById('upload-toast');
+
+    function showToast(msg, type) {
+      uploadToast.textContent = msg;
+      uploadToast.className = 'toast ' + type;
+      uploadToast.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => uploadToast.className = 'toast', 5000);
+    }
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      uploadForm.reset();
+      selectedFile = null;
+      fileNameDisplay.style.display = 'none';
+      fileNameDisplay.textContent = '';
+      autoSlugEl.textContent = '';
+      uploadToast.className = 'toast';
+    });
+
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!selectedFile) { showToast('Please select a .md file.', 'error'); return; }
+
+      uploadBtn.disabled = true;
+      uploadProgress.style.display = 'block';
+
+      const fd = new FormData();
+      fd.append('markdown', selectedFile);
+      fd.append('title', document.getElementById('post-title').value.trim());
+      fd.append('date', document.getElementById('post-date').value.trim());
+      fd.append('read_time', document.getElementById('post-read-time').value.trim());
+      fd.append('tag', document.getElementById('post-tag').value.trim());
+      fd.append('excerpt', document.getElementById('post-excerpt').value.trim());
+      fd.append('published', document.getElementById('post-published').value);
+
+      try {
+        const res = await fetch('/admin/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Upload failed');
+        showToast(`"${data.title}" uploaded successfully.`, 'success');
+        uploadForm.reset();
+        selectedFile = null;
+        fileNameDisplay.style.display = 'none';
+        autoSlugEl.textContent = '';
+        loadPosts();
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        uploadBtn.disabled = false;
+        uploadProgress.style.display = 'none';
+      }
+    });
+
+    // ── Posts list ──
+    async function loadPosts() {
+      const tbody = document.getElementById('posts-tbody');
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Loading posts…</td></tr>';
+      try {
+        const res = await fetch('/admin/api/posts');
+        const posts = await res.json();
+        renderPosts(posts);
+      } catch {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Failed to load posts.</td></tr>';
+      }
+    }
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderPosts(posts) {
+      const tbody = document.getElementById('posts-tbody');
+      if (!posts.length) {
+        tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No posts yet. Upload one above.</div></td></tr>';
+        return;
+      }
+      tbody.innerHTML = posts.map(p => `
+        <tr data-slug="${esc(p.slug)}">
+          <td>
+            <div class="td-title">${esc(p.title)}</div>
+            <div class="td-slug">/posts/${esc(p.slug)}</div>
+          </td>
+          <td>${esc(p.date)}</td>
+          <td>${esc(p.tag)}</td>
+          <td><span class="badge ${p.published ? 'badge-published' : 'badge-draft'}">${p.published ? 'Published' : 'Draft'}</span></td>
+          <td>
+            <label class="toggle">
+              <input type="checkbox" ${p.published ? 'checked' : ''} onchange="togglePublish('${esc(p.slug)}', this.checked)" />
+              <span class="toggle-track"></span>
+            </label>
+          </td>
+          <td>
+            <div class="td-actions">
+              <a class="action-link" href="/posts/${esc(p.slug)}" target="_blank">View →</a>
+              <button class="action-btn-delete" onclick="deletePost('${esc(p.slug)}', '${esc(p.title)}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function togglePublish(slug, published) {
+      try {
+        await fetch(`/admin/posts/${encodeURIComponent(slug)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ published })
+        });
+        loadPosts();
+      } catch {
+        alert('Failed to update post status.');
+      }
+    }
+
+    async function deletePost(slug, title) {
+      if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+      try {
+        const res = await fetch(`/admin/posts/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        loadPosts();
+      } catch {
+        alert('Failed to delete post.');
+      }
+    }
+
+    loadPosts();
+  </script>
+</body>
+</html>

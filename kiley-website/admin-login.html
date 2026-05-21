@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Kiley Meehan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5EEDB;
+      --cream-dark: #EDE3C8;
+      --ink: #1A1610;
+      --ink-soft: #3D3428;
+      --terracotta: #BB5E3E;
+      --dark-green: #0C1A14;
+      --muted: #8C7B5E;
+      --rule: rgba(26,22,16,0.12);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--cream);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--dark-green);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      padding: 0 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .hdr-brand {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: rgba(245,238,219,0.9);
+      text-transform: uppercase;
+    }
+
+    .hdr-brand span {
+      color: rgba(245,238,219,0.4);
+      margin: 0 8px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .login-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .login-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 36px;
+    }
+
+    .login-title em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: 12px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      border-color: var(--terracotta);
+    }
+
+    .error-msg {
+      background: #fdf0ed;
+      border: 1px solid #e8b4a4;
+      border-radius: 2px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--terracotta);
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: var(--dark-green);
+      color: var(--cream);
+      border: none;
+      border-radius: 2px;
+      padding: 14px 20px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+      margin-top: 8px;
+    }
+
+    button[type="submit"]:hover {
+      background: var(--ink);
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .login-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 36px 0 0;
+    }
+
+    .login-footer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .login-footer a {
+      color: var(--muted);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hdr-brand">Kiley Meehan <span>/</span> Admin</div>
+  </header>
+  <main>
+    <div class="login-card">
+      <div class="login-eyebrow">CMS</div>
+      <h1 class="login-title">Sign <em>in.</em></h1>
+
+      <div class="error-msg" id="error-msg"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required autofocus />
+        </div>
+        <button type="submit" id="submit-btn">Sign in</button>
+      </form>
+
+      <hr class="login-rule" />
+      <p class="login-footer"><a href="/">← Back to site</a></p>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+    const submitBtn = document.getElementById('submit-btn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.classList.remove('visible');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+
+      const body = new URLSearchParams({
+        email: form.email.value,
+        password: form.password.value
+      });
+
+      try {
+        const res = await fetch('/admin/login', { method: 'POST', body });
+        if (res.redirected) {
+          window.location.href = res.url;
+          return;
+        }
+        const data = await res.json().catch(() => ({}));
+        errorMsg.textContent = data.error || 'Invalid credentials. Try again.';
+        errorMsg.classList.add('visible');
+      } catch {
+        errorMsg.textContent = 'Network error. Please try again.';
+        errorMsg.classList.add('visible');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign in';
+      }
+    });
+  </script>
+</body>
+</html>
