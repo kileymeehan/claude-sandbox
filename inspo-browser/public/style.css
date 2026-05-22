@@ -953,3 +953,6 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+body.drag-over::after { content: 'Drop images to upload to inbox'; position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; letter-spacing: 0.05em; z-index: 9999; pointer-events: none; }
+body.drag-over::after { display: flex; }

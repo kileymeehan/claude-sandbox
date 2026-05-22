@@ -105,8 +105,7 @@ function getFolderCounts() {
 }
 
 function downloadUrl(img) {
-  const rel = img.folder === 'root' ? img.filename : `${img.folder}/${img.filename}`;
-  return `/download?path=${encodeURIComponent(rel)}`;
+  return img.url;
 }
 
 // ── Render ──
@@ -625,6 +624,60 @@ function initSync() {
   document.getElementById('sync-toast-close').addEventListener('click', hideToast);
 }
 
+// ── Upload ──
+
+async function uploadFiles(files) {
+  if (!files.length) return;
+  const btn = document.getElementById('upload-btn');
+  btn.disabled = true;
+  showToast(`Uploading ${files.length} file${files.length !== 1 ? 's' : ''} to inbox…`);
+
+  const fd = new FormData();
+  for (const file of files) fd.append('images', file);
+  fd.append('folder', 'inbox');
+
+  try {
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    const ok = data.results.filter(r => !r.error).length;
+    const fail = data.results.filter(r => r.error).length;
+    showToast(`Uploaded ${ok} image${ok !== 1 ? 's' : ''} to inbox${fail ? ` (${fail} failed)` : ''}.`);
+    await loadData();
+  } catch (err) {
+    showToast(`Upload failed: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function initUpload() {
+  const input = document.getElementById('upload-input');
+  const btn = document.getElementById('upload-btn');
+
+  btn.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    if (input.files.length) {
+      uploadFiles([...input.files]);
+      input.value = '';
+    }
+  });
+
+  // Drag and drop onto the whole app
+  document.body.addEventListener('dragover', e => {
+    e.preventDefault();
+    document.body.classList.add('drag-over');
+  });
+  document.body.addEventListener('dragleave', e => {
+    if (!e.relatedTarget) document.body.classList.remove('drag-over');
+  });
+  document.body.addEventListener('drop', e => {
+    e.preventDefault();
+    document.body.classList.remove('drag-over');
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+    if (files.length) uploadFiles(files);
+  });
+}
+
 // ── Theme ──
 
 function applyTheme(light) {
@@ -656,6 +709,7 @@ function init() {
   initViewToggle();
   initProjectModal();
   initSync();
+  initUpload();
 
   document.getElementById('search').addEventListener('input', e => {
     searchQuery = e.target.value;
