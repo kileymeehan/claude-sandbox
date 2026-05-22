@@ -1,3 +1,56 @@
+// ── Auth ──
+
+let supabaseClient = null;
+
+async function initAuth() {
+  const cfg = await fetch('/api/config').then(r => r.json()).catch(() => null);
+  if (!cfg) return;
+
+  supabaseClient = supabase.createClient(cfg.url, cfg.anonKey);
+
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('logout-btn').style.display = '';
+      if (event === 'SIGNED_IN') loadData();
+    } else {
+      document.getElementById('login-screen').classList.remove('hidden');
+      document.getElementById('logout-btn').style.display = 'none';
+    }
+  });
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('logout-btn').style.display = '';
+  }
+
+  document.getElementById('google-signin-btn').addEventListener('click', () => {
+    supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin }
+    });
+  });
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+  });
+
+  return session;
+}
+
+async function apiFetch(url, options = {}) {
+  const headers = { ...options.headers };
+  if (supabaseClient) {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+  if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+  return fetch(url, { ...options, headers });
+}
+
 // State
 let images = [];
 let tags = {};
@@ -44,9 +97,9 @@ async function loadData() {
   btn.classList.add('spinning');
   try {
     const [imgData, tagData, projData] = await Promise.all([
-      fetch('/api/images').then(r => r.json()),
-      fetch('/api/tags').then(r => r.json()),
-      fetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+      apiFetch('/api/images').then(r => r.json()),
+      apiFetch('/api/tags').then(r => r.json()),
+      apiFetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({}))
     ]);
     images = imgData;
     tags = tagData;
@@ -62,9 +115,8 @@ async function loadData() {
 async function saveTags(id, newTags) {
   tags[id] = newTags.length ? newTags : undefined;
   if (!newTags.length) delete tags[id];
-  await fetch('/api/tags', {
+  await apiFetch('/api/tags', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, tags: newTags })
   });
   renderSidebar();
@@ -186,7 +238,7 @@ function renderSidebar() {
       e.stopPropagation();
       const id = e.currentTarget.dataset.deleteId;
       if (!confirm(`Delete project "${projects[id]?.name}"?`)) return;
-      await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+      await apiFetch(`/api/projects/${id}`, { method: 'DELETE' });
       delete projects[id];
       if (projectFilter === id) projectFilter = null;
       renderAll();
@@ -469,9 +521,8 @@ async function toggleImageInProject(projectId, imageId) {
     ? imgs.filter(id => id !== imageId)
     : [...imgs, imageId];
   projects[projectId].images = newImgs;
-  await fetch('/api/projects', {
+  await apiFetch('/api/projects', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: projectId, images: newImgs })
   });
 }
@@ -493,9 +544,8 @@ function closeProjectModal() {
 async function createProject(name) {
   const id = `proj-${Date.now()}`;
   projects[id] = { name, created: Date.now(), images: [] };
-  await fetch('/api/projects', {
+  await apiFetch('/api/projects', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id, name, images: [] })
   });
   return id;
@@ -562,9 +612,6 @@ function hideToast() {
 }
 
 async function syncInbox() {
-  const btn = document.getElementById('sync-btn');
-  btn.classList.add('syncing');
-  btn.disabled = true;
   showToast('Scanning inbox…');
 
   let count = 0;
@@ -613,14 +660,11 @@ async function syncInbox() {
     }
   } catch (err) {
     showToast(`Error: ${err.message}`);
-  } finally {
-    btn.classList.remove('syncing');
-    btn.disabled = false;
   }
 }
 
 function initSync() {
-  document.getElementById('sync-btn').addEventListener('click', syncInbox);
+  document.getElementById('sync-btn')?.addEventListener('click', syncInbox);
   document.getElementById('sync-toast-close').addEventListener('click', hideToast);
 }
 
@@ -637,7 +681,7 @@ async function uploadFiles(files) {
   fd.append('folder', 'inbox');
 
   try {
-    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const res = await apiFetch('/api/upload', { method: 'POST', body: fd });
     const data = await res.json();
     const ok = data.results.filter(r => !r.error).length;
     const fail = data.results.filter(r => r.error).length;
@@ -699,7 +743,7 @@ function initTheme() {
 
 // ── Init ──
 
-function init() {
+async function init() {
   document.getElementById('lb-overlay').addEventListener('click', closeLightbox);
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
   document.getElementById('lb-prev').addEventListener('click', () => navigateLightbox(-1));
@@ -725,7 +769,8 @@ function init() {
   });
 
   initTagInput();
-  loadData();
+  const session = await initAuth();
+  if (session) loadData();
 }
 
 document.addEventListener('DOMContentLoaded', init);

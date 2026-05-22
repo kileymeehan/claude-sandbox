@@ -13,6 +13,15 @@ const BUCKET = 'inspo';
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
+async function requireAuth(req, res, next) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) return res.status(401).json({ error: 'Unauthorized' });
+  req.user = user;
+  next();
+}
+
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 const TARGET_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc'];
 const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif', '.bmp']);
@@ -24,9 +33,15 @@ function publicUrl(storagePath) {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ── Config (public) ─────────────────────────────────────────
+
+app.get('/api/config', (req, res) => {
+  res.json({ url: process.env.SUPABASE_URL, anonKey: process.env.SUPABASE_ANON_KEY });
+});
+
 // ── Images ──────────────────────────────────────────────────
 
-app.get('/api/images', async (req, res) => {
+app.get('/api/images', requireAuth, async (req, res) => {
   const { data, error } = await supabase
     .from('images')
     .select('id, filename, folder, storage_path, tags, created_at')
@@ -42,7 +57,7 @@ app.get('/api/images', async (req, res) => {
 
 // ── Tags ────────────────────────────────────────────────────
 
-app.get('/api/tags', async (req, res) => {
+app.get('/api/tags', requireAuth, async (req, res) => {
   const { data, error } = await supabase.from('images').select('id, tags');
   if (error) return res.status(500).json({ error: error.message });
   const map = {};
@@ -52,7 +67,7 @@ app.get('/api/tags', async (req, res) => {
   res.json(map);
 });
 
-app.post('/api/tags', async (req, res) => {
+app.post('/api/tags', requireAuth, async (req, res) => {
   const { id, tags } = req.body;
   if (!id) return res.status(400).json({ error: 'id required' });
   const { error } = await supabase
@@ -65,7 +80,7 @@ app.post('/api/tags', async (req, res) => {
 
 // ── Upload ──────────────────────────────────────────────────
 
-app.post('/api/upload', upload.array('images'), async (req, res) => {
+app.post('/api/upload', requireAuth, upload.array('images'), async (req, res) => {
   const folder = req.body.folder || 'inbox';
   if (!KNOWN_FOLDERS.includes(folder)) return res.status(400).json({ error: 'Invalid folder' });
 
@@ -98,7 +113,7 @@ app.post('/api/upload', upload.array('images'), async (req, res) => {
 
 // ── AI Sync Inbox ───────────────────────────────────────────
 
-app.post('/api/sync-inbox', async (req, res) => {
+app.post('/api/sync-inbox', requireAuth, async (req, res) => {
   const { data: inboxImages, error } = await supabase
     .from('images')
     .select('*')
@@ -186,7 +201,7 @@ Rules: 2-5 tags max, reuse existing tags when they fit, lowercase hyphenated.`;
 
 // ── Projects ────────────────────────────────────────────────
 
-app.get('/api/projects', async (req, res) => {
+app.get('/api/projects', requireAuth, async (req, res) => {
   const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   const map = {};
@@ -196,7 +211,7 @@ app.get('/api/projects', async (req, res) => {
   res.json(map);
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post('/api/projects', requireAuth, async (req, res) => {
   const { id, name, images } = req.body;
   if (!id) return res.status(400).json({ error: 'id required' });
   const { error } = await supabase
@@ -206,12 +221,12 @@ app.post('/api/projects', async (req, res) => {
   res.json({ ok: true });
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete('/api/projects/:id', requireAuth, async (req, res) => {
   await supabase.from('projects').delete().eq('id', req.params.id);
   res.json({ ok: true });
 });
 
-app.get('/api/projects/:id/download', async (req, res) => {
+app.get('/api/projects/:id/download', requireAuth, async (req, res) => {
   const { data: proj } = await supabase.from('projects').select('*').eq('id', req.params.id).maybeSingle();
   if (!proj) return res.status(404).send('Project not found');
 

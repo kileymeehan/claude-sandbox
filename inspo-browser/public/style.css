@@ -80,7 +80,26 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 .logo svg { color: var(--accent); }
 
-#refresh-btn, #theme-btn {
+.btn-upload-cta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
+}
+.btn-upload-cta:hover { background: var(--accent-hover); }
+.btn-upload-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#refresh-btn, #theme-btn, #logout-btn {
   background: none;
   border: none;
   color: var(--text-muted);
@@ -845,20 +864,6 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   flex-shrink: 0;
 }
 
-#sync-btn {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: color 0.15s, background 0.15s;
-}
-
-#sync-btn:hover { color: var(--accent); background: var(--accent-dim); }
-#sync-btn.syncing { color: var(--accent); animation: pulse 1s ease-in-out infinite; }
 
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
@@ -956,3 +961,66 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 
 body.drag-over::after { content: 'Drop images to upload to inbox'; position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; font-size: 18px; color: white; letter-spacing: 0.05em; z-index: 9999; pointer-events: none; }
 body.drag-over::after { display: flex; }
+
+/* ── Login screen ── */
+
+#login-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#login-screen.hidden { display: none; }
+
+#login-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.login-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.login-logo svg { color: var(--accent); }
+
+.login-sub {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+#google-signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#google-signin-btn:hover { background: var(--surface-2); border-color: var(--text-muted); }
+
+.login-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
