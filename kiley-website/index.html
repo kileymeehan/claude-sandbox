@@ -145,8 +145,9 @@
     border-bottom: 1px solid var(--rule);
     background: #1F1A12; color: #F5EEDB;
     display: grid; grid-template-columns: 1fr 1.15fr;
-    min-height: 340px;
+    height: 460px;
   }
+  .showcase-quote { overflow: hidden; }
   .showcase-quote {
     padding: 32px 40px;
     border-right: 1px solid rgba(245,238,219,0.28);
@@ -456,11 +457,15 @@
     .writing { grid-column: 2; grid-row: 8; grid-template-columns: 1fr; }
     .writing-head { border-right: none; padding: 40px 24px; }
     .post-link { grid-template-columns: 40px 1fr 24px; gap: 16px; padding: 24px; }
-    .bio-a-grid { grid-template-columns: 1fr; gap: 24px; }
-    .bio-a-img { max-width: 180px; }
     .col-bio-a, .col-bio-b { padding: 32px 28px; }
     .foot-inner { grid-template-columns: 1fr 1fr; gap: 40px; padding: 0 24px; }
     .foot-rule { padding: 24px 24px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+
+  @media (max-width: 800px) {
+    .bio-a-grid { grid-template-columns: 1fr; gap: 24px; }
+    .bio-a-img { max-width: 180px; }
+    .showcase { height: auto; min-height: 460px; }
   }
 </style>
 </head>
