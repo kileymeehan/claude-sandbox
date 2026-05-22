@@ -56,41 +56,28 @@ async function apiFetch(url, options = {}) {
 // State
 let images = [];
 let tags = {};
+let folders = {};
 let folderFilter = 'all';
 let tagFilter = null;
 let searchQuery = '';
-let lightboxIndex = -1; // index into getFiltered()
+let lightboxIndex = -1;
 let viewMode = localStorage.getItem('inspo-view') || 'grid-small';
-let projects = {}; // { id: { name, created, images[] } }
+let projects = {};
 let projectFilter = null;
-let projectModalCallback = null; // called with new project id after creation
+let projectModalCallback = null;
+let uploadFolder = 'inbox';
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
-const FOLDER_LABELS = {
-  all: 'All',
-  components: 'Components',
-  layouts: 'Layouts',
-  typography: 'Typography',
-  motion: 'Motion',
-  color: 'Color',
-  'empty-states': 'Empty States',
-  misc: 'Misc',
-  inbox: 'Inbox',
-  root: 'Ungrouped'
-};
+const FALLBACK_COLORS = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ec4899','#6366f1','#14b8a6','#f97316','#ef4444','#06b6d4'];
 
-const FOLDER_COLORS = {
-  components: '#3b82f6',
-  layouts: '#10b981',
-  typography: '#f59e0b',
-  motion: '#a855f7',
-  color: '#ec4899',
-  'empty-states': '#6366f1',
-  misc: '#14b8a6',
-  inbox: '#f97316',
-  root: '#6b7280'
-};
+function folderLabel(id) {
+  return folders[id]?.name || id;
+}
+
+function folderColor(id) {
+  return folders[id]?.color || '#888';
+}
 
 // ── Data ──
 
@@ -98,14 +85,17 @@ async function loadData() {
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
   try {
-    const [imgData, tagData, projData] = await Promise.all([
+    const [imgData, tagData, projData, folderData] = await Promise.all([
       apiFetch('/api/images').then(r => r.json()),
       apiFetch('/api/tags').then(r => r.json()),
-      apiFetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+      apiFetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      apiFetch('/api/folders').then(r => r.ok ? r.json() : {}).catch(() => ({}))
     ]);
     images = imgData;
     tags = tagData;
     projects = projData;
+    folders = folderData;
+    renderUploadFolderPicker();
     renderAll();
   } catch (err) {
     console.error('Failed to load data:', err);
@@ -175,10 +165,9 @@ function renderSidebar() {
   const tagSection = document.getElementById('tag-nav-section');
   const counts = getFolderCounts();
 
-  const orderedFolders = [
-    ...KNOWN_FOLDERS.filter(f => counts[f]),
-    ...Object.keys(counts).filter(f => f === 'root')
-  ];
+  const knownOrder = KNOWN_FOLDERS.filter(f => counts[f]);
+  const customOrder = Object.keys(counts).filter(f => !KNOWN_FOLDERS.includes(f) && f !== 'root');
+  const orderedFolders = [...knownOrder, ...customOrder, ...Object.keys(counts).filter(f => f === 'root')];
 
   const allActive = folderFilter === 'all' ? 'active' : '';
   let folderHTML = `<button class="nav-item ${allActive}" data-folder="all">
@@ -190,10 +179,10 @@ function renderSidebar() {
     const count = counts[folder] || 0;
     if (!count) return;
     const active = folderFilter === folder ? 'active' : '';
-    const label = FOLDER_LABELS[folder] || folder;
-    const color = FOLDER_COLORS[folder] || '#888';
+    const label = folderLabel(folder);
+    const color = folderColor(folder);
     folderHTML += `<button class="nav-item ${active}" data-folder="${folder}">
-      <span class="folder-dot" style="background:${color}"></span>
+      <svg class="nav-folder-icon" width="13" height="12" viewBox="0 0 24 22" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       <span class="nav-label">${label}</span>
       <span class="nav-count">${count}</span>
     </button>`;
@@ -215,6 +204,7 @@ function renderSidebar() {
     const active = projectFilter === id ? 'active' : '';
     const count = (proj.images || []).length;
     return `<div class="project-nav-item ${active}" data-id="${id}">
+      <svg class="nav-proj-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
       <span class="nav-label">${escHtml(proj.name)}</span>
       <span class="nav-count">${count}</span>
       <div class="project-nav-actions">
@@ -297,8 +287,8 @@ function renderGallery() {
   emptyEl.classList.add('hidden');
   gallery.innerHTML = filtered.map((img, i) => {
     const imgTags = tags[img.id] || [];
-    const color = FOLDER_COLORS[img.folder] || '#888';
-    const label = FOLDER_LABELS[img.folder] || img.folder;
+    const color = folderColor(img.folder);
+    const label = folderLabel(img.folder);
     const dl = downloadUrl(img);
     return `<div class="card" data-index="${i}">
       <div class="card-image-wrap">
@@ -353,14 +343,68 @@ function renderLightbox() {
   if (!filtered.length || lightboxIndex < 0) return;
   const img = filtered[lightboxIndex];
   const imgTags = tags[img.id] || [];
-  const color = FOLDER_COLORS[img.folder] || '#888';
-  const label = FOLDER_LABELS[img.folder] || img.folder;
+  const color = folderColor(img.folder);
+  const label = folderLabel(img.folder);
 
   document.getElementById('lb-img').src = img.url;
   document.getElementById('lb-img').alt = img.filename;
   document.getElementById('lb-filename').textContent = img.filename;
+
+  const otherFolders = Object.entries(folders).filter(([id]) => id !== img.folder);
   document.getElementById('lb-folder-badge-wrap').innerHTML =
-    `<span class="folder-badge" style="--badge-color:${color}">${label}</span>`;
+    `<div class="lb-folder-section">
+      <span class="folder-badge" style="--badge-color:${color}">${label}</span>
+      <button class="lb-move-toggle" id="lb-move-toggle">Move to…</button>
+    </div>
+    <div id="lb-folder-picker" class="lb-folder-picker hidden">
+      ${otherFolders.map(([id, f]) =>
+        `<button class="lb-folder-opt" data-folder="${id}">
+          <svg width="12" height="11" viewBox="0 0 24 22" fill="none" stroke="${f.color}" stroke-width="2" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          ${escHtml(f.name)}
+        </button>`
+      ).join('')}
+      <div class="lb-folder-divider"></div>
+      <button class="lb-folder-opt lb-new-folder-trigger" id="lb-new-folder-trigger">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New folder…
+      </button>
+      <div class="lb-inline-new-folder hidden" id="lb-inline-new-folder">
+        <input id="lb-inline-folder-input" class="lb-inline-folder-input" type="text" placeholder="Folder name, press Enter…" autocomplete="off" spellcheck="false">
+      </div>
+    </div>`;
+
+  document.getElementById('lb-move-toggle')?.addEventListener('click', e => {
+    e.stopPropagation();
+    document.getElementById('lb-folder-picker').classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('.lb-folder-opt:not(.lb-new-folder-trigger)').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (btn.dataset.folder) await moveImage(img.id, btn.dataset.folder);
+    });
+  });
+
+  document.getElementById('lb-new-folder-trigger')?.addEventListener('click', e => {
+    e.stopPropagation();
+    const inline = document.getElementById('lb-inline-new-folder');
+    inline.classList.toggle('hidden');
+    if (!inline.classList.contains('hidden')) document.getElementById('lb-inline-folder-input')?.focus();
+  });
+
+  const inlineInput = document.getElementById('lb-inline-folder-input');
+  inlineInput?.addEventListener('click', e => e.stopPropagation());
+  inlineInput?.addEventListener('keydown', async e => {
+    e.stopPropagation();
+    if (e.key === 'Escape') { document.getElementById('lb-inline-new-folder').classList.add('hidden'); return; }
+    if (e.key !== 'Enter') return;
+    const name = inlineInput.value.trim();
+    if (!name) return;
+    const res = await apiFetch('/api/folders', { method: 'POST', body: JSON.stringify({ name }) });
+    if (!res.ok) { const err = await res.json().catch(() => ({})); showToast(err.error || 'Failed'); return; }
+    const folder = await res.json();
+    folders[folder.id] = { name: folder.name, color: folder.color };
+    await moveImage(img.id, folder.id);
+  });
   document.getElementById('lb-counter').textContent =
     `${lightboxIndex + 1} of ${filtered.length}`;
 
@@ -681,7 +725,7 @@ async function uploadFiles(files) {
 
   const fd = new FormData();
   for (const file of files) fd.append('images', file);
-  fd.append('folder', 'inbox');
+  fd.append('folder', uploadFolder);
 
   try {
     const res = await apiFetch('/api/upload', { method: 'POST', body: fd });
@@ -722,6 +766,91 @@ function initUpload() {
     zone.classList.remove('drag-active');
     const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
     if (files.length) uploadFiles(files);
+  });
+}
+
+// ── Folders ──
+
+async function moveImage(imageId, folder) {
+  const res = await apiFetch(`/api/images/${encodeURIComponent(imageId)}/move`, {
+    method: 'POST',
+    body: JSON.stringify({ folder })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    showToast(`Move failed: ${err.error || 'unknown error'}`);
+    return;
+  }
+  closeLightbox();
+  await loadData();
+}
+
+function renderUploadFolderPicker() {
+  const picker = document.getElementById('upload-folder-picker');
+  const label = document.getElementById('upload-folder-label');
+  if (!picker || !label) return;
+  if (!folders[uploadFolder]) uploadFolder = 'inbox';
+  label.textContent = folderLabel(uploadFolder);
+  picker.innerHTML = Object.entries(folders).map(([id, f]) =>
+    `<button class="upload-folder-opt${id === uploadFolder ? ' selected' : ''}" data-folder="${id}">
+      <span class="folder-dot" style="background:${f.color}"></span>
+      ${escHtml(f.name)}
+    </button>`
+  ).join('');
+  picker.querySelectorAll('.upload-folder-opt').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      uploadFolder = btn.dataset.folder;
+      label.textContent = folderLabel(uploadFolder);
+      picker.classList.add('hidden');
+    });
+  });
+}
+
+function initFolderModal() {
+  const modal = document.getElementById('folder-modal');
+  const input = document.getElementById('folder-modal-input');
+
+  document.getElementById('new-folder-btn').addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    input.value = '';
+    input.focus();
+  });
+
+  async function submit() {
+    const name = input.value.trim();
+    if (!name) return;
+    const res = await apiFetch('/api/folders', {
+      method: 'POST',
+      body: JSON.stringify({ name })
+    });
+    if (!res.ok) { const e = await res.json(); showToast(e.error); return; }
+    const folder = await res.json();
+    folders[folder.id] = { name: folder.name, color: folder.color };
+    modal.classList.add('hidden');
+    renderUploadFolderPicker();
+    renderSidebar();
+  }
+
+  document.getElementById('folder-modal-create').addEventListener('click', submit);
+  document.getElementById('folder-modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+  document.getElementById('folder-modal-overlay').addEventListener('click', () => modal.classList.add('hidden'));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submit();
+    if (e.key === 'Escape') modal.classList.add('hidden');
+  });
+
+  // Upload folder button
+  const uploadBtn = document.getElementById('upload-folder-btn');
+  const picker = document.getElementById('upload-folder-picker');
+  uploadBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    picker.classList.toggle('hidden');
+  });
+  document.addEventListener('click', e => {
+    if (!uploadBtn.contains(e.target) && !picker.contains(e.target)) {
+      picker.classList.add('hidden');
+    }
   });
 }
 
@@ -856,6 +985,7 @@ async function init() {
   initTheme();
   initViewToggle();
   initProjectModal();
+  initFolderModal();
   initProfileUI();
   initSync();
   initUpload();

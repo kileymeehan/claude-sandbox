@@ -29,11 +29,24 @@
         <input type="file" id="upload-input" multiple accept="image/*" style="display:none">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
         <span class="drop-zone-label">Drop images here</span>
-        <span class="drop-zone-sub">or click to browse</span>
+        <div class="drop-zone-row">
+          <span class="drop-zone-sub">click to browse</span>
+          <button id="upload-folder-btn" class="drop-zone-folder-btn" title="Change upload folder">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span id="upload-folder-label">Inbox</span>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
       </div>
+      <div id="upload-folder-picker" class="hidden"></div>
 
       <div class="sidebar-section">
-        <div class="section-label">Folders</div>
+        <div class="section-label-row">
+          <span class="section-label">Folders</span>
+          <button id="new-folder-btn" title="New folder">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
         <nav id="folder-nav"></nav>
       </div>
 
@@ -178,6 +191,19 @@
           </a>
         </div>
         <div id="lb-counter"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Folder Modal -->
+  <div id="folder-modal" class="hidden">
+    <div id="folder-modal-overlay"></div>
+    <div id="folder-modal-box">
+      <div id="folder-modal-title">New Folder</div>
+      <input id="folder-modal-input" type="text" placeholder="Folder name…" autocomplete="off" spellcheck="false">
+      <div id="folder-modal-actions">
+        <button id="folder-modal-cancel">Cancel</button>
+        <button id="folder-modal-create">Create</button>
       </div>
     </div>
   </div>

@@ -82,7 +82,8 @@ app.post('/api/tags', requireAuth, async (req, res) => {
 
 app.post('/api/upload', requireAuth, upload.array('images'), async (req, res) => {
   const folder = req.body.folder || 'inbox';
-  if (!KNOWN_FOLDERS.includes(folder)) return res.status(400).json({ error: 'Invalid folder' });
+  const { data: folderRow } = await supabase.from('folders').select('id').eq('id', folder).maybeSingle();
+  if (!folderRow && !KNOWN_FOLDERS.includes(folder)) return res.status(400).json({ error: 'Invalid folder' });
 
   const results = [];
   for (const file of req.files || []) {
@@ -244,6 +245,57 @@ app.get('/api/projects/:id/download', requireAuth, async (req, res) => {
     archive.append(buffer, { name: path.basename(imageId) });
   }
   await archive.finalize();
+});
+
+// ── Folders ──────────────────────────────────────────────────
+
+app.get('/api/folders', requireAuth, async (req, res) => {
+  const { data, error } = await supabase.from('folders').select('*').order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  const map = {};
+  for (const f of data || []) map[f.id] = { name: f.name, color: f.color };
+  res.json(map);
+});
+
+app.post('/api/folders', requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (!name?.trim()) return res.status(400).json({ error: 'name required' });
+  const id = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  if (!id) return res.status(400).json({ error: 'Invalid folder name' });
+  const PALETTE = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ec4899','#6366f1','#14b8a6','#f97316','#ef4444','#06b6d4','#84cc16','#fb923c'];
+  const color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+  const { error } = await supabase.from('folders').upsert({ id, name: name.trim(), color }, { onConflict: 'id' });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ id, name: name.trim(), color });
+});
+
+// ── Move image ────────────────────────────────────────────────
+
+app.post('/api/images/:id/move', requireAuth, async (req, res) => {
+  const imageId = decodeURIComponent(req.params.id);
+  const { folder } = req.body;
+  if (!folder) return res.status(400).json({ error: 'folder required' });
+
+  const { data: img } = await supabase.from('images').select('*').eq('id', imageId).maybeSingle();
+  if (!img) return res.status(404).json({ error: 'Image not found' });
+  if (img.folder === folder) return res.json({ ok: true, id: imageId });
+
+  const ext = path.extname(img.filename);
+  let destFilename = img.filename;
+  let destPath = `${folder}/${destFilename}`;
+  const { data: collision } = await supabase.from('images').select('id').eq('id', destPath).maybeSingle();
+  if (collision) {
+    destFilename = `${path.basename(img.filename, ext)}-${Date.now()}${ext}`;
+    destPath = `${folder}/${destFilename}`;
+  }
+
+  const { error: copyErr } = await supabase.storage.from(BUCKET).copy(img.storage_path, destPath);
+  if (copyErr) return res.status(500).json({ error: copyErr.message });
+  await supabase.storage.from(BUCKET).remove([img.storage_path]);
+  await supabase.from('images').delete().eq('id', img.id);
+  await supabase.from('images').insert({ id: destPath, filename: destFilename, folder, storage_path: destPath, tags: img.tags || [] });
+
+  res.json({ ok: true, id: destPath, filename: destFilename, folder, url: publicUrl(destPath) });
 });
 
 app.listen(PORT, () => console.log(`\n  Inspo Browser  →  http://localhost:${PORT}\n`));
