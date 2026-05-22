@@ -225,65 +225,52 @@
   .showcase-feature .flink::after { content: '\2192'; transition: transform 0.2s ease; }
   .showcase-feature .flink:hover::after { transform: translateX(4px); }
 
-  /* ---- catlist (col 4, rows 2-3) ---- */
-  .catlist {
+  /* ---- bookshelf (col 4, rows 2-3) ---- */
+  .bookshelf {
     grid-row: 2 / 4; grid-column: 4;
     margin-top: -100px;
     background: color-mix(in oklab, var(--cream), white 30%);
     padding: 20px 0 0;
     display: flex; flex-direction: column;
-    justify-content: flex-start; overflow: visible;
   }
-  .catlist-eyebrow {
+  .bookshelf-eyebrow {
     font-family: var(--mono); font-size: 11px;
     letter-spacing: 0.28em; text-transform: uppercase;
     color: var(--terracotta); padding: 0 28px 22px;
     border-bottom: 1px solid rgba(26,22,16,0.18);
   }
-  .catlist-items { list-style: none; display: flex; flex-direction: column; }
-  .cat-row { border-bottom: 1px solid rgba(26,22,16,0.18); position: relative; }
-  .cat-row:last-child { border-bottom: none; }
-  .cat-link {
-    display: grid; grid-template-columns: 28px 1fr 18px;
-    align-items: center; gap: 14px; padding: 22px 28px;
-    text-decoration: none; color: var(--ink);
-    transition: padding-left 0.25s ease, background 0.25s ease;
-    position: relative; z-index: 1;
+  .book-list { list-style: none; display: flex; flex-direction: column; }
+  .book-row {
+    border-bottom: 1px solid rgba(26,22,16,0.18);
+    display: grid; grid-template-columns: 52px 1fr;
+    gap: 16px; padding: 18px 28px; align-items: center;
+    transition: background 0.2s;
   }
-  .cat-link:hover { padding-left: 36px; background: rgba(187,94,62,0.06); }
-  .cat-link:hover .cat-name { color: var(--terracotta); font-style: italic; }
-  .cat-link:hover .cat-arrow { opacity: 1; transform: translateX(0); color: var(--terracotta); }
-  .cat-num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; color: var(--terracotta); }
-  .cat-name {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(19px, 1.5vw, 22px); line-height: 1.1;
-    color: var(--ink); letter-spacing: -0.005em;
-    transition: color 0.25s ease, font-style 0.25s ease;
+  .book-row:last-child { border-bottom: none; }
+  .book-row:hover { background: rgba(187,94,62,0.05); }
+  .book-cover {
+    width: 44px; height: 62px; object-fit: cover;
+    box-shadow: 2px 3px 10px rgba(26,22,16,0.2);
+    background: var(--cream-dark); flex-shrink: 0;
+    display: block;
   }
-  .cat-arrow {
-    font-size: 14px; line-height: 1;
-    color: rgba(26,22,16,0.4); opacity: 0;
-    transform: translateX(-6px);
-    transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease;
+  .book-cover-placeholder {
+    width: 44px; height: 62px; flex-shrink: 0;
+    background: var(--cream-dark);
+    border: 1px solid rgba(26,22,16,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 9px; color: var(--muted);
+    box-shadow: 2px 3px 10px rgba(26,22,16,0.1);
   }
-  .cat-tip {
-    position: absolute; top: 50%; right: calc(100% + 12px);
-    transform: translateY(-50%) translateX(8px);
-    width: 240px; background: var(--ink); color: var(--cream);
-    font-family: var(--mono); font-size: 11px; line-height: 1.55;
-    letter-spacing: 0.02em; padding: 14px 16px;
-    border-left: 2px solid var(--terracotta);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.25s ease;
-    z-index: 20; box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  .book-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .book-title {
+    font-family: var(--serif); font-size: 15px; font-weight: 400;
+    line-height: 1.2; color: var(--ink); letter-spacing: -0.005em;
   }
-  .cat-tip::after {
-    content: ''; position: absolute; right: -7px; top: 50%;
-    transform: translateY(-50%); width: 0; height: 0;
-    border-top: 7px solid transparent; border-bottom: 7px solid transparent;
-    border-left: 7px solid var(--ink);
+  .book-author {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
+    color: var(--muted); text-transform: uppercase;
   }
-  .cat-row:hover .cat-tip { opacity: 1; transform: translateY(-50%) translateX(0); }
 
   /* ---- bio cols (row 3, cols 2-3) ---- */
   .col-bio-a, .col-bio-b {
@@ -466,7 +453,7 @@
     .showcase { grid-column: 2; grid-row: 3; border-right: none; grid-template-columns: 1fr; }
     .showcase-quote { border-right: none; border-bottom: 1px solid rgba(245,238,219,0.10); padding: 32px 24px; }
     .showcase-feature { padding: 32px 24px; }
-    .catlist { grid-column: 2; grid-row: 4; border-right: none; margin-top: 0; }
+    .bookshelf { grid-column: 2; grid-row: 4; border-right: none; margin-top: 0; }
     .col-bio-a { grid-column: 2; grid-row: 5; border-right: none; }
     .col-bio-b { grid-column: 2; grid-row: 6; border-right: none; }
     .accent { grid-column: 2; grid-row: 7; }
@@ -531,52 +518,47 @@
     </article>
   </section>
 
-  <!-- Things I do -->
-  <nav class="catlist" aria-label="Things I do">
-    <div class="catlist-eyebrow">Things I do</div>
-    <ol class="catlist-items">
-      <li class="cat-row">
-        <a href="#about" class="cat-link">
-          <span class="cat-num">01</span>
-          <span class="cat-name">Product Design</span>
-          <span class="cat-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="cat-tip" role="tooltip">End-to-end product work — from messy first sketches to shipped pixels people actually rely on.</span>
+  <!-- Bookshelf -->
+  <aside class="bookshelf" aria-label="Bookshelf">
+    <div class="bookshelf-eyebrow">Bookshelf</div>
+    <ol class="book-list" id="book-list">
+      <li class="book-row">
+        <img class="book-cover" id="cover-0" alt="" />
+        <div class="book-info">
+          <span class="book-title">Demand Side Sales 101</span>
+          <span class="book-author">Bob Moesta &amp; Greg Engle</span>
+        </div>
       </li>
-      <li class="cat-row">
-        <a href="#about" class="cat-link">
-          <span class="cat-num">02</span>
-          <span class="cat-name">Leadership</span>
-          <span class="cat-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="cat-tip" role="tooltip">Coaching designers, managers, and cross-functional partners through scale and ambiguity.</span>
+      <li class="book-row">
+        <img class="book-cover" id="cover-1" alt="" />
+        <div class="book-info">
+          <span class="book-title">Designing Assistant Technology</span>
+          <span class="book-author">Christopher Noessel</span>
+        </div>
       </li>
-      <li class="cat-row">
-        <a href="#about" class="cat-link">
-          <span class="cat-num">03</span>
-          <span class="cat-name">Design Systems</span>
-          <span class="cat-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="cat-tip" role="tooltip">The grammar underneath the product — tokens, components, and the operating model that keeps them honest.</span>
+      <li class="book-row">
+        <img class="book-cover" id="cover-2" alt="" />
+        <div class="book-info">
+          <span class="book-title">Against the Machine</span>
+          <span class="book-author">Paul Kingsnorth</span>
+        </div>
       </li>
-      <li class="cat-row">
-        <a href="#about" class="cat-link">
-          <span class="cat-num">04</span>
-          <span class="cat-name">Strategy</span>
-          <span class="cat-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="cat-tip" role="tooltip">Turning fuzzy business mandates into legible, sequenced product bets.</span>
+      <li class="book-row">
+        <img class="book-cover" id="cover-3" alt="" />
+        <div class="book-info">
+          <span class="book-title">The Pyramid Principle</span>
+          <span class="book-author">Barbara Minto</span>
+        </div>
       </li>
-      <li class="cat-row">
-        <a href="#writing" class="cat-link">
-          <span class="cat-num">05</span>
-          <span class="cat-name">Writing</span>
-          <span class="cat-arrow" aria-hidden="true">&rarr;</span>
-        </a>
-        <span class="cat-tip" role="tooltip">Of Quality — a newsletter on craft, leadership, and the long game.</span>
+      <li class="book-row">
+        <img class="book-cover" id="cover-4" alt="" />
+        <div class="book-info">
+          <span class="book-title">Tools for Conviviality</span>
+          <span class="book-author">Ivan Illich</span>
+        </div>
       </li>
     </ol>
-  </nav>
+  </aside>
 
   <!-- Bio A -->
   <section class="col-bio-a" id="about">
@@ -711,6 +693,35 @@ function advance() {
 showQuote();
 renderDots();
 setInterval(advance, 7500);
+
+// ── Bookshelf covers ─────────────────────────────────────
+const BOOKS = [
+  { id: 'cover-0', title: 'Demand Side Sales 101', author: 'Bob Moesta' },
+  { id: 'cover-1', title: 'Designing Assistant Technology', author: 'Christopher Noessel' },
+  { id: 'cover-2', title: 'Against the Machine', author: 'Paul Kingsnorth' },
+  { id: 'cover-3', title: 'The Pyramid Principle', author: 'Barbara Minto' },
+  { id: 'cover-4', title: 'Tools for Conviviality', author: 'Ivan Illich' },
+];
+
+BOOKS.forEach(async (b) => {
+  const img = document.getElementById(b.id);
+  if (!img) return;
+  try {
+    const q = encodeURIComponent(b.title);
+    const a = encodeURIComponent(b.author);
+    const res = await fetch(`https://openlibrary.org/search.json?title=${q}&author=${a}&fields=cover_i&limit=1`);
+    const data = await res.json();
+    const coverId = data.docs?.[0]?.cover_i;
+    if (coverId) {
+      img.src = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
+      img.onerror = () => img.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+    }
+  } catch {
+    img.style.display = 'none';
+  }
+});
 
 // ── Writing list ──────────────────────────────────────────
 (async function loadWriting() {
