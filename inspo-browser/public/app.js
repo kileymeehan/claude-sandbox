@@ -11,18 +11,24 @@ async function initAuth() {
   supabaseClient.auth.onAuthStateChange((event, session) => {
     if (session) {
       document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('logout-btn').style.display = '';
+      document.getElementById('user-section').style.display = '';
+      profileUser = session.user;
+      updateProfileDisplay();
       if (event === 'SIGNED_IN') loadData();
     } else {
       document.getElementById('login-screen').classList.remove('hidden');
-      document.getElementById('logout-btn').style.display = 'none';
+      document.getElementById('user-section').style.display = 'none';
     }
   });
 
   const { data: { session } } = await supabaseClient.auth.getSession();
   if (session) {
     document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('logout-btn').style.display = '';
+    document.getElementById('user-section').style.display = '';
+    profileUser = session.user;
+    updateProfileDisplay();
+  } else {
+    document.getElementById('user-section').style.display = 'none';
   }
 
   document.getElementById('google-signin-btn').addEventListener('click', () => {
@@ -30,10 +36,6 @@ async function initAuth() {
       provider: 'google',
       options: { redirectTo: window.location.origin }
     });
-  });
-
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
   });
 
   return session;
@@ -672,8 +674,9 @@ function initSync() {
 
 async function uploadFiles(files) {
   if (!files.length) return;
-  const btn = document.getElementById('upload-btn');
-  btn.disabled = true;
+  const zone = document.getElementById('drop-zone');
+  zone.style.pointerEvents = 'none';
+  zone.style.opacity = '0.5';
   showToast(`Uploading ${files.length} file${files.length !== 1 ? 's' : ''} to inbox…`);
 
   const fd = new FormData();
@@ -690,15 +693,16 @@ async function uploadFiles(files) {
   } catch (err) {
     showToast(`Upload failed: ${err.message}`);
   } finally {
-    btn.disabled = false;
+    zone.style.pointerEvents = '';
+    zone.style.opacity = '';
   }
 }
 
 function initUpload() {
   const input = document.getElementById('upload-input');
-  const btn = document.getElementById('upload-btn');
+  const zone = document.getElementById('drop-zone');
 
-  btn.addEventListener('click', () => input.click());
+  zone.addEventListener('click', () => input.click());
   input.addEventListener('change', () => {
     if (input.files.length) {
       uploadFiles([...input.files]);
@@ -706,19 +710,119 @@ function initUpload() {
     }
   });
 
-  // Drag and drop onto the whole app
-  document.body.addEventListener('dragover', e => {
+  zone.addEventListener('dragover', e => {
     e.preventDefault();
-    document.body.classList.add('drag-over');
+    zone.classList.add('drag-active');
   });
-  document.body.addEventListener('dragleave', e => {
-    if (!e.relatedTarget) document.body.classList.remove('drag-over');
+  zone.addEventListener('dragleave', e => {
+    if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-active');
   });
-  document.body.addEventListener('drop', e => {
+  zone.addEventListener('drop', e => {
     e.preventDefault();
-    document.body.classList.remove('drag-over');
+    zone.classList.remove('drag-active');
     const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
     if (files.length) uploadFiles(files);
+  });
+}
+
+// ── User Profile ──
+
+let profileUser = null;
+
+function updateProfileDisplay() {
+  if (!profileUser) return;
+  const savedAvatar = localStorage.getItem('inspo-avatar');
+  const savedName = localStorage.getItem('inspo-display-name');
+  const fallbackName = profileUser.user_metadata?.full_name || profileUser.email?.split('@')[0] || 'You';
+  const displayName = savedName || fallbackName;
+
+  const avatarEl = document.getElementById('user-avatar');
+  if (savedAvatar) {
+    avatarEl.textContent = savedAvatar;
+    avatarEl.style.background = 'transparent';
+    avatarEl.style.fontSize = '17px';
+  } else {
+    avatarEl.textContent = displayName[0].toUpperCase();
+    avatarEl.style.background = '';
+    avatarEl.style.fontSize = '';
+  }
+
+  document.getElementById('user-display-name').textContent = displayName;
+  document.getElementById('user-email-label').textContent = profileUser.email || '';
+  document.getElementById('profile-name-display').textContent = displayName;
+
+  document.querySelectorAll('.avatar-opt').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.avatar === savedAvatar);
+  });
+}
+
+function initProfileUI() {
+  const section = document.getElementById('user-section');
+  const profile = document.getElementById('user-profile');
+  const menu = document.getElementById('profile-menu');
+
+  profile.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = section.classList.toggle('open');
+    menu.classList.toggle('hidden', !open);
+  });
+
+  document.addEventListener('click', e => {
+    if (!section.contains(e.target)) {
+      section.classList.remove('open');
+      menu.classList.add('hidden');
+    }
+  });
+
+  document.querySelectorAll('.avatar-opt').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      localStorage.setItem('inspo-avatar', btn.dataset.avatar);
+      updateProfileDisplay();
+    });
+  });
+
+  const nameDisplay = document.getElementById('profile-name-display');
+  const nameInput = document.getElementById('profile-name-input');
+  const editBtn = document.getElementById('profile-name-edit');
+  const saveBtn = document.getElementById('profile-name-save');
+
+  function startEdit() {
+    nameInput.value = nameDisplay.textContent;
+    nameDisplay.classList.add('hidden');
+    nameInput.classList.remove('hidden');
+    editBtn.classList.add('hidden');
+    saveBtn.classList.remove('hidden');
+    nameInput.focus();
+    nameInput.select();
+  }
+
+  function saveName() {
+    const val = nameInput.value.trim();
+    if (val) localStorage.setItem('inspo-display-name', val);
+    nameDisplay.classList.remove('hidden');
+    nameInput.classList.add('hidden');
+    editBtn.classList.remove('hidden');
+    saveBtn.classList.add('hidden');
+    updateProfileDisplay();
+  }
+
+  editBtn.addEventListener('click', e => { e.stopPropagation(); startEdit(); });
+  saveBtn.addEventListener('click', e => { e.stopPropagation(); saveName(); });
+  nameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') saveName();
+    if (e.key === 'Escape') {
+      nameDisplay.classList.remove('hidden');
+      nameInput.classList.add('hidden');
+      editBtn.classList.remove('hidden');
+      saveBtn.classList.add('hidden');
+    }
+  });
+  nameInput.addEventListener('click', e => e.stopPropagation());
+  nameInput.addEventListener('keydown', e => e.stopPropagation());
+
+  document.getElementById('profile-signout-btn').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
   });
 }
 
@@ -752,6 +856,7 @@ async function init() {
   initTheme();
   initViewToggle();
   initProjectModal();
+  initProfileUI();
   initSync();
   initUpload();
 
