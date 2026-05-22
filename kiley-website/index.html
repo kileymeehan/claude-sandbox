@@ -256,11 +256,7 @@
   }
   .book-cover-placeholder {
     width: 44px; height: 62px; flex-shrink: 0;
-    background: var(--cream-dark);
-    border: 1px solid rgba(26,22,16,0.15);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 9px; color: var(--muted);
-    box-shadow: 2px 3px 10px rgba(26,22,16,0.1);
+    box-shadow: 2px 3px 10px rgba(26,22,16,0.12);
   }
   .book-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .book-title {
@@ -460,8 +456,9 @@
     .writing { grid-column: 2; grid-row: 8; grid-template-columns: 1fr; }
     .writing-head { border-right: none; padding: 40px 24px; }
     .post-link { grid-template-columns: 40px 1fr 24px; gap: 16px; padding: 24px; }
-    .bio-a-grid { grid-template-columns: 1fr; gap: 20px; }
-    .bio-a-img { max-width: 220px; }
+    .bio-a-grid { grid-template-columns: 1fr; gap: 24px; }
+    .bio-a-img { max-width: 180px; }
+    .col-bio-a, .col-bio-b { padding: 32px 28px; }
     .foot-inner { grid-template-columns: 1fr 1fr; gap: 40px; padding: 0 24px; }
     .foot-rule { padding: 24px 24px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
   }
@@ -703,6 +700,25 @@ const BOOKS = [
   { id: 'cover-4', title: 'Tools for Conviviality', author: 'Ivan Illich' },
 ];
 
+const BOOK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="62" viewBox="0 0 44 62" fill="none">
+  <rect x="1" y="1" width="43" height="60" rx="1" fill="#EDE3C8" stroke="#1A1610" stroke-width="0.75"/>
+  <rect x="6" y="1" width="1.5" height="60" fill="#D4C9AC"/>
+  <line x1="6" y1="1" x2="6" y2="61" stroke="#1A1610" stroke-width="0.5"/>
+  <line x1="7.5" y1="1" x2="7.5" y2="61" stroke="rgba(26,22,16,0.15)" stroke-width="0.5"/>
+  <rect x="11" y="14" width="24" height="0.75" rx="0.375" fill="#1A1610" opacity="0.25"/>
+  <rect x="11" y="20" width="18" height="0.75" rx="0.375" fill="#1A1610" opacity="0.18"/>
+  <rect x="11" y="26" width="21" height="0.75" rx="0.375" fill="#1A1610" opacity="0.18"/>
+  <rect x="11" y="38" width="16" height="5" rx="0.5" fill="#1A1610" opacity="0.08"/>
+  <path d="M18 8 L26 8 M18 11 L30 11" stroke="#BB5E3E" stroke-width="0.75" stroke-linecap="round" opacity="0.6"/>
+</svg>`;
+
+function showBookPlaceholder(el) {
+  const svg = document.createElement('div');
+  svg.className = 'book-cover-placeholder';
+  svg.innerHTML = BOOK_SVG;
+  el.replaceWith(svg);
+}
+
 BOOKS.forEach(async (b) => {
   const img = document.getElementById(b.id);
   if (!img) return;
@@ -714,12 +730,12 @@ BOOKS.forEach(async (b) => {
     const coverId = data.docs?.[0]?.cover_i;
     if (coverId) {
       img.src = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
-      img.onerror = () => img.style.display = 'none';
+      img.onerror = () => showBookPlaceholder(img);
     } else {
-      img.style.display = 'none';
+      showBookPlaceholder(img);
     }
   } catch {
-    img.style.display = 'none';
+    showBookPlaceholder(img);
   }
 });
 
