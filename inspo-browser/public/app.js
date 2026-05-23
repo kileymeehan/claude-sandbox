@@ -231,9 +231,7 @@ function renderSidebar() {
   const allTagsList = getAllTags();
   if (!allTagsList.length) {
     tagSection.style.display = 'none';
-    return;
-  }
-
+  } else {
   tagSection.style.display = 'block';
   tagNav.innerHTML = allTagsList.map(tag => {
     const active = tagFilter === tag ? 'active' : '';
@@ -250,6 +248,7 @@ function renderSidebar() {
       renderAll();
     });
   });
+  }
 
   // Flows nav
   const flowNav = document.getElementById('flow-nav');
