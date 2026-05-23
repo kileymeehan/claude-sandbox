@@ -225,6 +225,7 @@ function renderSidebar() {
     btn.addEventListener('click', () => {
       folderFilter = btn.dataset.folder;
       tagFilter = null;
+      activeFlow = null;
       renderAll();
     });
   });
@@ -246,6 +247,7 @@ function renderSidebar() {
     btn.addEventListener('click', () => {
       tagFilter = tagFilter === btn.dataset.tag ? null : btn.dataset.tag;
       if (tagFilter) folderFilter = 'all';
+      activeFlow = null;
       renderAll();
     });
   });
