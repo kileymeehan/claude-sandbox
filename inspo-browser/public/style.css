@@ -642,8 +642,7 @@ body.light {
 
 .card-checkbox.checked svg { opacity: 1; }
 
-.select-mode .card-checkbox,
-.card:hover .card-checkbox { opacity: 1; }
+.select-mode .card-checkbox { opacity: 1; }
 
 /* Bulk bar */
 #bulk-bar {
