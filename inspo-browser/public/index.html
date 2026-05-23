@@ -59,6 +59,16 @@
         <nav id="folder-nav"></nav>
       </div>
 
+      <div class="sidebar-section" id="flow-nav-section">
+        <div class="section-label-row">
+          <span class="section-label">Flows</span>
+          <button id="new-flow-btn" title="New flow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <nav id="flow-nav"></nav>
+      </div>
+
 <div class="sidebar-section" id="tag-nav-section" style="display:none">
         <div class="section-label">Tags</div>
         <nav id="tag-nav"></nav>
@@ -116,6 +126,25 @@
     </aside>
 
     <main id="main">
+      <div id="flow-header" class="hidden">
+        <div id="flow-header-left">
+          <div id="flow-header-icon"></div>
+          <span id="flow-header-name"></span>
+          <span id="flow-header-count"></span>
+        </div>
+        <div id="flow-header-right">
+          <button id="flow-add-step-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add step
+          </button>
+          <button id="flow-delete-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="flow-view" class="hidden">
+        <div id="flow-rail"></div>
+      </div>
       <div id="gallery-header">
         <div class="search-wrap">
           <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -202,6 +231,14 @@
             <input id="lb-comment-input" type="text" placeholder="Add a comment…" autocomplete="off" spellcheck="false">
           </div>
         </div>
+        <div id="lb-flows-section">
+          <div class="section-label">Flows</div>
+          <div id="lb-flows-list"></div>
+          <button id="lb-new-flow-btn" class="lb-new-flow-btn">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New flow
+          </button>
+        </div>
         <div id="lb-actions">
           <a id="lb-download" class="btn-lb-action" href="" download="">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
@@ -257,6 +294,34 @@
         Sign in with Google
       </button>
       <p class="login-note">Access restricted to authorised users.</p>
+    </div>
+  </div>
+
+  <!-- New Flow Modal -->
+  <div id="flow-modal" class="hidden">
+    <div id="flow-modal-overlay"></div>
+    <div id="flow-modal-box">
+      <div id="flow-modal-title">New Flow</div>
+      <input id="flow-modal-input" type="text" placeholder="Flow name…" autocomplete="off" spellcheck="false">
+      <div id="flow-modal-actions">
+        <button id="flow-modal-cancel">Cancel</button>
+        <button id="flow-modal-create">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flow Image Picker -->
+  <div id="flow-picker" class="hidden">
+    <div id="flow-picker-overlay"></div>
+    <div id="flow-picker-box">
+      <div id="flow-picker-header">
+        <span id="flow-picker-title">Add step</span>
+        <input id="flow-picker-search" type="text" placeholder="Search images…" autocomplete="off" spellcheck="false">
+        <button id="flow-picker-close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div id="flow-picker-grid"></div>
     </div>
   </div>
 

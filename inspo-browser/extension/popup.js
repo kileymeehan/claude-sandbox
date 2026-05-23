@@ -8,6 +8,32 @@ const saveBtn = document.getElementById('save-btn');
 const pickBtn = document.getElementById('pick-btn');
 const status = document.getElementById('status');
 
+async function loadFlows() {
+  const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
+  if (!serverUrl || !apiToken) return;
+  try {
+    const res = await fetch(`${serverUrl}/api/flows`, {
+      headers: { 'Authorization': `Bearer ${apiToken}` }
+    });
+    if (!res.ok) return;
+    const flows = await res.json();
+    if (!flows.length) return;
+    const select = document.getElementById('flow-select');
+    flows.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.id;
+      opt.textContent = f.name;
+      select.appendChild(opt);
+    });
+    const { selectedFlowId } = await chrome.storage.local.get(['selectedFlowId']);
+    if (selectedFlowId) select.value = selectedFlowId;
+    document.getElementById('flow-selector-row').style.display = 'flex';
+    select.addEventListener('change', () => {
+      chrome.storage.local.set({ selectedFlowId: select.value || null });
+    });
+  } catch {}
+}
+
 async function init() {
   const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
   serverUrlInput.value = serverUrl || '';
@@ -77,3 +103,4 @@ document.getElementById('shot-area-btn').addEventListener('click', async () => {
 });
 
 init();
+loadFlows();

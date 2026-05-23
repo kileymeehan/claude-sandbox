@@ -36,7 +36,7 @@ function publicUrl(storagePath) {
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, PATCH, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.sendStatus(200);
   next();
@@ -282,6 +282,7 @@ app.delete('/api/images/:id', requireAuth, async (req, res) => {
   if (!img) return res.status(404).json({ error: 'Image not found' });
   await supabase.storage.from(BUCKET).remove([img.storage_path]);
   await supabase.from('images').delete().eq('id', imageId);
+  await removeImageFromFlows(imageId);
   res.json({ ok: true });
 });
 
@@ -292,8 +293,29 @@ app.post('/api/images/bulk-delete', requireAuth, async (req, res) => {
   if (!imgs?.length) return res.json({ ok: true, deleted: 0 });
   await supabase.storage.from(BUCKET).remove(imgs.map(i => i.storage_path));
   await supabase.from('images').delete().in('id', ids);
+  await Promise.all(ids.map(id => removeImageFromFlows(id)));
   res.json({ ok: true, deleted: imgs.length });
 });
+
+// ── Flow helpers ─────────────────────────────────────────────
+
+async function removeImageFromFlows(imageId) {
+  const { data: flowList } = await supabase.from('flows').select('id, items');
+  for (const flow of flowList || []) {
+    const updated = (flow.items || []).filter(i => i.image_id !== imageId);
+    if (updated.length !== (flow.items || []).length)
+      await supabase.from('flows').update({ items: updated }).eq('id', flow.id);
+  }
+}
+
+async function updateImageInFlows(oldId, newId) {
+  const { data: flowList } = await supabase.from('flows').select('id, items');
+  for (const flow of flowList || []) {
+    const updated = (flow.items || []).map(i => i.image_id === oldId ? { ...i, image_id: newId } : i);
+    if (JSON.stringify(updated) !== JSON.stringify(flow.items))
+      await supabase.from('flows').update({ items: updated }).eq('id', flow.id);
+  }
+}
 
 // ── Folders ──────────────────────────────────────────────────
 
@@ -345,8 +367,69 @@ app.post('/api/images/:id/move', requireAuth, async (req, res) => {
   await supabase.storage.from(BUCKET).remove([img.storage_path]);
   await supabase.from('images').delete().eq('id', img.id);
   await supabase.from('images').insert({ id: destPath, filename: destFilename, folder, storage_path: destPath, tags: img.tags || [] });
+  await updateImageInFlows(imageId, destPath);
 
   res.json({ ok: true, id: destPath, filename: destFilename, folder, url: publicUrl(destPath) });
+});
+
+// ── Flows ─────────────────────────────────────────────────
+
+const FLOW_PALETTE = ['#f97316','#8b5cf6','#06b6d4','#f43f5e','#84cc16','#eab308','#e879f9','#34d399','#fb7185','#60a5fa'];
+const FLOW_ICONS   = ['play','zap','star','diamond','target','flag','layers','compass','hexagon','trending'];
+
+app.get('/api/flows', requireAuth, async (req, res) => {
+  const { data: flowData, error } = await supabase.from('flows').select('*').order('created_at');
+  if (error) return res.status(500).json({ error: error.message });
+  const { data: imgs } = await supabase.from('images').select('id, filename, storage_path');
+  const imgMap = {};
+  (imgs || []).forEach(i => { imgMap[i.id] = i; });
+  const enriched = (flowData || []).map(f => ({
+    ...f,
+    items: (f.items || []).map(item => {
+      const img = imgMap[item.image_id];
+      return { ...item, url: img ? publicUrl(img.storage_path) : null, filename: img?.filename };
+    })
+  }));
+  res.json(enriched);
+});
+
+app.post('/api/flows', requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (!name?.trim()) return res.status(400).json({ error: 'name required' });
+  const id = `flow-${Date.now()}`;
+  const { data: existing } = await supabase.from('flows').select('color, icon');
+  const usedColors = new Set((existing || []).map(f => f.color));
+  const usedIcons  = new Set((existing || []).map(f => f.icon));
+  const color = FLOW_PALETTE.find(c => !usedColors.has(c)) || FLOW_PALETTE[(existing || []).length % FLOW_PALETTE.length];
+  const icon  = FLOW_ICONS.find(i => !usedIcons.has(i))   || FLOW_ICONS[(existing || []).length % FLOW_ICONS.length];
+  const { error } = await supabase.from('flows').insert({ id, name: name.trim(), color, icon, items: [] });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ id, name: name.trim(), color, icon, items: [] });
+});
+
+app.delete('/api/flows/:id', requireAuth, async (req, res) => {
+  const { error } = await supabase.from('flows').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+app.post('/api/flows/:id/items', requireAuth, async (req, res) => {
+  const { image_id } = req.body;
+  if (!image_id) return res.status(400).json({ error: 'image_id required' });
+  const { data: flow } = await supabase.from('flows').select('items').eq('id', req.params.id).maybeSingle();
+  if (!flow) return res.status(404).json({ error: 'Flow not found' });
+  const item = { id: `fi-${Date.now()}`, image_id, note: '' };
+  const { error } = await supabase.from('flows').update({ items: [...(flow.items || []), item] }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(item);
+});
+
+app.patch('/api/flows/:id/items', requireAuth, async (req, res) => {
+  const { items } = req.body;
+  if (!Array.isArray(items)) return res.status(400).json({ error: 'items array required' });
+  const { error } = await supabase.from('flows').update({ items }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
 });
 
 app.listen(PORT, () => console.log(`\n  Inspo Browser  →  http://localhost:${PORT}\n`));

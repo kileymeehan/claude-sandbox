@@ -10,9 +10,10 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
   if (info.menuItemId !== 'save-to-inspo') return;
-  const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
+  const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
   if (!serverUrl || !apiToken) { chrome.action.openPopup(); return; }
   const result = await uploadUrl(info.srcUrl, serverUrl, apiToken);
+  if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
   badge(result.ok);
   notify(result.ok, result.ok ? 'Image saved to SwatchBook' : `Failed: ${result.error}`);
 });
@@ -20,8 +21,11 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'upload-urls') {
     (async () => {
-      const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
+      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
       const results = await Promise.all(msg.urls.map(url => uploadUrl(url, serverUrl, apiToken)));
+      if (selectedFlowId) {
+        await Promise.all(results.filter(r => r.ok && r.id).map(r => addToFlow(r.id, selectedFlowId, serverUrl, apiToken)));
+      }
       const ok = results.filter(r => r.ok).length;
       const fail = results.filter(r => !r.ok).length;
       const success = ok > 0;
@@ -36,11 +40,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'capture-full') {
     (async () => {
-      const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
+      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
       const blob = await dataUrlToBlob(dataUrl);
       const result = await uploadBlob(blob, serverUrl, apiToken);
+      if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
       badge(result.ok);
       sendResponse(result);
     })();
@@ -49,10 +54,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'capture-area') {
     (async () => {
-      const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
+      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
       const dataUrl = await chrome.tabs.captureVisibleTab(sender.tab.windowId, { format: 'png' });
       const cropped = await cropImage(dataUrl, msg.rect);
       const result = await uploadBlob(cropped, serverUrl, apiToken);
+      if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
       badge(result.ok);
       notify(result.ok, result.ok ? 'Screenshot saved to SwatchBook' : `Failed: ${result.error}`);
       sendResponse(result);
@@ -78,6 +84,16 @@ function badge(ok) {
   setTimeout(() => chrome.action.setBadgeText({ text: '' }), 2500);
 }
 
+async function addToFlow(imageId, flowId, serverUrl, apiToken) {
+  try {
+    await fetch(`${serverUrl.replace(/\/$/, '')}/api/flows/${flowId}/items`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiToken}` },
+      body: JSON.stringify({ image_id: imageId })
+    });
+  } catch {}
+}
+
 async function uploadUrl(url, serverUrl, apiToken) {
   if (!serverUrl || !apiToken) return { ok: false, url, error: 'Not configured' };
   try {
@@ -88,7 +104,7 @@ async function uploadUrl(url, serverUrl, apiToken) {
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, url, error: data.error || res.statusText };
-    return { ok: true, url, filename: data.filename };
+    return { ok: true, url, filename: data.filename, id: data.id };
   } catch (err) {
     return { ok: false, url, error: err.message };
   }
@@ -108,7 +124,7 @@ async function uploadBlob(blob, serverUrl, apiToken) {
     const data = await res.json();
     if (!res.ok) return { ok: false, error: data.error || res.statusText };
     const r = data.results?.[0];
-    return r?.error ? { ok: false, error: r.error } : { ok: true, filename: r?.filename };
+    return r?.error ? { ok: false, error: r.error } : { ok: true, filename: r?.filename, id: r?.id };
   } catch (err) {
     return { ok: false, error: err.message };
   }

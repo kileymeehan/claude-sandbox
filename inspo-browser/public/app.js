@@ -65,10 +65,31 @@ let viewMode = localStorage.getItem('inspo-view') || 'grid-small';
 let uploadFolder = 'inbox';
 let selectMode = false;
 let selectedIds = new Set();
+let flows = [];
+let activeFlow = null;
+let pickerTargetFlowId = null;
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
 const FALLBACK_COLORS = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ec4899','#6366f1','#14b8a6','#f97316','#ef4444','#06b6d4'];
+
+const FLOW_ICON_SVGS = {
+  play:     '<polygon points="5 3 19 12 5 21 5 3"/>',
+  zap:      '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  star:     '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+  diamond:  '<path d="M12 2L2 12l10 10 10-10z"/>',
+  target:   '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  flag:     '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+  layers:   '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  compass:  '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>',
+  hexagon:  '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>',
+  trending: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+};
+
+function flowIconSvg(icon, color, size = 14) {
+  const inner = FLOW_ICON_SVGS[icon] || FLOW_ICON_SVGS.play;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
 
 function folderLabel(id) {
   return folders[id]?.name || id;
@@ -84,14 +105,18 @@ async function loadData() {
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
   try {
-    const [imgData, tagData, folderData] = await Promise.all([
+    const [imgData, tagData, folderData, flowData] = await Promise.all([
       apiFetch('/api/images').then(r => r.json()),
       apiFetch('/api/tags').then(r => r.json()),
-      apiFetch('/api/folders').then(r => r.ok ? r.json() : {}).catch(() => ({}))
+      apiFetch('/api/folders').then(r => r.ok ? r.json() : {}).catch(() => ({})),
+      apiFetch('/api/flows').then(r => r.ok ? r.json() : []).catch(() => [])
     ]);
     images = imgData;
     tags = tagData;
     folders = folderData;
+    flows = flowData;
+    // Keep activeFlow in sync
+    if (activeFlow) activeFlow = flows.find(f => f.id === activeFlow.id) || null;
     renderUploadFolderPicker();
     renderAll();
   } catch (err) {
@@ -149,7 +174,20 @@ function downloadUrl(img) {
 
 function renderAll() {
   renderSidebar();
-  renderGallery();
+  if (activeFlow) {
+    document.getElementById('gallery-header').classList.add('hidden');
+    document.getElementById('bulk-bar').classList.add('hidden');
+    document.getElementById('gallery').classList.add('hidden');
+    document.getElementById('empty-state').classList.add('hidden');
+    document.getElementById('flow-header').classList.remove('hidden');
+    document.getElementById('flow-view').classList.remove('hidden');
+    renderFlowView();
+  } else {
+    document.getElementById('gallery-header').classList.remove('hidden');
+    document.getElementById('flow-header').classList.add('hidden');
+    document.getElementById('flow-view').classList.add('hidden');
+    renderGallery();
+  }
 }
 
 function renderSidebar() {
@@ -209,6 +247,36 @@ function renderSidebar() {
     btn.addEventListener('click', () => {
       tagFilter = tagFilter === btn.dataset.tag ? null : btn.dataset.tag;
       if (tagFilter) folderFilter = 'all';
+      renderAll();
+    });
+  });
+
+  // Flows nav
+  const flowNav = document.getElementById('flow-nav');
+  const flowSection = document.getElementById('flow-nav-section');
+  if (!flowNav) return;
+  if (!flows.length) {
+    flowSection.style.display = 'none';
+    return;
+  }
+  flowSection.style.display = '';
+  flowNav.innerHTML = flows.map(flow => {
+    const active = activeFlow?.id === flow.id ? 'active' : '';
+    const count = flow.items.length;
+    return `<button class="nav-item ${active}" data-flow="${flow.id}">
+      <div class="flow-icon-wrap" style="background:${flow.color}22">${flowIconSvg(flow.icon, flow.color, 11)}</div>
+      <span class="nav-label">${escHtml(flow.name)}</span>
+      <span class="nav-count">${count}</span>
+    </button>`;
+  }).join('');
+
+  flowNav.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFlow = flows.find(f => f.id === btn.dataset.flow) || null;
+      folderFilter = 'all';
+      tagFilter = null;
+      searchQuery = '';
+      document.getElementById('search').value = '';
       renderAll();
     });
   });
@@ -394,6 +462,7 @@ function renderLightbox() {
   dlLink.download = img.filename;
 
   renderComments(img);
+  renderLightboxFlowSection(img);
   renderPalette(img);
 
   const singleImage = filtered.length === 1;
@@ -497,6 +566,204 @@ async function renderPalette(img) {
   });
 }
 
+// ── Flow view ──
+
+function renderFlowView() {
+  const flow = activeFlow;
+  if (!flow) return;
+
+  // Update header
+  const headerIcon = document.getElementById('flow-header-icon');
+  headerIcon.innerHTML = flowIconSvg(flow.icon, flow.color, 16);
+  headerIcon.style.background = `${flow.color}22`;
+  document.getElementById('flow-header-name').textContent = flow.name;
+  document.getElementById('flow-header-count').textContent =
+    `${flow.items.length} step${flow.items.length !== 1 ? 's' : ''}`;
+
+  const rail = document.getElementById('flow-rail');
+
+  if (!flow.items.length) {
+    rail.innerHTML = `<div class="flow-empty">
+      ${flowIconSvg(flow.icon, flow.color, 36)}
+      <p>No steps yet — add images from your library.</p>
+      <button class="flow-empty-btn" id="flow-add-first">+ Add first step</button>
+    </div>`;
+    document.getElementById('flow-add-first').addEventListener('click', () => openFlowPicker(flow.id));
+    return;
+  }
+
+  let html = '';
+  flow.items.forEach((item, i) => {
+    const isFirst = i === 0;
+    const isLast = i === flow.items.length - 1;
+    if (i > 0) html += `<div class="flow-connector">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+    const imgContent = item.url
+      ? `<img class="flow-step-img" src="${escAttr(item.url)}" alt="${escAttr(item.filename || '')}" loading="lazy">`
+      : `<div class="flow-step-missing">Image not found</div>`;
+    html += `<div class="flow-step" data-item-id="${escAttr(item.id)}" data-index="${i}" data-image-id="${escAttr(item.image_id)}">
+      <div class="flow-step-header">
+        <span class="flow-step-num">Step ${i + 1}</span>
+        <button class="flow-step-ctrl" data-action="left" title="Move left" ${isFirst ? 'disabled' : ''}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="flow-step-ctrl" data-action="right" title="Move right" ${isLast ? 'disabled' : ''}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="flow-step-ctrl remove" data-action="remove" title="Remove step">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="flow-step-img-wrap" data-image-id="${escAttr(item.image_id)}">${imgContent}</div>
+      <textarea class="flow-step-note" placeholder="Add a note for this step…">${escHtml(item.note || '')}</textarea>
+    </div>`;
+  });
+
+  html += `<div class="flow-connector">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+  <button class="flow-add-card" id="flow-rail-add">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <span>Add step</span>
+  </button>`;
+
+  rail.innerHTML = html;
+
+  rail.querySelectorAll('.flow-step').forEach(card => {
+    const itemId = card.dataset.itemId;
+    const idx = parseInt(card.dataset.index);
+    const imageId = card.dataset.imageId;
+
+    card.querySelector('[data-action="left"]')?.addEventListener('click', () => moveFlowItem(flow.id, idx, -1));
+    card.querySelector('[data-action="right"]')?.addEventListener('click', () => moveFlowItem(flow.id, idx, 1));
+    card.querySelector('[data-action="remove"]')?.addEventListener('click', () => removeFlowItem(flow.id, itemId));
+
+    card.querySelector('.flow-step-img-wrap')?.addEventListener('click', () => openFlowStepInLightbox(imageId));
+
+    const noteEl = card.querySelector('.flow-step-note');
+    noteEl?.addEventListener('blur', () => saveFlowItemNote(flow.id, itemId, noteEl.value));
+    noteEl?.addEventListener('keydown', e => e.stopPropagation());
+  });
+
+  document.getElementById('flow-rail-add')?.addEventListener('click', () => openFlowPicker(flow.id));
+}
+
+function openFlowStepInLightbox(imageId) {
+  const savedFolder = folderFilter, savedTag = tagFilter, savedSearch = searchQuery;
+  folderFilter = 'all'; tagFilter = null; searchQuery = '';
+  const index = getFiltered().findIndex(img => img.id === imageId);
+  if (index >= 0) { openLightbox(index); return; }
+  folderFilter = savedFolder; tagFilter = savedTag; searchQuery = savedSearch;
+}
+
+async function moveFlowItem(flowId, index, dir) {
+  const flow = flows.find(f => f.id === flowId);
+  if (!flow) return;
+  const items = [...flow.items];
+  const newIdx = index + dir;
+  if (newIdx < 0 || newIdx >= items.length) return;
+  [items[index], items[newIdx]] = [items[newIdx], items[index]];
+  flow.items = items;
+  await apiFetch(`/api/flows/${flowId}/items`, { method: 'PATCH', body: JSON.stringify({ items }) });
+  renderFlowView();
+  renderSidebar();
+}
+
+async function removeFlowItem(flowId, itemId) {
+  const flow = flows.find(f => f.id === flowId);
+  if (!flow) return;
+  const items = flow.items.filter(i => i.id !== itemId);
+  flow.items = items;
+  await apiFetch(`/api/flows/${flowId}/items`, { method: 'PATCH', body: JSON.stringify({ items }) });
+  renderFlowView();
+  renderSidebar();
+}
+
+async function saveFlowItemNote(flowId, itemId, note) {
+  const flow = flows.find(f => f.id === flowId);
+  if (!flow) return;
+  const items = flow.items.map(i => i.id === itemId ? { ...i, note } : i);
+  flow.items = items;
+  await apiFetch(`/api/flows/${flowId}/items`, { method: 'PATCH', body: JSON.stringify({ items }) });
+}
+
+async function addImageToFlow(flowId, imageId) {
+  const res = await apiFetch(`/api/flows/${flowId}/items`, {
+    method: 'POST',
+    body: JSON.stringify({ image_id: imageId })
+  });
+  if (!res.ok) return;
+  const item = await res.json();
+  const img = images.find(i => i.id === imageId);
+  const flow = flows.find(f => f.id === flowId);
+  if (flow) flow.items = [...flow.items, { ...item, url: img?.url, filename: img?.filename }];
+  renderSidebar();
+  if (activeFlow?.id === flowId) renderFlowView();
+}
+
+async function toggleImageInFlow(flowId, imageId, isInFlow) {
+  const flow = flows.find(f => f.id === flowId);
+  if (!flow) return;
+  if (isInFlow) {
+    const item = flow.items.find(i => i.image_id === imageId);
+    if (item) await removeFlowItem(flowId, item.id);
+  } else {
+    await addImageToFlow(flowId, imageId);
+  }
+  renderLightboxFlowSection(images.find(i => i.id === imageId));
+}
+
+// ── Image picker for flows ──
+
+function openFlowPicker(flowId) {
+  pickerTargetFlowId = flowId;
+  const flow = flows.find(f => f.id === flowId);
+  document.getElementById('flow-picker-title').textContent = `Add step to "${flow?.name}"`;
+  document.getElementById('flow-picker-search').value = '';
+  renderFlowPickerGrid('');
+  document.getElementById('flow-picker').classList.remove('hidden');
+  document.getElementById('flow-picker-search').focus();
+}
+
+function closeFlowPicker() {
+  document.getElementById('flow-picker').classList.add('hidden');
+  pickerTargetFlowId = null;
+}
+
+function renderFlowPickerGrid(query) {
+  const flow = flows.find(f => f.id === pickerTargetFlowId);
+  const inFlowIds = new Set((flow?.items || []).map(i => i.image_id));
+  const q = query.toLowerCase();
+  const filtered = images.filter(img => !q || img.filename.toLowerCase().includes(q));
+  const grid = document.getElementById('flow-picker-grid');
+  if (!filtered.length) { grid.innerHTML = `<p style="color:var(--text-muted);font-size:12px;grid-column:1/-1">No images found.</p>`; return; }
+  grid.innerHTML = filtered.map(img =>
+    `<div class="flow-picker-item${inFlowIds.has(img.id) ? ' already-in' : ''}" data-id="${escAttr(img.id)}">
+      <img class="flow-picker-thumb" src="${escAttr(img.url)}" alt="${escAttr(img.filename)}" loading="lazy">
+      <span class="flow-picker-name">${escHtml(img.filename)}</span>
+    </div>`
+  ).join('');
+  grid.querySelectorAll('.flow-picker-item:not(.already-in)').forEach(item => {
+    item.addEventListener('click', async () => {
+      await addImageToFlow(pickerTargetFlowId, item.dataset.id);
+      closeFlowPicker();
+    });
+  });
+}
+
+function initFlowPicker() {
+  document.getElementById('flow-picker-overlay').addEventListener('click', closeFlowPicker);
+  document.getElementById('flow-picker-close').addEventListener('click', closeFlowPicker);
+  document.getElementById('flow-picker-search').addEventListener('input', e => {
+    renderFlowPickerGrid(e.target.value.trim());
+  });
+  document.getElementById('flow-picker-search').addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeFlowPicker();
+    e.stopPropagation();
+  });
+}
+
 // ── Comments ──
 
 function formatTime(iso) {
@@ -570,6 +837,27 @@ function renderComments(img) {
     renderGallery();
     list.scrollTop = list.scrollHeight;
   };
+}
+
+function renderLightboxFlowSection(img) {
+  if (!img) return;
+  const section = document.getElementById('lb-flows-section');
+  if (!section) return;
+  section.style.display = flows.length ? '' : 'none';
+  const list = document.getElementById('lb-flows-list');
+  list.innerHTML = flows.map(flow => {
+    const inFlow = flow.items.some(i => i.image_id === img.id);
+    return `<div class="lb-flow-row">
+      <div class="lb-flow-row-icon" style="background:${flow.color}22">${flowIconSvg(flow.icon, flow.color, 11)}</div>
+      <span class="lb-flow-row-name">${escHtml(flow.name)}</span>
+      <button class="lb-flow-toggle${inFlow ? ' in-flow' : ''}" data-flow="${escAttr(flow.id)}" data-in="${inFlow}">
+        ${inFlow ? '✓ Added' : '+ Add'}
+      </button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.lb-flow-toggle').forEach(btn => {
+    btn.addEventListener('click', () => toggleImageInFlow(btn.dataset.flow, img.id, btn.dataset.in === 'true'));
+  });
 }
 
 // ── Tag input with autocomplete ──
@@ -952,6 +1240,63 @@ function initFolderModal() {
   });
 }
 
+function initFlowModal() {
+  const modal = document.getElementById('flow-modal');
+  const input = document.getElementById('flow-modal-input');
+
+  function openFlowModal(callback) {
+    modal._callback = callback;
+    modal.classList.remove('hidden');
+    input.value = '';
+    input.focus();
+  }
+
+  async function submitFlow() {
+    const name = input.value.trim();
+    if (!name) return;
+    const res = await apiFetch('/api/flows', { method: 'POST', body: JSON.stringify({ name }) });
+    if (!res.ok) { const e = await res.json(); showToast(e.error); return; }
+    const flow = await res.json();
+    flows.push({ ...flow, items: [] });
+    modal.classList.add('hidden');
+    if (modal._callback) modal._callback(flow);
+    else renderSidebar();
+  }
+
+  document.getElementById('new-flow-btn').addEventListener('click', () => openFlowModal(flow => {
+    activeFlow = flows.find(f => f.id === flow.id) || null;
+    renderAll();
+  }));
+
+  document.getElementById('lb-new-flow-btn').addEventListener('click', () => openFlowModal(() => {
+    const filtered = getFiltered();
+    const img = filtered[lightboxIndex];
+    renderLightboxFlowSection(img);
+  }));
+
+  document.getElementById('flow-modal-create').addEventListener('click', submitFlow);
+  document.getElementById('flow-modal-cancel').addEventListener('click', () => modal.classList.add('hidden'));
+  document.getElementById('flow-modal-overlay').addEventListener('click', () => modal.classList.add('hidden'));
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitFlow();
+    if (e.key === 'Escape') modal.classList.add('hidden');
+  });
+
+  // Flow header buttons
+  document.getElementById('flow-add-step-btn').addEventListener('click', () => {
+    if (activeFlow) openFlowPicker(activeFlow.id);
+  });
+
+  document.getElementById('flow-delete-btn').addEventListener('click', async () => {
+    if (!activeFlow) return;
+    if (!confirm(`Delete flow "${activeFlow.name}"? This won't delete the images.`)) return;
+    await apiFetch(`/api/flows/${activeFlow.id}`, { method: 'DELETE' });
+    flows = flows.filter(f => f.id !== activeFlow.id);
+    activeFlow = null;
+    renderAll();
+  });
+}
+
 // ── User Profile ──
 
 let profileUser = null;
@@ -1084,6 +1429,8 @@ async function init() {
   initViewToggle();
   initSelectMode();
   initFolderModal();
+  initFlowModal();
+  initFlowPicker();
   initProfileUI();
   initSync();
   initUpload();
@@ -1102,6 +1449,10 @@ async function init() {
       return;
     }
     if (e.key === 'Escape' && selectMode) toggleSelectMode(false);
+    if (e.key === 'Escape' && activeFlow && document.getElementById('flow-picker').classList.contains('hidden')) {
+      activeFlow = null;
+      renderAll();
+    }
   });
 
   initTagInput();
