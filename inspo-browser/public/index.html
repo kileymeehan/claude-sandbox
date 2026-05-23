@@ -50,17 +50,7 @@
         <nav id="folder-nav"></nav>
       </div>
 
-      <div class="sidebar-section" id="project-nav-section">
-        <div class="section-label-row">
-          <span class="section-label">Projects</span>
-          <button id="new-project-btn" title="New project">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-        <nav id="project-nav"></nav>
-      </div>
-
-      <div class="sidebar-section" id="tag-nav-section" style="display:none">
+<div class="sidebar-section" id="tag-nav-section" style="display:none">
         <div class="section-label">Tags</div>
         <nav id="tag-nav"></nav>
       </div>
@@ -183,14 +173,6 @@
           <div id="lb-filename"></div>
           <div id="lb-folder-badge-wrap"></div>
         </div>
-        <div id="lb-projects-section">
-          <div class="section-label">Projects</div>
-          <div id="lb-projects"></div>
-          <button id="lb-new-project-btn" class="lb-new-project-btn">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            New project…
-          </button>
-        </div>
         <div id="lb-tags-section">
           <div class="section-label">Tags</div>
           <div id="lb-tags"></div>
@@ -199,9 +181,13 @@
             <ul id="lb-tag-suggestions"></ul>
           </div>
         </div>
-        <div id="lb-notes-section">
-          <div class="section-label">Note</div>
-          <textarea id="lb-note" placeholder="Add a note…" spellcheck="false"></textarea>
+        <div id="lb-comments-section">
+          <div class="section-label">Comments</div>
+          <div id="lb-comments-list"></div>
+          <div id="lb-comment-input-row">
+            <div class="lb-comment-avatar" id="lb-comment-self-avatar"></div>
+            <input id="lb-comment-input" type="text" placeholder="Add a comment…" autocomplete="off" spellcheck="false">
+          </div>
         </div>
         <div id="lb-actions">
           <a id="lb-download" class="btn-lb-action" href="" download="">
@@ -231,20 +217,7 @@
     </div>
   </div>
 
-  <!-- New Project Modal -->
-  <div id="project-modal" class="hidden">
-    <div id="project-modal-overlay"></div>
-    <div id="project-modal-box">
-      <div id="project-modal-title">New Project</div>
-      <input id="project-modal-input" type="text" placeholder="Project name…" autocomplete="off" spellcheck="false">
-      <div id="project-modal-actions">
-        <button id="project-modal-cancel">Cancel</button>
-        <button id="project-modal-create">Create</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="sync-toast" class="hidden">
+<div id="sync-toast" class="hidden">
     <div id="sync-toast-inner">
       <span id="sync-toast-msg"></span>
       <button id="sync-toast-close">✕</button>

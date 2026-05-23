@@ -62,9 +62,6 @@ let tagFilter = null;
 let searchQuery = '';
 let lightboxIndex = -1;
 let viewMode = localStorage.getItem('inspo-view') || 'grid-small';
-let projects = {};
-let projectFilter = null;
-let projectModalCallback = null;
 let uploadFolder = 'inbox';
 let selectMode = false;
 let selectedIds = new Set();
@@ -87,15 +84,13 @@ async function loadData() {
   const btn = document.getElementById('refresh-btn');
   btn.classList.add('spinning');
   try {
-    const [imgData, tagData, projData, folderData] = await Promise.all([
+    const [imgData, tagData, folderData] = await Promise.all([
       apiFetch('/api/images').then(r => r.json()),
       apiFetch('/api/tags').then(r => r.json()),
-      apiFetch('/api/projects').then(r => r.ok ? r.json() : {}).catch(() => ({})),
       apiFetch('/api/folders').then(r => r.ok ? r.json() : {}).catch(() => ({}))
     ]);
     images = imgData;
     tags = tagData;
-    projects = projData;
     folders = folderData;
     renderUploadFolderPicker();
     renderAll();
@@ -126,10 +121,6 @@ function getFiltered() {
     if (tagFilter) {
       const imgTags = tags[img.id] || [];
       if (!imgTags.includes(tagFilter)) return false;
-    }
-    if (projectFilter) {
-      const proj = projects[projectFilter];
-      if (!proj || !(proj.images || []).includes(img.id)) return false;
     }
     if (q && !img.filename.toLowerCase().includes(q)) return false;
     return true;
@@ -199,46 +190,6 @@ function renderSidebar() {
     });
   });
 
-  // Projects
-  const projectNav = document.getElementById('project-nav');
-  const projectList = Object.entries(projects).sort((a, b) => b[1].created - a[1].created);
-  projectNav.innerHTML = projectList.map(([id, proj]) => {
-    const active = projectFilter === id ? 'active' : '';
-    const count = (proj.images || []).length;
-    return `<div class="project-nav-item ${active}" data-id="${id}">
-      <svg class="nav-proj-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-      <span class="nav-label">${escHtml(proj.name)}</span>
-      <span class="nav-count">${count}</span>
-      <div class="project-nav-actions">
-        <a href="/api/projects/${id}/download" title="Download zip" data-dl-proj>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
-        </a>
-        <button title="Delete project" data-delete-id="${id}">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-        </button>
-      </div>
-    </div>`;
-  }).join('');
-
-  projectNav.querySelectorAll('.project-nav-item').forEach(item => {
-    item.addEventListener('click', e => {
-      if (e.target.closest('[data-dl-proj]') || e.target.closest('[data-delete-id]')) return;
-      const id = item.dataset.id;
-      projectFilter = projectFilter === id ? null : id;
-      if (projectFilter) { folderFilter = 'all'; tagFilter = null; }
-      renderAll();
-    });
-    item.querySelector('[data-delete-id]')?.addEventListener('click', async e => {
-      e.stopPropagation();
-      const id = e.currentTarget.dataset.deleteId;
-      if (!confirm(`Delete project "${projects[id]?.name}"?`)) return;
-      await apiFetch(`/api/projects/${id}`, { method: 'DELETE' });
-      delete projects[id];
-      if (projectFilter === id) projectFilter = null;
-      renderAll();
-    });
-  });
-
   const allTagsList = getAllTags();
   if (!allTagsList.length) {
     tagSection.style.display = 'none';
@@ -301,7 +252,7 @@ function renderGallery() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
           </a>
         </div>
-        ${img.note ? `<div class="card-note-dot" title="${escAttr(img.note)}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>` : ''}
+        ${img.comments?.length ? `<div class="card-comment-dot" title="${img.comments.length} comment${img.comments.length !== 1 ? 's' : ''}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${img.comments.length > 1 ? `<span>${img.comments.length}</span>` : ''}</div>` : ''}
         <div class="card-checkbox ${isSelected ? 'checked' : ''}">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
@@ -437,45 +388,12 @@ function renderLightbox() {
     });
   });
 
-  // Projects
-  const lbProjects = document.getElementById('lb-projects');
-  const projectList = Object.entries(projects).sort((a, b) => b[1].created - a[1].created);
-  lbProjects.innerHTML = projectList.map(([id, proj]) => {
-    const assigned = (proj.images || []).includes(img.id);
-    return `<div class="lb-project-row ${assigned ? 'assigned' : ''}" data-proj-id="${id}">
-      <div class="lb-project-check">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
-      <span>${escHtml(proj.name)}</span>
-    </div>`;
-  }).join('');
-
-  lbProjects.querySelectorAll('.lb-project-row').forEach(row => {
-    row.addEventListener('click', async () => {
-      const projId = row.dataset.projId;
-      await toggleImageInProject(projId, img.id);
-      renderLightbox();
-      renderSidebar();
-    });
-  });
-
   const dl = downloadUrl(img);
   const dlLink = document.getElementById('lb-download');
   dlLink.href = dl;
   dlLink.download = img.filename;
 
-  const noteEl = document.getElementById('lb-note');
-  noteEl.value = img.note || '';
-  noteEl.onblur = async () => {
-    const newNote = noteEl.value.trim() || null;
-    if (newNote === (img.note || null)) return;
-    img.note = newNote;
-    await apiFetch(`/api/images/${encodeURIComponent(img.id)}/note`, {
-      method: 'POST',
-      body: JSON.stringify({ note: newNote })
-    });
-    renderGallery();
-  };
+  renderComments(img);
 
   const singleImage = filtered.length === 1;
   document.getElementById('lb-prev').style.visibility = singleImage ? 'hidden' : '';
@@ -490,6 +408,81 @@ function renderLightbox() {
     images = images.filter(i => i.id !== img.id);
     showToast(`Deleted "${img.filename}".`);
     renderAll();
+  };
+}
+
+// ── Comments ──
+
+function formatTime(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  const opts = { month: 'short', day: 'numeric' };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
+  return d.toLocaleDateString('en-US', opts);
+}
+
+function renderComments(img) {
+  const comments = img.comments || [];
+  const list = document.getElementById('lb-comments-list');
+  if (!list) return;
+
+  list.innerHTML = comments.map(c => {
+    const isEmoji = c.avatar && /\p{Emoji}/u.test(c.avatar);
+    const avatarContent = isEmoji ? c.avatar : (c.name?.[0]?.toUpperCase() || '?');
+    return `<div class="lb-comment" data-id="${escAttr(c.id)}">
+      <div class="lb-comment-avatar">${escHtml(avatarContent)}</div>
+      <div class="lb-comment-body">
+        <div class="lb-comment-meta">
+          <span class="lb-comment-name">${escHtml(c.name)}</span>
+          <span class="lb-comment-time">${escHtml(formatTime(c.timestamp))}</span>
+          <button class="lb-comment-delete" data-cid="${escAttr(c.id)}" title="Delete">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="lb-comment-text">${escHtml(c.text)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.lb-comment-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cid = btn.dataset.cid;
+      await apiFetch(`/api/images/${encodeURIComponent(img.id)}/comment/${cid}`, { method: 'DELETE' });
+      img.comments = (img.comments || []).filter(c => c.id !== cid);
+      renderComments(img);
+      renderGallery();
+    });
+  });
+
+  const selfAvatar = localStorage.getItem('inspo-avatar') || '';
+  const fallbackName = profileUser?.user_metadata?.full_name || profileUser?.email?.split('@')[0] || 'You';
+  const selfName = localStorage.getItem('inspo-display-name') || fallbackName;
+  const isEmoji = selfAvatar && /\p{Emoji}/u.test(selfAvatar);
+  const selfAvatarEl = document.getElementById('lb-comment-self-avatar');
+  if (selfAvatarEl) selfAvatarEl.textContent = isEmoji ? selfAvatar : (selfName[0]?.toUpperCase() || '?');
+
+  const input = document.getElementById('lb-comment-input');
+  if (!input) return;
+  input.onkeydown = async e => {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    const res = await apiFetch(`/api/images/${encodeURIComponent(img.id)}/comment`, {
+      method: 'POST',
+      body: JSON.stringify({ text, avatar: selfAvatar, name: selfName })
+    });
+    if (!res.ok) return;
+    const comment = await res.json();
+    img.comments = [...(img.comments || []), comment];
+    input.value = '';
+    renderComments(img);
+    renderGallery();
+    list.scrollTop = list.scrollHeight;
   };
 }
 
@@ -594,81 +587,6 @@ function escHtml(str) {
 
 function escAttr(str) {
   return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-// ── Projects ──
-
-async function toggleImageInProject(projectId, imageId) {
-  const proj = projects[projectId];
-  if (!proj) return;
-  const imgs = proj.images || [];
-  const newImgs = imgs.includes(imageId)
-    ? imgs.filter(id => id !== imageId)
-    : [...imgs, imageId];
-  projects[projectId].images = newImgs;
-  await apiFetch('/api/projects', {
-    method: 'POST',
-    body: JSON.stringify({ id: projectId, images: newImgs })
-  });
-}
-
-function openProjectModal(callback) {
-  projectModalCallback = callback || null;
-  const modal = document.getElementById('project-modal');
-  const input = document.getElementById('project-modal-input');
-  modal.classList.remove('hidden');
-  input.value = '';
-  input.focus();
-}
-
-function closeProjectModal() {
-  document.getElementById('project-modal').classList.add('hidden');
-  projectModalCallback = null;
-}
-
-async function createProject(name) {
-  const id = `proj-${Date.now()}`;
-  projects[id] = { name, created: Date.now(), images: [] };
-  await apiFetch('/api/projects', {
-    method: 'POST',
-    body: JSON.stringify({ id, name, images: [] })
-  });
-  return id;
-}
-
-function initProjectModal() {
-  const input = document.getElementById('project-modal-input');
-
-  async function submit() {
-    const name = input.value.trim();
-    if (!name) return;
-    const id = await createProject(name);
-    closeProjectModal();
-    renderSidebar();
-    if (projectModalCallback) {
-      await projectModalCallback(id);
-      renderLightbox();
-      renderSidebar();
-    }
-  }
-
-  document.getElementById('project-modal-create').addEventListener('click', submit);
-  document.getElementById('project-modal-cancel').addEventListener('click', closeProjectModal);
-  document.getElementById('project-modal-overlay').addEventListener('click', closeProjectModal);
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') submit();
-    if (e.key === 'Escape') closeProjectModal();
-  });
-
-  document.getElementById('new-project-btn').addEventListener('click', () => openProjectModal(null));
-
-  document.getElementById('lb-new-project-btn').addEventListener('click', () => {
-    openProjectModal(async newId => {
-      const filtered = getFiltered();
-      const img = filtered[lightboxIndex];
-      if (img) await toggleImageInProject(newId, img.id);
-    });
-  });
 }
 
 // ── Select & bulk delete ──
@@ -1079,7 +997,6 @@ async function init() {
   initTheme();
   initViewToggle();
   initSelectMode();
-  initProjectModal();
   initFolderModal();
   initProfileUI();
   initSync();

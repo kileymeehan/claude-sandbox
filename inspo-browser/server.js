@@ -44,12 +44,13 @@ app.get('/api/config', (req, res) => {
 app.get('/api/images', requireAuth, async (req, res) => {
   const { data, error } = await supabase
     .from('images')
-    .select('id, filename, folder, storage_path, tags, note, created_at')
+    .select('id, filename, folder, storage_path, tags, comments, created_at')
     .order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   res.json(data.map(img => ({
     ...img,
     tags: img.tags || [],
+    comments: img.comments || [],
     url: publicUrl(img.storage_path),
     mtime: new Date(img.created_at).getTime()
   })));
@@ -200,61 +201,27 @@ Rules: 2-5 tags max, reuse existing tags when they fit, lowercase hyphenated.`;
   res.end();
 });
 
-// ── Projects ────────────────────────────────────────────────
+// ── Comments ─────────────────────────────────────────────────
 
-app.get('/api/projects', requireAuth, async (req, res) => {
-  const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+app.post('/api/images/:id/comment', requireAuth, async (req, res) => {
+  const imageId = decodeURIComponent(req.params.id);
+  const { text, avatar, name } = req.body;
+  if (!text?.trim()) return res.status(400).json({ error: 'text required' });
+  const { data: img } = await supabase.from('images').select('comments').eq('id', imageId).maybeSingle();
+  if (!img) return res.status(404).json({ error: 'Image not found' });
+  const comment = { id: `c-${Date.now()}`, text: text.trim(), timestamp: new Date().toISOString(), avatar: avatar || '', name: name || 'You' };
+  const comments = [...(img.comments || []), comment];
+  const { error } = await supabase.from('images').update({ comments }).eq('id', imageId);
   if (error) return res.status(500).json({ error: error.message });
-  const map = {};
-  for (const p of data) {
-    map[p.id] = { name: p.name, created: new Date(p.created_at).getTime(), images: p.images || [] };
-  }
-  res.json(map);
+  res.json(comment);
 });
 
-app.post('/api/projects', requireAuth, async (req, res) => {
-  const { id, name, images } = req.body;
-  if (!id) return res.status(400).json({ error: 'id required' });
-  const { error } = await supabase
-    .from('projects')
-    .upsert({ id, name: name || 'Untitled', images: images || [] }, { onConflict: 'id' });
-  if (error) return res.status(500).json({ error: error.message });
-  res.json({ ok: true });
-});
-
-app.delete('/api/projects/:id', requireAuth, async (req, res) => {
-  await supabase.from('projects').delete().eq('id', req.params.id);
-  res.json({ ok: true });
-});
-
-app.get('/api/projects/:id/download', requireAuth, async (req, res) => {
-  const { data: proj } = await supabase.from('projects').select('*').eq('id', req.params.id).maybeSingle();
-  if (!proj) return res.status(404).send('Project not found');
-
-  const safeName = (proj.name || 'project').replace(/[^a-z0-9_\- ]/gi, '').trim() || 'project';
-  res.setHeader('Content-Type', 'application/zip');
-  res.setHeader('Content-Disposition', `attachment; filename="${safeName}.zip"`);
-
-  const archive = archiver('zip', { zlib: { level: 6 } });
-  archive.pipe(res);
-
-  for (const imageId of proj.images || []) {
-    const { data: blob } = await supabase.storage.from(BUCKET).download(imageId);
-    if (!blob) continue;
-    const buffer = Buffer.from(await blob.arrayBuffer());
-    archive.append(buffer, { name: path.basename(imageId) });
-  }
-  await archive.finalize();
-});
-
-// ── Notes ────────────────────────────────────────────────────
-
-app.post('/api/images/:id/note', requireAuth, async (req, res) => {
-  const { note } = req.body;
-  const { error } = await supabase
-    .from('images')
-    .update({ note: note || null })
-    .eq('id', decodeURIComponent(req.params.id));
+app.delete('/api/images/:id/comment/:commentId', requireAuth, async (req, res) => {
+  const imageId = decodeURIComponent(req.params.id);
+  const { data: img } = await supabase.from('images').select('comments').eq('id', imageId).maybeSingle();
+  if (!img) return res.status(404).json({ error: 'Image not found' });
+  const comments = (img.comments || []).filter(c => c.id !== req.params.commentId);
+  const { error } = await supabase.from('images').update({ comments }).eq('id', imageId);
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
 });
@@ -296,7 +263,10 @@ app.post('/api/folders', requireAuth, async (req, res) => {
   const id = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   if (!id) return res.status(400).json({ error: 'Invalid folder name' });
   const PALETTE = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ec4899','#6366f1','#14b8a6','#f97316','#ef4444','#06b6d4','#84cc16','#fb923c'];
-  const color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+  const { data: existing } = await supabase.from('folders').select('color');
+  const used = new Set((existing || []).map(f => f.color));
+  const available = PALETTE.filter(c => !used.has(c));
+  const color = available.length ? available[0] : PALETTE[Math.floor(Math.random() * PALETTE.length)];
   const { error } = await supabase.from('folders').upsert({ id, name: name.trim(), color }, { onConflict: 'id' });
   if (error) return res.status(500).json({ error: error.message });
   res.json({ id, name: name.trim(), color });
