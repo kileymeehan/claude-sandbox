@@ -1346,6 +1346,50 @@ body.light .swatch-color {
   flex-shrink: 0;
 }
 
+.flow-nav-item {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.flow-nav-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.flow-nav-add {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 2px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.flow-nav-add:hover {
+  color: var(--text);
+  background: var(--surface-3);
+}
+
+.flow-nav-item:hover .flow-nav-add {
+  display: flex;
+}
+
+.flow-nav-empty {
+  padding: 6px 14px 8px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
 /* ── Flow header ── */
 
 #flow-header {

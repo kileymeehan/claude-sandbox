@@ -254,29 +254,44 @@ function renderSidebar() {
   const flowNav = document.getElementById('flow-nav');
   const flowSection = document.getElementById('flow-nav-section');
   if (!flowNav) return;
+  flowSection.style.display = '';
+
   if (!flows.length) {
-    flowSection.style.display = 'none';
+    flowNav.innerHTML = '<div class="flow-nav-empty">No flows yet — click + to create one</div>';
     return;
   }
-  flowSection.style.display = '';
+
   flowNav.innerHTML = flows.map(flow => {
     const active = activeFlow?.id === flow.id ? 'active' : '';
     const count = flow.items.length;
-    return `<button class="nav-item ${active}" data-flow="${flow.id}">
-      <div class="flow-icon-wrap" style="background:${flow.color}22">${flowIconSvg(flow.icon, flow.color, 11)}</div>
-      <span class="nav-label">${escHtml(flow.name)}</span>
-      <span class="nav-count">${count}</span>
-    </button>`;
+    return `<div class="nav-item flow-nav-item ${active}" data-flow="${flow.id}">
+      <div class="flow-nav-main">
+        <div class="flow-icon-wrap" style="background:${flow.color}22">${flowIconSvg(flow.icon, flow.color, 11)}</div>
+        <span class="nav-label">${escHtml(flow.name)}</span>
+        <span class="nav-count">${count}</span>
+      </div>
+      <button class="flow-nav-add" data-flow-add="${flow.id}" title="Add images">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>`;
   }).join('');
 
-  flowNav.querySelectorAll('.nav-item').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeFlow = flows.find(f => f.id === btn.dataset.flow) || null;
+  flowNav.querySelectorAll('.flow-nav-main').forEach(main => {
+    main.addEventListener('click', () => {
+      const flow = main.closest('.flow-nav-item').dataset.flow;
+      activeFlow = flows.find(f => f.id === flow) || null;
       folderFilter = 'all';
       tagFilter = null;
       searchQuery = '';
       document.getElementById('search').value = '';
       renderAll();
+    });
+  });
+
+  flowNav.querySelectorAll('.flow-nav-add').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openFlowPicker(btn.dataset.flowAdd);
     });
   });
 }
