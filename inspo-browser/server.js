@@ -16,6 +16,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 async function requireAuth(req, res, next) {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
+  if (process.env.INSPO_API_TOKEN && token === process.env.INSPO_API_TOKEN) {
+    req.user = { id: 'api-token' };
+    return next();
+  }
   const { data: { user }, error } = await supabase.auth.getUser(token);
   if (error || !user) return res.status(401).json({ error: 'Unauthorized' });
   req.user = user;
@@ -30,6 +34,13 @@ function publicUrl(storagePath) {
   return `${process.env.SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${storagePath}`;
 }
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -111,6 +122,43 @@ app.post('/api/upload', requireAuth, upload.array('images'), async (req, res) =>
     results.push({ filename, id: storagePath, url: publicUrl(storagePath) });
   }
   res.json({ results });
+});
+
+// ── Upload from URL (Chrome extension) ──────────────────────
+
+app.post('/api/upload-url', requireAuth, async (req, res) => {
+  const { url, folder = 'inbox' } = req.body;
+  if (!url) return res.status(400).json({ error: 'url required' });
+
+  const { data: folderRow } = await supabase.from('folders').select('id').eq('id', folder).maybeSingle();
+  if (!folderRow && !KNOWN_FOLDERS.includes(folder)) return res.status(400).json({ error: 'Invalid folder' });
+
+  let imgRes;
+  try { imgRes = await fetch(url); } catch { return res.status(400).json({ error: 'Could not fetch URL' }); }
+  if (!imgRes.ok) return res.status(400).json({ error: 'Image URL returned ' + imgRes.status });
+
+  const contentType = imgRes.headers.get('content-type') || '';
+  if (!contentType.startsWith('image/')) return res.status(400).json({ error: 'URL does not point to an image' });
+
+  const urlPath = new URL(url).pathname;
+  const ext = path.extname(urlPath).toLowerCase() || '.jpg';
+  if (!IMAGE_EXTS.has(ext)) return res.status(400).json({ error: 'Unsupported image format' });
+
+  let filename = (path.basename(urlPath) || `image-${Date.now()}${ext}`).replace(/:/g, '-');
+  let storagePath = `${folder}/${filename}`;
+
+  const { data: existing } = await supabase.from('images').select('id').eq('id', storagePath).maybeSingle();
+  if (existing) {
+    filename = `${path.basename(filename, ext)}-${Date.now()}${ext}`;
+    storagePath = `${folder}/${filename}`;
+  }
+
+  const buffer = Buffer.from(await imgRes.arrayBuffer());
+  const { error: uploadErr } = await supabase.storage.from(BUCKET).upload(storagePath, buffer, { contentType });
+  if (uploadErr) return res.status(500).json({ error: uploadErr.message });
+
+  await supabase.from('images').insert({ id: storagePath, filename, folder, storage_path: storagePath, tags: [], comments: [] });
+  res.json({ ok: true, filename, id: storagePath, url: publicUrl(storagePath) });
 });
 
 // ── AI Sync Inbox ───────────────────────────────────────────
