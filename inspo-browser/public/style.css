@@ -473,6 +473,25 @@ body.light {
   margin-left: auto;
 }
 
+.select-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.select-toggle-btn:hover { color: var(--text); background: var(--surface-3); }
+.select-toggle-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
 .view-toggle {
   display: flex;
   gap: 2px;
@@ -587,6 +606,95 @@ body.light {
 }
 
 .card:hover .card-overlay { opacity: 1; }
+
+.card.card-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.card.card-selected:hover { transform: none; }
+
+.card-checkbox {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.75);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.card-checkbox svg { opacity: 0; transition: opacity 0.1s; }
+
+.card-checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.card-checkbox.checked svg { opacity: 1; }
+
+.select-mode .card-checkbox,
+.card:hover .card-checkbox { opacity: 1; }
+
+/* Bulk bar */
+#bulk-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: color-mix(in srgb, var(--surface-1) 90%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 49px;
+  z-index: 9;
+}
+
+#bulk-bar.hidden { display: none; }
+
+#bulk-count {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.bulk-actions button {
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+}
+
+.bulk-actions button:hover { background: var(--surface-3); color: var(--text); }
+
+#bulk-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #ef4444 !important;
+  border-color: rgba(239,68,68,0.3) !important;
+}
+
+#bulk-delete-btn:hover { background: rgba(239,68,68,0.12) !important; }
 
 .card-image-wrap {
   position: relative;
@@ -998,8 +1106,33 @@ body.light {
 #lb-actions {
   padding: 14px 16px;
   border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 8px;
 }
 
+.btn-lb-action {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 7px 10px;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+}
+
+.btn-lb-action:hover { background: var(--surface-3); color: var(--text); }
+
+.btn-lb-danger { color: #ef4444; }
+.btn-lb-danger:hover { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.35); color: #ef4444; }
+
+/* legacy alias kept for any remaining refs */
 .btn-download {
   display: inline-flex;
   align-items: center;

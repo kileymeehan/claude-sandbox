@@ -90,7 +90,7 @@ app.post('/api/upload', requireAuth, upload.array('images'), async (req, res) =>
     const ext = path.extname(file.originalname).toLowerCase();
     if (!IMAGE_EXTS.has(ext)) { results.push({ filename: file.originalname, error: 'Unsupported format' }); continue; }
 
-    let filename = file.originalname;
+    let filename = file.originalname.replace(/:/g, '-').replace(/\s{2,}/g, ' ').trim();
     let storagePath = `${folder}/${filename}`;
 
     const { data: existing } = await supabase.from('images').select('id').eq('id', storagePath).maybeSingle();
@@ -257,6 +257,27 @@ app.post('/api/images/:id/note', requireAuth, async (req, res) => {
     .eq('id', decodeURIComponent(req.params.id));
   if (error) return res.status(500).json({ error: error.message });
   res.json({ ok: true });
+});
+
+// ── Delete image ─────────────────────────────────────────────
+
+app.delete('/api/images/:id', requireAuth, async (req, res) => {
+  const imageId = decodeURIComponent(req.params.id);
+  const { data: img } = await supabase.from('images').select('storage_path').eq('id', imageId).maybeSingle();
+  if (!img) return res.status(404).json({ error: 'Image not found' });
+  await supabase.storage.from(BUCKET).remove([img.storage_path]);
+  await supabase.from('images').delete().eq('id', imageId);
+  res.json({ ok: true });
+});
+
+app.post('/api/images/bulk-delete', requireAuth, async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'ids required' });
+  const { data: imgs } = await supabase.from('images').select('id, storage_path').in('id', ids);
+  if (!imgs?.length) return res.json({ ok: true, deleted: 0 });
+  await supabase.storage.from(BUCKET).remove(imgs.map(i => i.storage_path));
+  await supabase.from('images').delete().in('id', ids);
+  res.json({ ok: true, deleted: imgs.length });
 });
 
 // ── Folders ──────────────────────────────────────────────────

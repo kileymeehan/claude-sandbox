@@ -123,6 +123,10 @@
           <input id="search" type="text" placeholder="Search images…" autocomplete="off" spellcheck="false">
         </div>
         <span id="image-count"></span>
+        <button id="select-btn" class="select-toggle-btn" title="Select images">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Select
+        </button>
         <div class="view-toggle">
           <button class="view-btn" data-view="grid-small" title="Small grid">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -133,6 +137,17 @@
           <button class="view-btn" data-view="list" title="List view">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
           </button>
+        </div>
+      </div>
+      <div id="bulk-bar" class="hidden">
+        <span id="bulk-count"></span>
+        <div class="bulk-actions">
+          <button id="bulk-select-all">Select all</button>
+          <button id="bulk-delete-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Delete
+          </button>
+          <button id="bulk-cancel">Cancel</button>
         </div>
       </div>
       <div id="gallery"></div>
@@ -189,10 +204,14 @@
           <textarea id="lb-note" placeholder="Add a note…" spellcheck="false"></textarea>
         </div>
         <div id="lb-actions">
-          <a id="lb-download" class="btn-download" href="" download="">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
+          <a id="lb-download" class="btn-lb-action" href="" download="">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
             Download
           </a>
+          <button id="lb-delete-btn" class="btn-lb-action btn-lb-danger">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Delete
+          </button>
         </div>
         <div id="lb-counter"></div>
       </div>

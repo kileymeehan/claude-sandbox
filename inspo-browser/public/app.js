@@ -66,6 +66,8 @@ let projects = {};
 let projectFilter = null;
 let projectModalCallback = null;
 let uploadFolder = 'inbox';
+let selectMode = false;
+let selectedIds = new Set();
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
@@ -290,7 +292,8 @@ function renderGallery() {
     const color = folderColor(img.folder);
     const label = folderLabel(img.folder);
     const dl = downloadUrl(img);
-    return `<div class="card" data-index="${i}">
+    const isSelected = selectedIds.has(img.id);
+    return `<div class="card${isSelected ? ' card-selected' : ''}" data-index="${i}" data-id="${img.id}">
       <div class="card-image-wrap">
         <img class="card-img" src="${img.url}" alt="${escAttr(img.filename)}" loading="lazy">
         <div class="card-overlay">
@@ -299,6 +302,9 @@ function renderGallery() {
           </a>
         </div>
         ${img.note ? `<div class="card-note-dot" title="${escAttr(img.note)}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>` : ''}
+        <div class="card-checkbox ${isSelected ? 'checked' : ''}">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
       </div>
       <div class="card-info">
         <div class="card-filename" title="${escAttr(img.filename)}">${escHtml(img.filename)}</div>
@@ -311,6 +317,14 @@ function renderGallery() {
   gallery.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', e => {
       if (e.target.closest('[data-dl]')) return;
+      if (selectMode) {
+        const id = card.dataset.id;
+        if (selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+        renderGallery();
+        renderBulkBar();
+        return;
+      }
       openLightbox(parseInt(card.dataset.index));
     });
   });
@@ -466,6 +480,17 @@ function renderLightbox() {
   const singleImage = filtered.length === 1;
   document.getElementById('lb-prev').style.visibility = singleImage ? 'hidden' : '';
   document.getElementById('lb-next').style.visibility = singleImage ? 'hidden' : '';
+
+  const deleteBtn = document.getElementById('lb-delete-btn');
+  deleteBtn.onclick = async () => {
+    if (!confirm(`Delete "${img.filename}"? This cannot be undone.`)) return;
+    const res = await apiFetch(`/api/images/${encodeURIComponent(img.id)}`, { method: 'DELETE' });
+    if (!res.ok) { const e = await res.json().catch(() => ({})); showToast(e.error || 'Delete failed'); return; }
+    closeLightbox();
+    images = images.filter(i => i.id !== img.id);
+    showToast(`Deleted "${img.filename}".`);
+    renderAll();
+  };
 }
 
 // ── Tag input with autocomplete ──
@@ -643,6 +668,56 @@ function initProjectModal() {
       const img = filtered[lightboxIndex];
       if (img) await toggleImageInProject(newId, img.id);
     });
+  });
+}
+
+// ── Select & bulk delete ──
+
+function renderBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  const n = selectedIds.size;
+  bar.classList.toggle('hidden', n === 0);
+  document.getElementById('bulk-count').textContent = `${n} selected`;
+}
+
+function toggleSelectMode(on) {
+  selectMode = on !== undefined ? on : !selectMode;
+  if (!selectMode) { selectedIds.clear(); renderBulkBar(); }
+  document.getElementById('select-btn').classList.toggle('active', selectMode);
+  document.body.classList.toggle('select-mode', selectMode);
+  renderGallery();
+}
+
+async function bulkDelete() {
+  const ids = [...selectedIds];
+  if (!ids.length) return;
+  if (!confirm(`Delete ${ids.length} image${ids.length !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+  const res = await apiFetch('/api/images/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids })
+  });
+  if (!res.ok) { const e = await res.json().catch(() => ({})); showToast(e.error || 'Delete failed'); return; }
+  const data = await res.json();
+  showToast(`Deleted ${data.deleted} image${data.deleted !== 1 ? 's' : ''}.`);
+  images = images.filter(img => !ids.includes(img.id));
+  selectedIds.clear();
+  toggleSelectMode(false);
+  renderAll();
+}
+
+function initSelectMode() {
+  document.getElementById('select-btn').addEventListener('click', () => toggleSelectMode());
+  document.getElementById('bulk-cancel').addEventListener('click', () => toggleSelectMode(false));
+  document.getElementById('bulk-delete-btn').addEventListener('click', bulkDelete);
+  document.getElementById('bulk-select-all').addEventListener('click', () => {
+    const filtered = getFiltered();
+    if (selectedIds.size === filtered.length) {
+      selectedIds.clear();
+    } else {
+      filtered.forEach(img => selectedIds.add(img.id));
+    }
+    renderGallery();
+    renderBulkBar();
   });
 }
 
@@ -1003,6 +1078,7 @@ async function init() {
   document.getElementById('refresh-btn').addEventListener('click', loadData);
   initTheme();
   initViewToggle();
+  initSelectMode();
   initProjectModal();
   initFolderModal();
   initProfileUI();
@@ -1015,11 +1091,14 @@ async function init() {
   });
 
   document.addEventListener('keydown', e => {
-    if (document.getElementById('lightbox').classList.contains('hidden')) return;
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') navigateLightbox(-1);
-    if (e.key === 'ArrowRight') navigateLightbox(1);
+    if (!document.getElementById('lightbox').classList.contains('hidden')) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigateLightbox(-1);
+      if (e.key === 'ArrowRight') navigateLightbox(1);
+      return;
+    }
+    if (e.key === 'Escape' && selectMode) toggleSelectMode(false);
   });
 
   initTagInput();
