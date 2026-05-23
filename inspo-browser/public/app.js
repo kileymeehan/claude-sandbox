@@ -1268,13 +1268,27 @@ function initFlowModal() {
   async function submitFlow() {
     const name = input.value.trim();
     if (!name) return;
-    const res = await apiFetch('/api/flows', { method: 'POST', body: JSON.stringify({ name }) });
-    if (!res.ok) { const e = await res.json(); showToast(e.error); return; }
-    const flow = await res.json();
-    flows.push({ ...flow, items: [] });
-    modal.classList.add('hidden');
-    if (modal._callback) modal._callback(flow);
-    else renderSidebar();
+    const createBtn = document.getElementById('flow-modal-create');
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creating…';
+    try {
+      const res = await apiFetch('/api/flows', { method: 'POST', body: JSON.stringify({ name }) });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        showToast(e.error || `Server error ${res.status}`);
+        return;
+      }
+      const flow = await res.json();
+      flows.push({ ...flow, items: [] });
+      modal.classList.add('hidden');
+      if (modal._callback) modal._callback(flow);
+      else renderSidebar();
+    } catch (err) {
+      showToast(`Failed to create flow: ${err.message}`);
+    } finally {
+      createBtn.disabled = false;
+      createBtn.textContent = 'Create';
+    }
   }
 
   document.getElementById('new-flow-btn').addEventListener('click', () => openFlowModal(flow => {
