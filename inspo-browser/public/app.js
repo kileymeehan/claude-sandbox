@@ -68,6 +68,7 @@ let selectedIds = new Set();
 let flows = [];
 let activeFlow = null;
 let pickerTargetFlowId = null;
+let flowDragFrom = null;
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
@@ -658,6 +659,38 @@ function renderFlowView() {
     const noteEl = card.querySelector('.flow-step-note');
     noteEl?.addEventListener('blur', () => saveFlowItemNote(flow.id, itemId, noteEl.value));
     noteEl?.addEventListener('keydown', e => e.stopPropagation());
+
+    // Drag to reorder
+    card.setAttribute('draggable', 'true');
+    card.addEventListener('dragstart', e => {
+      if (e.target.tagName === 'TEXTAREA') { e.preventDefault(); return; }
+      flowDragFrom = idx;
+      card.classList.add('flow-dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    card.addEventListener('dragend', () => {
+      flowDragFrom = null;
+      card.classList.remove('flow-dragging');
+      rail.querySelectorAll('.flow-step').forEach(c => c.classList.remove('drop-left', 'drop-right'));
+    });
+    card.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (flowDragFrom === null || flowDragFrom === idx) return;
+      const mid = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+      rail.querySelectorAll('.flow-step').forEach(c => c.classList.remove('drop-left', 'drop-right'));
+      card.classList.add(e.clientX < mid ? 'drop-left' : 'drop-right');
+    });
+    card.addEventListener('dragleave', () => card.classList.remove('drop-left', 'drop-right'));
+    card.addEventListener('drop', e => {
+      e.preventDefault();
+      if (flowDragFrom === null || flowDragFrom === idx) return;
+      const mid = card.getBoundingClientRect().left + card.getBoundingClientRect().width / 2;
+      let toIdx = e.clientX < mid ? idx : idx + 1;
+      if (toIdx > flowDragFrom) toIdx--;
+      card.classList.remove('drop-left', 'drop-right');
+      if (toIdx !== flowDragFrom) reorderFlowItems(flow.id, flowDragFrom, toIdx);
+      flowDragFrom = null;
+    });
   });
 
   document.getElementById('flow-rail-add')?.addEventListener('click', () => openFlowPicker(flow.id));
@@ -678,6 +711,18 @@ async function moveFlowItem(flowId, index, dir) {
   const newIdx = index + dir;
   if (newIdx < 0 || newIdx >= items.length) return;
   [items[index], items[newIdx]] = [items[newIdx], items[index]];
+  flow.items = items;
+  await apiFetch(`/api/flows/${flowId}/items`, { method: 'PATCH', body: JSON.stringify({ items }) });
+  renderFlowView();
+  renderSidebar();
+}
+
+async function reorderFlowItems(flowId, fromIdx, toIdx) {
+  const flow = flows.find(f => f.id === flowId);
+  if (!flow || fromIdx === toIdx) return;
+  const items = [...flow.items];
+  const [moved] = items.splice(fromIdx, 1);
+  items.splice(toIdx, 0, moved);
   flow.items = items;
   await apiFetch(`/api/flows/${flowId}/items`, { method: 'PATCH', body: JSON.stringify({ items }) });
   renderFlowView();

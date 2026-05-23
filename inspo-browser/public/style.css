@@ -1505,6 +1505,14 @@ body.light .swatch-color {
 
 .flow-step:hover { border-color: var(--border); }
 
+.flow-step[draggable="true"] { cursor: grab; }
+.flow-step[draggable="true"]:active { cursor: grabbing; }
+
+.flow-step.flow-dragging { opacity: 0.4; }
+
+.flow-step.drop-left { box-shadow: -3px 0 0 var(--accent); }
+.flow-step.drop-right { box-shadow: 3px 0 0 var(--accent); }
+
 .flow-step-header {
   display: flex;
   align-items: center;
