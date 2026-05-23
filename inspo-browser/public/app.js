@@ -745,8 +745,12 @@ async function uploadFiles(files) {
   try {
     const res = await apiFetch('/api/upload', { method: 'POST', body: fd });
     const data = await res.json();
-    const ok = data.results.filter(r => !r.error).length;
-    const fail = data.results.filter(r => r.error).length;
+    if (!res.ok) {
+      showToast(`Upload failed: ${data.error || res.statusText}`);
+      return;
+    }
+    const ok = (data.results || []).filter(r => !r.error).length;
+    const fail = (data.results || []).filter(r => r.error).length;
     showToast(`Uploaded ${ok} image${ok !== 1 ? 's' : ''} to ${destLabel}${fail ? ` (${fail} failed)` : ''}.`);
     await loadData();
   } catch (err) {
