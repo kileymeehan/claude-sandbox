@@ -10,10 +10,13 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener(async (info) => {
   if (info.menuItemId !== 'save-to-inspo') return;
-  const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
+  const { serverUrl, apiToken, selectedFlowId, selectedFolder, selectedTags } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId', 'selectedFolder', 'selectedTags']);
   if (!serverUrl || !apiToken) { chrome.action.openPopup(); return; }
-  const result = await uploadUrl(info.srcUrl, serverUrl, apiToken);
-  if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+  const result = await uploadUrl(info.srcUrl, serverUrl, apiToken, selectedFolder || 'inbox');
+  if (result.ok && result.id) {
+    if (selectedFlowId) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+    if (selectedTags?.length) await applyTags(result.id, selectedTags, serverUrl, apiToken);
+  }
   badge(result.ok);
   notify(result.ok, result.ok ? 'Image saved to SwatchBook' : `Failed: ${result.error}`);
 });
@@ -21,17 +24,16 @@ chrome.contextMenus.onClicked.addListener(async (info) => {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'upload-urls') {
     (async () => {
-      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
-      const results = await Promise.all(msg.urls.map(url => uploadUrl(url, serverUrl, apiToken)));
-      if (selectedFlowId) {
-        await Promise.all(results.filter(r => r.ok && r.id).map(r => addToFlow(r.id, selectedFlowId, serverUrl, apiToken)));
-      }
+      const { serverUrl, apiToken, selectedFlowId, selectedFolder, selectedTags } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId', 'selectedFolder', 'selectedTags']);
+      const folder = selectedFolder || 'inbox';
+      const results = await Promise.all(msg.urls.map(url => uploadUrl(url, serverUrl, apiToken, folder)));
+      const successful = results.filter(r => r.ok && r.id);
+      if (selectedFlowId) await Promise.all(successful.map(r => addToFlow(r.id, selectedFlowId, serverUrl, apiToken)));
+      if (selectedTags?.length) await Promise.all(successful.map(r => applyTags(r.id, selectedTags, serverUrl, apiToken)));
       const ok = results.filter(r => r.ok).length;
       const fail = results.filter(r => !r.ok).length;
-      const success = ok > 0;
-      notify(success, ok > 0
-        ? `${ok} image${ok > 1 ? 's' : ''} saved to SwatchBook${fail ? ` (${fail} failed)` : ''}`
-        : `All uploads failed`
+      notify(ok > 0,
+        ok > 0 ? `${ok} image${ok > 1 ? 's' : ''} saved to SwatchBook${fail ? ` (${fail} failed)` : ''}` : `All uploads failed`
       );
       sendResponse({ results });
     })();
@@ -40,12 +42,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'capture-full') {
     (async () => {
-      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
+      const { serverUrl, apiToken, selectedFlowId, selectedFolder, selectedTags } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId', 'selectedFolder', 'selectedTags']);
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
       const blob = await dataUrlToBlob(dataUrl);
-      const result = await uploadBlob(blob, serverUrl, apiToken);
-      if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+      const result = await uploadBlob(blob, serverUrl, apiToken, selectedFolder || 'inbox');
+      if (result.ok && result.id) {
+        if (selectedFlowId) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+        if (selectedTags?.length) await applyTags(result.id, selectedTags, serverUrl, apiToken);
+      }
       badge(result.ok);
       sendResponse(result);
     })();
@@ -54,11 +59,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'capture-area') {
     (async () => {
-      const { serverUrl, apiToken, selectedFlowId } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId']);
+      const { serverUrl, apiToken, selectedFlowId, selectedFolder, selectedTags } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFlowId', 'selectedFolder', 'selectedTags']);
       const dataUrl = await chrome.tabs.captureVisibleTab(sender.tab.windowId, { format: 'png' });
       const cropped = await cropImage(dataUrl, msg.rect);
-      const result = await uploadBlob(cropped, serverUrl, apiToken);
-      if (result.ok && selectedFlowId && result.id) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+      const result = await uploadBlob(cropped, serverUrl, apiToken, selectedFolder || 'inbox');
+      if (result.ok && result.id) {
+        if (selectedFlowId) await addToFlow(result.id, selectedFlowId, serverUrl, apiToken);
+        if (selectedTags?.length) await applyTags(result.id, selectedTags, serverUrl, apiToken);
+      }
       badge(result.ok);
       notify(result.ok, result.ok ? 'Screenshot saved to SwatchBook' : `Failed: ${result.error}`);
       sendResponse(result);
@@ -94,13 +102,24 @@ async function addToFlow(imageId, flowId, serverUrl, apiToken) {
   } catch {}
 }
 
-async function uploadUrl(url, serverUrl, apiToken) {
+async function applyTags(imageId, tags, serverUrl, apiToken) {
+  if (!tags?.length) return;
+  try {
+    await fetch(`${serverUrl.replace(/\/$/, '')}/api/tags`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiToken}` },
+      body: JSON.stringify({ id: imageId, tags })
+    });
+  } catch {}
+}
+
+async function uploadUrl(url, serverUrl, apiToken, folder = 'inbox') {
   if (!serverUrl || !apiToken) return { ok: false, url, error: 'Not configured' };
   try {
     const res = await fetch(`${serverUrl.replace(/\/$/, '')}/api/upload-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiToken}` },
-      body: JSON.stringify({ url, folder: 'inbox' })
+      body: JSON.stringify({ url, folder })
     });
     const data = await res.json();
     if (!res.ok) return { ok: false, url, error: data.error || res.statusText };
@@ -110,12 +129,12 @@ async function uploadUrl(url, serverUrl, apiToken) {
   }
 }
 
-async function uploadBlob(blob, serverUrl, apiToken) {
+async function uploadBlob(blob, serverUrl, apiToken, folder = 'inbox') {
   if (!serverUrl || !apiToken) return { ok: false, error: 'Not configured' };
   try {
     const fd = new FormData();
     fd.append('images', blob, `screenshot-${Date.now()}.png`);
-    fd.append('folder', 'inbox');
+    fd.append('folder', folder);
     const res = await fetch(`${serverUrl.replace(/\/$/, '')}/api/upload`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiToken}` },

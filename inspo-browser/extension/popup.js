@@ -8,6 +8,39 @@ const saveBtn = document.getElementById('save-btn');
 const pickBtn = document.getElementById('pick-btn');
 const status = document.getElementById('status');
 
+const KNOWN_FOLDERS = ['inbox', 'components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc'];
+
+async function loadFolders() {
+  const { serverUrl, apiToken, selectedFolder } = await chrome.storage.local.get(['serverUrl', 'apiToken', 'selectedFolder']);
+  if (!serverUrl || !apiToken) return;
+  const select = document.getElementById('folder-select');
+  // Populate known folders first
+  KNOWN_FOLDERS.forEach(id => {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = id.charAt(0).toUpperCase() + id.slice(1).replace(/-/g, ' ');
+    select.appendChild(opt);
+  });
+  // Add custom folders from API
+  try {
+    const res = await fetch(`${serverUrl}/api/folders`, { headers: { 'Authorization': `Bearer ${apiToken}` } });
+    if (res.ok) {
+      const folders = await res.json();
+      Object.entries(folders).forEach(([id, f]) => {
+        if (!KNOWN_FOLDERS.includes(id)) {
+          const opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = f.name;
+          select.appendChild(opt);
+        }
+      });
+    }
+  } catch {}
+  select.value = selectedFolder || 'inbox';
+  document.getElementById('folder-selector-row').style.display = 'flex';
+  select.addEventListener('change', () => chrome.storage.local.set({ selectedFolder: select.value }));
+}
+
 async function loadFlows() {
   const { serverUrl, apiToken } = await chrome.storage.local.get(['serverUrl', 'apiToken']);
   if (!serverUrl || !apiToken) return;
@@ -102,5 +135,17 @@ document.getElementById('shot-area-btn').addEventListener('click', async () => {
   window.close();
 });
 
+async function loadTags() {
+  const { selectedTags } = await chrome.storage.local.get(['selectedTags']);
+  const input = document.getElementById('tag-input');
+  if (selectedTags?.length) input.value = selectedTags.join(', ');
+  input.addEventListener('change', () => {
+    const tags = input.value.split(',').map(t => t.trim()).filter(Boolean);
+    chrome.storage.local.set({ selectedTags: tags });
+  });
+}
+
 init();
+loadFolders();
 loadFlows();
+loadTags();

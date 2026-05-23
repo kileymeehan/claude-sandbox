@@ -168,6 +168,26 @@
     }
     .flow-select-row select:focus { border-color: #6366f1; }
 
+    .tag-input-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 8px;
+      color: #6b7280;
+    }
+    .tag-input-row input {
+      flex: 1;
+      background: #1a1a2e;
+      border: 1px solid #2a2a3e;
+      border-radius: 5px;
+      color: #e2e2f0;
+      font-size: 11.5px;
+      padding: 4px 6px;
+      outline: none;
+    }
+    .tag-input-row input:focus { border-color: #6366f1; }
+    .tag-input-row input::placeholder { color: #374151; }
+
     .not-configured {
       padding: 16px;
       text-align: center;
@@ -219,6 +239,16 @@
     </div>
 
     <p class="hint">Or right-click any image → <strong>Save to SwatchBook</strong></p>
+    <div class="divider"></div>
+    <div id="folder-selector-row" class="flow-select-row" style="display:none">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span class="flow-select-label">Folder</span>
+      <select id="folder-select"></select>
+    </div>
+    <div class="tag-input-row">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <input id="tag-input" type="text" placeholder="Tags (optional, comma separated)">
+    </div>
     <div class="divider"></div>
     <div id="flow-selector-row" class="flow-select-row" style="display:none">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
