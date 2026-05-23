@@ -298,6 +298,7 @@ function renderGallery() {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
           </a>
         </div>
+        ${img.note ? `<div class="card-note-dot" title="${escAttr(img.note)}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>` : ''}
       </div>
       <div class="card-info">
         <div class="card-filename" title="${escAttr(img.filename)}">${escHtml(img.filename)}</div>
@@ -448,6 +449,19 @@ function renderLightbox() {
   const dlLink = document.getElementById('lb-download');
   dlLink.href = dl;
   dlLink.download = img.filename;
+
+  const noteEl = document.getElementById('lb-note');
+  noteEl.value = img.note || '';
+  noteEl.onblur = async () => {
+    const newNote = noteEl.value.trim() || null;
+    if (newNote === (img.note || null)) return;
+    img.note = newNote;
+    await apiFetch(`/api/images/${encodeURIComponent(img.id)}/note`, {
+      method: 'POST',
+      body: JSON.stringify({ note: newNote })
+    });
+    renderGallery();
+  };
 
   const singleImage = filtered.length === 1;
   document.getElementById('lb-prev').style.visibility = singleImage ? 'hidden' : '';
@@ -721,7 +735,8 @@ async function uploadFiles(files) {
   const zone = document.getElementById('drop-zone');
   zone.style.pointerEvents = 'none';
   zone.style.opacity = '0.5';
-  showToast(`Uploading ${files.length} file${files.length !== 1 ? 's' : ''} to inbox…`);
+  const destLabel = folderLabel(uploadFolder);
+  showToast(`Uploading ${files.length} file${files.length !== 1 ? 's' : ''} to ${destLabel}…`);
 
   const fd = new FormData();
   for (const file of files) fd.append('images', file);
@@ -732,7 +747,7 @@ async function uploadFiles(files) {
     const data = await res.json();
     const ok = data.results.filter(r => !r.error).length;
     const fail = data.results.filter(r => r.error).length;
-    showToast(`Uploaded ${ok} image${ok !== 1 ? 's' : ''} to inbox${fail ? ` (${fail} failed)` : ''}.`);
+    showToast(`Uploaded ${ok} image${ok !== 1 ? 's' : ''} to ${destLabel}${fail ? ` (${fail} failed)` : ''}.`);
     await loadData();
   } catch (err) {
     showToast(`Upload failed: ${err.message}`);

@@ -44,7 +44,7 @@ app.get('/api/config', (req, res) => {
 app.get('/api/images', requireAuth, async (req, res) => {
   const { data, error } = await supabase
     .from('images')
-    .select('id, filename, folder, storage_path, tags, created_at')
+    .select('id, filename, folder, storage_path, tags, note, created_at')
     .order('created_at', { ascending: false });
   if (error) return res.status(500).json({ error: error.message });
   res.json(data.map(img => ({
@@ -245,6 +245,18 @@ app.get('/api/projects/:id/download', requireAuth, async (req, res) => {
     archive.append(buffer, { name: path.basename(imageId) });
   }
   await archive.finalize();
+});
+
+// ── Notes ────────────────────────────────────────────────────
+
+app.post('/api/images/:id/note', requireAuth, async (req, res) => {
+  const { note } = req.body;
+  const { error } = await supabase
+    .from('images')
+    .update({ note: note || null })
+    .eq('id', decodeURIComponent(req.params.id));
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
 });
 
 // ── Folders ──────────────────────────────────────────────────
