@@ -87,10 +87,10 @@ body.light {
   color: var(--text);
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
-.logo svg { color: var(--accent); }
+.logo-accent { color: var(--accent); }
 
 #drop-zone {
   margin: 10px 10px 4px;
@@ -949,6 +949,70 @@ body.light {
 #lb-tag-input:focus { border-color: var(--accent); }
 #lb-tag-input::placeholder { color: var(--text-muted); }
 
+/* ── Palette ── */
+
+#lb-palette-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+#lb-palette-swatches {
+  display: flex;
+  gap: 7px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.palette-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s;
+}
+
+.palette-swatch:hover { transform: translateY(-2px); }
+
+.swatch-color {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: var(--swatch-color);
+  display: block;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: box-shadow 0.12s;
+}
+
+body.light .swatch-color {
+  border-color: rgba(0,0,0,0.08);
+}
+
+.palette-swatch:hover .swatch-color {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+
+.swatch-hex {
+  font-size: 9px;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  transition: color 0.1s;
+}
+
+.palette-swatch.copied .swatch-hex { color: var(--accent); }
+
+.palette-loading {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  opacity: 0.6;
+}
+
 /* ── Comments ── */
 
 #lb-comments-section {
@@ -1476,14 +1540,13 @@ body.light {
 .login-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
+  gap: 12px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: -0.03em;
   color: var(--text);
   margin-bottom: 4px;
 }
-
-.login-logo svg { color: var(--accent); }
 
 .login-sub {
   color: var(--text-muted);

@@ -2,9 +2,10 @@
 // Lets the user click images on the page to select them, then send to Inspo.
 
 (function () {
-  if (document.getElementById('inspo-picker-overlay')) return; // already active
+  if (document.getElementById('inspo-picker-bar')) return; // already active
 
   const selected = new Set();
+  const anchorListeners = new Map(); // track added listeners for cleanup
 
   const style = document.createElement('style');
   style.id = 'inspo-picker-styles';
@@ -31,6 +32,7 @@
       padding: 6px 14px; cursor: pointer; font-size: 12px; font-weight: 500;
     }
     #inspo-picker-send:hover { background: #4f52e0; }
+    #inspo-picker-send:disabled { background: #2a2a3e; color: #4b5563; cursor: default; }
     #inspo-picker-cancel {
       background: none; border: none; color: #6b7280; cursor: pointer; font-size: 12px;
     }
@@ -43,7 +45,7 @@
   bar.innerHTML = `
     <span>Click images to select</span>
     <span id="inspo-picker-count">0 selected</span>
-    <button id="inspo-picker-send" disabled>Send to Inspo</button>
+    <button id="inspo-picker-send" disabled>Send to SwatchBook</button>
     <button id="inspo-picker-cancel">Cancel</button>
   `;
   document.body.appendChild(bar);
@@ -57,11 +59,20 @@
   imgs.forEach(img => {
     img.classList.add('inspo-img-target');
     img.addEventListener('click', onImgClick, true);
+
+    // Prevent parent anchor from navigating when image is clicked
+    const anchor = img.closest('a');
+    if (anchor && !anchorListeners.has(anchor)) {
+      const block = e => { e.preventDefault(); e.stopPropagation(); };
+      anchor.addEventListener('click', block, true);
+      anchorListeners.set(anchor, block);
+    }
   });
 
   function onImgClick(e) {
     e.preventDefault();
     e.stopPropagation();
+    e.stopImmediatePropagation();
     const img = e.currentTarget;
     const src = img.src;
     if (selected.has(src)) {
@@ -75,7 +86,7 @@
     document.getElementById('inspo-picker-count').textContent = `${count} selected`;
     const sendBtn = document.getElementById('inspo-picker-send');
     sendBtn.disabled = count === 0;
-    sendBtn.textContent = count > 0 ? `Send ${count} to Inspo` : 'Send to Inspo';
+    sendBtn.textContent = count > 0 ? `Send ${count} to SwatchBook` : 'Send to SwatchBook';
   }
 
   document.getElementById('inspo-picker-send').addEventListener('click', async () => {
@@ -92,7 +103,6 @@
   });
 
   document.getElementById('inspo-picker-cancel').addEventListener('click', cleanup);
-
   document.addEventListener('keydown', e => { if (e.key === 'Escape') cleanup(); }, { once: true });
 
   function cleanup() {
@@ -100,6 +110,10 @@
       img.classList.remove('inspo-img-target', 'inspo-img-selected');
       img.removeEventListener('click', onImgClick, true);
     });
+    anchorListeners.forEach((listener, anchor) => {
+      anchor.removeEventListener('click', listener, true);
+    });
+    anchorListeners.clear();
     bar.remove();
     style.remove();
     document.body.classList.remove('inspo-picking');

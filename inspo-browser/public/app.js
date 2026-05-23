@@ -394,6 +394,7 @@ function renderLightbox() {
   dlLink.download = img.filename;
 
   renderComments(img);
+  renderPalette(img);
 
   const singleImage = filtered.length === 1;
   document.getElementById('lb-prev').style.visibility = singleImage ? 'hidden' : '';
@@ -409,6 +410,91 @@ function renderLightbox() {
     showToast(`Deleted "${img.filename}".`);
     renderAll();
   };
+}
+
+// ── Palette extraction ──
+
+const paletteCache = new Map();
+
+function extractPalette(url, numColors = 6) {
+  if (paletteCache.has(url)) return Promise.resolve(paletteCache.get(url));
+  return new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const SIZE = 120;
+        const canvas = document.createElement('canvas');
+        canvas.width = SIZE; canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        const { data } = ctx.getImageData(0, 0, SIZE, SIZE);
+
+        // Quantize to 5-bit per channel and count frequencies
+        const counts = {};
+        for (let i = 0; i < data.length; i += 4) {
+          if (data[i + 3] < 128) continue;
+          const r = Math.round(data[i] / 8) * 8;
+          const g = Math.round(data[i + 1] / 8) * 8;
+          const b = Math.round(data[i + 2] / 8) * 8;
+          // Skip near-white and near-black
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          if (lum > 245 || lum < 10) continue;
+          const key = (r << 16) | (g << 8) | b;
+          counts[key] = (counts[key] || 0) + 1;
+        }
+
+        const sorted = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k]) => { const n = +k; return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]; });
+
+        // Greedy pick: each new color must be far enough from already-picked ones
+        const picked = [];
+        for (const c of sorted) {
+          if (picked.length >= numColors) break;
+          const tooClose = picked.some(p => {
+            const dr = c[0] - p[0], dg = c[1] - p[1], db = c[2] - p[2];
+            return Math.sqrt(dr * dr + dg * dg + db * db) < 85;
+          });
+          if (!tooClose) picked.push(c);
+        }
+
+        const palette = picked.map(([r, g, b]) =>
+          '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')
+        );
+        paletteCache.set(url, palette);
+        resolve(palette);
+      } catch { resolve([]); }
+    };
+    img.onerror = () => resolve([]);
+    img.src = url;
+  });
+}
+
+async function renderPalette(img) {
+  const wrap = document.getElementById('lb-palette-swatches');
+  if (!wrap) return;
+  wrap.innerHTML = `<span class="palette-loading">Extracting…</span>`;
+  const palette = await extractPalette(img.url);
+  if (!palette.length) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = palette.map(hex =>
+    `<button class="palette-swatch" data-hex="${hex}" title="Copy ${hex}">
+      <span class="swatch-color" style="--swatch-color:${hex}"></span>
+      <span class="swatch-hex">${hex}</span>
+    </button>`
+  ).join('');
+  wrap.querySelectorAll('.palette-swatch').forEach(btn => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.hex).then(() => {
+        btn.classList.add('copied');
+        btn.querySelector('.swatch-hex').textContent = 'Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.querySelector('.swatch-hex').textContent = btn.dataset.hex;
+        }, 1200);
+      });
+    });
+  });
 }
 
 // ── Comments ──

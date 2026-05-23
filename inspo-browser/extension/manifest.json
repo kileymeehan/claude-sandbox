@@ -1,15 +1,24 @@
 {
   "manifest_version": 3,
-  "name": "Inspo",
+  "name": "SwatchBook",
   "version": "1.0",
-  "description": "Save images from any page to your Inspo library",
-  "permissions": ["contextMenus", "storage", "activeTab", "scripting"],
+  "description": "Save images and screenshots from any page to your SwatchBook library",
+  "permissions": ["contextMenus", "storage", "activeTab", "scripting", "notifications"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"
   },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Inspo"
+    "default_title": "SwatchBook",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png"
+    }
   }
 }

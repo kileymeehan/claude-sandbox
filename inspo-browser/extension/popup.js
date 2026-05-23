@@ -37,7 +37,12 @@ saveBtn.addEventListener('click', async () => {
   status.textContent = 'Checking…';
   try {
     const res = await fetch(`${serverUrl}/api/config`);
-    if (!res.ok) throw new Error('Server returned ' + res.status);
+    if (!res.ok) throw new Error('unreachable');
+    const authRes = await fetch(`${serverUrl}/api/images`, {
+      headers: { 'Authorization': `Bearer ${apiToken}` }
+    });
+    if (authRes.status === 401) { status.textContent = 'Wrong API token.'; return; }
+    if (!authRes.ok) throw new Error('server error');
     await chrome.storage.local.set({ serverUrl, apiToken });
     status.textContent = 'Saved!';
     mainSection.style.display = 'block';
@@ -53,6 +58,21 @@ saveBtn.addEventListener('click', async () => {
 pickBtn.addEventListener('click', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] });
+  window.close();
+});
+
+document.getElementById('shot-full-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('shot-full-btn');
+  btn.textContent = 'Capturing…';
+  btn.disabled = true;
+  const result = await chrome.runtime.sendMessage({ type: 'capture-full' });
+  btn.textContent = result?.ok ? '✓ Saved to SwatchBook' : '✗ Upload failed';
+  setTimeout(() => window.close(), 1200);
+});
+
+document.getElementById('shot-area-btn').addEventListener('click', async () => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['screenshotter.js'] });
   window.close();
 });
 
