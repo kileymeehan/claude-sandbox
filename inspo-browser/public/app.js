@@ -1491,7 +1491,9 @@ let profileUser = null;
 
 function updateProfileDisplay() {
   if (!profileUser) return;
-  const savedAvatar = localStorage.getItem('inspo-avatar');
+  const _rawAvatar = localStorage.getItem('inspo-avatar');
+  const savedAvatar = (_rawAvatar && _rawAvatar !== 'undefined' && _rawAvatar !== 'null') ? _rawAvatar : null;
+  if (!savedAvatar && _rawAvatar) localStorage.removeItem('inspo-avatar');
   const savedName = localStorage.getItem('inspo-display-name');
   const fallbackName = profileUser.user_metadata?.full_name || profileUser.email?.split('@')[0] || 'You';
   const displayName = savedName || fallbackName;
