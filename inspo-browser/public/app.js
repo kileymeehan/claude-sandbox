@@ -412,7 +412,10 @@ function renderLightbox() {
 
   document.getElementById('lb-img').src = img.url;
   document.getElementById('lb-img').alt = img.filename;
-  document.getElementById('lb-filename').textContent = img.filename;
+  const filenameEl = document.getElementById('lb-filename');
+  filenameEl.textContent = img.filename;
+  filenameEl.title = 'Click to rename';
+  filenameEl.onclick = () => startRename(img, filenameEl);
 
   const otherFolders = Object.entries(folders).filter(([id]) => id !== img.folder);
   document.getElementById('lb-folder-badge-wrap').innerHTML =
@@ -509,6 +512,53 @@ function renderLightbox() {
     showToast(`Deleted "${img.filename}".`);
     renderAll();
   };
+}
+
+// ── Rename ──
+
+function startRename(img, el) {
+  const current = img.filename;
+  const dotIdx = current.lastIndexOf('.');
+  const baseLen = dotIdx > 0 ? dotIdx : current.length;
+
+  const input = document.createElement('input');
+  input.className = 'lb-filename-input';
+  input.value = current;
+  el.textContent = '';
+  el.appendChild(input);
+  input.focus();
+  input.setSelectionRange(0, baseLen);
+
+  let saved = false;
+
+  async function save() {
+    if (saved) return;
+    saved = true;
+    const newName = input.value.trim();
+    if (!newName || newName === current) { el.textContent = current; el.onclick = () => startRename(img, el); return; }
+    const res = await apiFetch(`/api/images/${encodeURIComponent(img.id)}/rename`, {
+      method: 'PATCH', body: JSON.stringify({ filename: newName })
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      showToast(e.error || 'Rename failed');
+      el.textContent = current;
+    } else {
+      img.filename = newName;
+      const mainImg = images.find(i => i.id === img.id);
+      if (mainImg) mainImg.filename = newName;
+      el.textContent = newName;
+      renderGallery();
+    }
+    el.onclick = () => startRename(img, el);
+  }
+
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { saved = true; el.textContent = current; el.onclick = () => startRename(img, el); }
+    e.stopPropagation();
+  });
 }
 
 // ── Palette extraction ──

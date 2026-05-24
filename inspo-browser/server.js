@@ -276,6 +276,15 @@ app.delete('/api/images/:id/comment/:commentId', requireAuth, async (req, res) =
 
 // ── Delete image ─────────────────────────────────────────────
 
+app.patch('/api/images/:id/rename', requireAuth, async (req, res) => {
+  const imageId = decodeURIComponent(req.params.id);
+  const { filename } = req.body;
+  if (!filename?.trim()) return res.status(400).json({ error: 'filename required' });
+  const { error } = await supabase.from('images').update({ filename: filename.trim() }).eq('id', imageId);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true, filename: filename.trim() });
+});
+
 app.delete('/api/images/:id', requireAuth, async (req, res) => {
   const imageId = decodeURIComponent(req.params.id);
   const { data: img } = await supabase.from('images').select('storage_path').eq('id', imageId).maybeSingle();
