@@ -98,7 +98,7 @@ body.light {
 .logo-accent { color: var(--accent); }
 
 #drop-zone {
-  margin: 10px 10px 4px;
+  margin: 10px 10px 10px;
   border: 1.5px dashed var(--border);
   border-radius: var(--radius);
   padding: 14px 10px;
