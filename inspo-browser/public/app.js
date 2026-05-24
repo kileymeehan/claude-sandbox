@@ -103,8 +103,6 @@ function folderColor(id) {
 // ── Data ──
 
 async function loadData() {
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning');
   try {
     const [imgData, tagData, folderData, flowData] = await Promise.all([
       apiFetch('/api/images').then(r => r.json()),
@@ -122,8 +120,6 @@ async function loadData() {
     renderAll();
   } catch (err) {
     console.error('Failed to load data:', err);
-  } finally {
-    btn.classList.remove('spinning');
   }
 }
 
