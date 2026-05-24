@@ -13,7 +13,7 @@
   --accent: #7c6af7;
   --accent-hover: #9284f9;
   --accent-dim: rgba(124,106,247,0.12);
-  --sidebar-w: 220px;
+  --sidebar-w: 250px;
   --radius: 8px;
   --radius-sm: 5px;
 }
@@ -88,9 +88,9 @@ body.light {
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   color: var(--text);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -369,6 +369,17 @@ body.light {
 
 .section-label-row button:hover { color: var(--text); background: var(--surface-2); }
 
+.section-label-row { cursor: pointer; }
+.section-label-row button { cursor: pointer; }
+
+.section-chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.15s;
+}
+
+.sidebar-section.collapsed .section-chevron { transform: rotate(-90deg); }
+.sidebar-section.collapsed nav { display: none; }
 
 .tag-hash {
   color: var(--text-muted);

@@ -1590,12 +1590,28 @@ function initProfileUI() {
   });
 }
 
+// ── Collapsible sidebar sections ──
+
+function initCollapsible() {
+  localStorage.removeItem('inspo-collapsed');
+  document.querySelectorAll('.sidebar-section[data-section]').forEach(section => {
+    const row = section.querySelector('.section-label-row');
+    if (!row) return;
+    row.addEventListener('click', e => {
+      if (e.target.closest('[data-no-collapse]')) return;
+      section.classList.toggle('collapsed');
+    });
+  });
+}
+
 // ── Theme ──
 
 function applyTheme(light) {
   document.body.classList.toggle('light', light);
   document.getElementById('theme-icon-dark').style.display = light ? 'none' : '';
   document.getElementById('theme-icon-light').style.display = light ? '' : 'none';
+  const lbl = document.getElementById('theme-label');
+  if (lbl) lbl.textContent = light ? 'Light mode' : 'Dark mode';
 }
 
 function initTheme() {
@@ -1616,8 +1632,8 @@ async function init() {
   document.getElementById('lb-close').addEventListener('click', closeLightbox);
   document.getElementById('lb-prev').addEventListener('click', () => navigateLightbox(-1));
   document.getElementById('lb-next').addEventListener('click', () => navigateLightbox(1));
-  document.getElementById('refresh-btn').addEventListener('click', loadData);
   initTheme();
+  initCollapsible();
   initViewToggle();
   initSelectMode();
   initFolderModal();
