@@ -563,6 +563,46 @@ function startRename(img, el) {
   });
 }
 
+function startFlowRename(flow, el) {
+  const current = flow.name;
+  const input = document.createElement('input');
+  input.className = 'flow-name-input';
+  input.value = current;
+  el.textContent = '';
+  el.appendChild(input);
+  input.focus();
+  input.select();
+
+  let saved = false;
+
+  async function save() {
+    if (saved) return;
+    saved = true;
+    const newName = input.value.trim();
+    if (!newName || newName === current) { el.textContent = current; el.onclick = () => startFlowRename(flow, el); return; }
+    const res = await apiFetch(`/api/flows/${flow.id}`, { method: 'PATCH', body: JSON.stringify({ name: newName }) });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      showToast(e.error || 'Rename failed');
+      el.textContent = current;
+    } else {
+      flow.name = newName;
+      const f = flows.find(f => f.id === flow.id);
+      if (f) f.name = newName;
+      el.textContent = newName;
+      renderSidebar();
+    }
+    el.onclick = () => startFlowRename(flow, el);
+  }
+
+  input.addEventListener('blur', save);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { saved = true; el.textContent = current; el.onclick = () => startFlowRename(flow, el); }
+    e.stopPropagation();
+  });
+}
+
 // ── Palette extraction ──
 
 const paletteCache = new Map();
@@ -658,7 +698,10 @@ function renderFlowView() {
   const headerIcon = document.getElementById('flow-header-icon');
   headerIcon.innerHTML = flowIconSvg(flow.icon, flow.color, 16);
   headerIcon.style.background = `${flow.color}22`;
-  document.getElementById('flow-header-name').textContent = flow.name;
+  const flowNameEl = document.getElementById('flow-header-name');
+  flowNameEl.textContent = flow.name;
+  flowNameEl.title = 'Click to rename';
+  flowNameEl.onclick = () => startFlowRename(flow, flowNameEl);
   document.getElementById('flow-header-count').textContent =
     `${flow.items.length} step${flow.items.length !== 1 ? 's' : ''}`;
 

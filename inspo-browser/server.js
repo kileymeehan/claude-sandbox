@@ -416,6 +416,14 @@ app.post('/api/flows', requireAuth, async (req, res) => {
   res.json({ id, name: name.trim(), color, icon, items: [] });
 });
 
+app.patch('/api/flows/:id', requireAuth, async (req, res) => {
+  const { name } = req.body;
+  if (!name?.trim()) return res.status(400).json({ error: 'name required' });
+  const { error } = await supabase.from('flows').update({ name: name.trim() }).eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true, name: name.trim() });
+});
+
 app.delete('/api/flows/:id', requireAuth, async (req, res) => {
   const { error } = await supabase.from('flows').delete().eq('id', req.params.id);
   if (error) return res.status(500).json({ error: error.message });
