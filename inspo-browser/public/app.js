@@ -1513,15 +1513,9 @@ function updateProfileDisplay() {
   document.getElementById('user-email-label').textContent = profileUser.email || '';
   document.getElementById('profile-name-display').textContent = displayName;
 
-  const presets = [...document.querySelectorAll('.avatar-opt[data-avatar]')].map(b => b.dataset.avatar);
-  const isPreset = presets.includes(savedAvatar);
-  document.querySelectorAll('.avatar-opt[data-avatar]').forEach(btn => {
+  document.querySelectorAll('.avatar-opt').forEach(btn => {
     btn.classList.toggle('selected', btn.dataset.avatar === savedAvatar);
   });
-  const customBtn = document.getElementById('custom-emoji-btn');
-  if (customBtn) customBtn.classList.toggle('selected', !!savedAvatar && !isPreset);
-  const customInput = document.getElementById('custom-emoji-input');
-  if (customInput) customInput.value = savedAvatar && !isPreset ? savedAvatar : '';
 }
 
 function initProfileUI() {
@@ -1549,30 +1543,6 @@ function initProfileUI() {
       updateProfileDisplay();
     });
   });
-
-  const customEmojiBtn = document.getElementById('custom-emoji-btn');
-  const customEmojiExpanded = document.getElementById('custom-emoji-expanded');
-  const customEmojiInput = document.getElementById('custom-emoji-input');
-
-  customEmojiBtn?.addEventListener('click', e => {
-    e.stopPropagation();
-    const open = customEmojiExpanded.classList.toggle('hidden') === false;
-    if (open) customEmojiInput?.focus();
-  });
-
-  if (customEmojiInput) {
-    customEmojiInput.addEventListener('input', e => {
-      e.stopPropagation();
-      const chars = [...e.target.value];
-      const emoji = chars.find(c => /\p{Emoji_Presentation}/u.test(c) || /\p{Extended_Pictographic}/u.test(c));
-      if (emoji) {
-        e.target.value = emoji;
-        localStorage.setItem('inspo-avatar', emoji);
-        updateProfileDisplay();
-      }
-    });
-    customEmojiInput.addEventListener('click', e => e.stopPropagation());
-  }
 
   const nameDisplay = document.getElementById('profile-name-display');
   const nameInput = document.getElementById('profile-name-input');

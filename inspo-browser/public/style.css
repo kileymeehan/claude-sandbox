@@ -2160,16 +2160,6 @@ body.light .swatch-color {
 .avatar-opt:hover { transform: scale(1.12); background: var(--surface); }
 .avatar-opt.selected { border-color: var(--accent); background: var(--accent-dim); }
 
-.avatar-opt-custom {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: 0.05em;
-  border: 1px dashed var(--border) !important;
-  background: none !important;
-}
-.avatar-opt-custom:hover { color: var(--text) !important; border-color: var(--text-muted) !important; transform: none !important; }
-
 .profile-name-row {
   display: flex;
   align-items: center;
@@ -2213,25 +2203,6 @@ body.light .swatch-color {
 
 .profile-icon-btn:hover { color: var(--text); background: var(--surface-3); }
 
-.custom-emoji-row {
-  margin-top: 8px;
-}
-
-.custom-emoji-row input {
-  width: 100%;
-  background: var(--surface-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-size: 12px;
-  padding: 5px 8px;
-  outline: none;
-  font-family: inherit;
-}
-
-.custom-emoji-row input:focus { border-color: var(--accent); }
-.custom-emoji-row input::placeholder { color: var(--text-muted); }
-
 .profile-menu-btn {
   display: flex;
   align-items: center;
@@ -2251,6 +2222,13 @@ body.light .swatch-color {
 
 .profile-menu-btn:hover { background: var(--surface-3); color: var(--text); }
 .profile-menu-btn.danger:hover { color: #ef4444; }
+
+#theme-btn, #profile-signout-btn {
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 400;
+  font-family: inherit;
+}
 
 #theme-btn { border-bottom: 1px solid var(--border-subtle); }
 
