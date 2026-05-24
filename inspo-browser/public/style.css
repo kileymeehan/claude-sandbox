@@ -31,6 +31,9 @@ body.light {
   --accent: #6356e8;
   --accent-hover: #7a6ef5;
   --accent-dim: rgba(99,86,232,0.10);
+  --sidebar-bg: #f7f4ee;
+  --sidebar-divider: rgba(0,0,0,0.10);
+  --sidebar-label: rgba(0,0,0,0.88);
 }
 
 html, body {
@@ -39,7 +42,7 @@ html, body {
   background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
   background-size: 14px 14px;
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
 }
 
@@ -58,7 +61,7 @@ body.light {
 #sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  background: var(--surface);
+  background: var(--sidebar-bg, var(--surface));
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
@@ -273,14 +276,17 @@ body.light {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.sidebar-section { padding: 10px 0; }
+.sidebar-section {
+  padding: 10px 0;
+  border-top: 1px solid var(--sidebar-divider, var(--border-subtle));
+}
 
 .section-label {
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--sidebar-label, var(--text-muted));
   padding: 0 14px 6px;
 }
 
