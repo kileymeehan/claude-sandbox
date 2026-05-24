@@ -349,11 +349,12 @@ body.light {
 .section-label-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 6px;
   padding: 0 14px 6px;
+  cursor: pointer;
 }
 
-.section-label-row .section-label { padding: 0; }
+.section-label-row .section-label { padding: 0; flex: 1; }
 
 .section-label-row button {
   background: none;
@@ -369,8 +370,17 @@ body.light {
 
 .section-label-row button:hover { color: var(--text); background: var(--surface-2); }
 
-.section-label-row { cursor: pointer; }
-.section-label-row button { cursor: pointer; }
+.section-add-btn {
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  padding: 3px 6px !important;
+  color: var(--text-muted);
+}
+
+.section-add-btn:hover {
+  border-color: var(--text-muted) !important;
+  background: var(--surface-2) !important;
+}
 
 .section-chevron {
   flex-shrink: 0;
