@@ -1701,8 +1701,8 @@ body.light .swatch-color {
 
 .flow-add-card {
   flex-shrink: 0;
+  align-self: stretch;
   width: 220px;
-  min-height: 220px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   display: flex;
@@ -1710,15 +1710,16 @@ body.light .swatch-color {
   justify-content: center;
   cursor: pointer;
   color: var(--text-muted);
-  background: var(--surface);
-  font-size: 12px;
+  background: rgba(255,255,255,0.5);
+  font-size: 14px;
   font-weight: 500;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .flow-add-card:hover {
   border-color: var(--text-muted);
   color: var(--text-dim);
+  background: rgba(255,255,255,0.75);
 }
 
 .flow-empty {
