@@ -2203,6 +2203,25 @@ body.light .swatch-color {
 
 .profile-icon-btn:hover { color: var(--text); background: var(--surface-3); }
 
+.custom-emoji-row {
+  margin-top: 8px;
+}
+
+.custom-emoji-row input {
+  width: 100%;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 12px;
+  padding: 5px 8px;
+  outline: none;
+  font-family: inherit;
+}
+
+.custom-emoji-row input:focus { border-color: var(--accent); }
+.custom-emoji-row input::placeholder { color: var(--text-muted); }
+
 .profile-menu-btn {
   display: flex;
   align-items: center;
@@ -2212,7 +2231,7 @@ body.light .swatch-color {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-dim);
+  color: var(--text);
   font-size: 12.5px;
   text-align: left;
   transition: background 0.1s, color 0.1s;
