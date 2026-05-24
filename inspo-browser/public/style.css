@@ -685,7 +685,7 @@ body.light {
   transition: opacity 0.15s;
 }
 
-.card-download {
+.card-delete, .card-download {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -698,9 +698,11 @@ body.light {
   text-decoration: none;
   backdrop-filter: blur(8px);
   transition: background 0.1s;
+  cursor: pointer;
 }
 
 .card-download:hover { background: rgba(255,255,255,0.2); }
+.card-delete:hover { background: rgba(239,68,68,0.55); border-color: rgba(239,68,68,0.4); }
 
 .card-info {
   padding: 8px 10px 10px;

@@ -333,6 +333,9 @@ function renderGallery() {
       <div class="card-image-wrap">
         <img class="card-img" src="${img.url}" alt="${escAttr(img.filename)}" loading="lazy">
         <div class="card-overlay">
+          <button class="card-delete" title="Delete" data-delete>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
           <a class="card-download" href="${dl}" download="${escAttr(img.filename)}" title="Download" data-dl>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3"/><path d="M8 11l4 4 4-4"/><path d="M20 21H4"/></svg>
           </a>
@@ -351,8 +354,18 @@ function renderGallery() {
   }).join('');
 
   gallery.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', e => {
+    card.addEventListener('click', async e => {
       if (e.target.closest('[data-dl]')) return;
+      if (e.target.closest('[data-delete]')) {
+        const img = filtered[parseInt(card.dataset.index)];
+        if (!confirm(`Delete "${img.filename}"? This cannot be undone.`)) return;
+        const res = await apiFetch(`/api/images/${encodeURIComponent(img.id)}`, { method: 'DELETE' });
+        if (!res.ok) { const err = await res.json().catch(() => ({})); showToast(err.error || 'Delete failed'); return; }
+        images = images.filter(i => i.id !== img.id);
+        showToast(`Deleted "${img.filename}".`);
+        renderAll();
+        return;
+      }
       if (selectMode) {
         const id = card.dataset.id;
         if (selectedIds.has(id)) selectedIds.delete(id);
