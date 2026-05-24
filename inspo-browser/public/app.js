@@ -1511,11 +1511,13 @@ function updateProfileDisplay() {
   document.getElementById('user-email-label').textContent = profileUser.email || '';
   document.getElementById('profile-name-display').textContent = displayName;
 
-  const presets = [...document.querySelectorAll('.avatar-opt')].map(b => b.dataset.avatar);
+  const presets = [...document.querySelectorAll('.avatar-opt[data-avatar]')].map(b => b.dataset.avatar);
   const isPreset = presets.includes(savedAvatar);
-  document.querySelectorAll('.avatar-opt').forEach(btn => {
+  document.querySelectorAll('.avatar-opt[data-avatar]').forEach(btn => {
     btn.classList.toggle('selected', btn.dataset.avatar === savedAvatar);
   });
+  const customBtn = document.getElementById('custom-emoji-btn');
+  if (customBtn) customBtn.classList.toggle('selected', !!savedAvatar && !isPreset);
   const customInput = document.getElementById('custom-emoji-input');
   if (customInput) customInput.value = savedAvatar && !isPreset ? savedAvatar : '';
 }
@@ -1546,7 +1548,16 @@ function initProfileUI() {
     });
   });
 
+  const customEmojiBtn = document.getElementById('custom-emoji-btn');
+  const customEmojiExpanded = document.getElementById('custom-emoji-expanded');
   const customEmojiInput = document.getElementById('custom-emoji-input');
+
+  customEmojiBtn?.addEventListener('click', e => {
+    e.stopPropagation();
+    const open = customEmojiExpanded.classList.toggle('hidden') === false;
+    if (open) customEmojiInput?.focus();
+  });
+
   if (customEmojiInput) {
     customEmojiInput.addEventListener('input', e => {
       e.stopPropagation();
