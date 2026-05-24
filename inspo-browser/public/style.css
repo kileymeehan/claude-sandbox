@@ -1699,27 +1699,24 @@ body.light .swatch-color {
 
 .flow-add-card {
   flex-shrink: 0;
-  width: 160px;
+  width: 220px;
   min-height: 220px;
-  border: 1.5px dashed var(--accent);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   cursor: pointer;
-  color: var(--accent);
-  background: none;
-  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: 12px;
   font-weight: 500;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .flow-add-card:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-dim);
+  border-color: var(--text-muted);
+  color: var(--text-dim);
 }
 
 .flow-empty {

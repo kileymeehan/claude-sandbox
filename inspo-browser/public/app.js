@@ -748,10 +748,7 @@ function renderFlowView() {
   html += `<div class="flow-connector">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
-  <button class="flow-add-card" id="flow-rail-add">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    <span>Add step</span>
-  </button>`;
+  <button class="flow-add-card" id="flow-rail-add">+ Add step</button>`;
 
   rail.innerHTML = html;
 
