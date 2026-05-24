@@ -299,10 +299,12 @@ function renderSidebar() {
   });
 }
 
+const VIEW_LABELS = { 'grid-small': 'Small grid', 'grid-large': 'Large grid', 'list': 'List' };
+
 function applyViewMode() {
-  const gallery = document.getElementById('gallery');
-  gallery.className = `view-${viewMode}`;
-  document.querySelectorAll('.view-btn').forEach(btn => {
+  document.getElementById('gallery').className = `view-${viewMode}`;
+  document.getElementById('view-dropdown-label').textContent = VIEW_LABELS[viewMode] || 'View';
+  document.querySelectorAll('.view-option').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === viewMode);
   });
 }
@@ -1140,13 +1142,25 @@ function initSelectMode() {
 // ── View toggle ──
 
 function initViewToggle() {
-  document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      viewMode = btn.dataset.view;
+  const btn = document.getElementById('view-dropdown-btn');
+  const menu = document.getElementById('view-dropdown-menu');
+
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    menu.classList.toggle('hidden');
+  });
+
+  document.addEventListener('click', () => menu.classList.add('hidden'));
+
+  menu.querySelectorAll('.view-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      viewMode = opt.dataset.view;
       localStorage.setItem('inspo-view', viewMode);
+      menu.classList.add('hidden');
       applyViewMode();
     });
   });
+
   applyViewMode();
 }
 
