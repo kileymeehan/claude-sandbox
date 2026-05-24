@@ -201,7 +201,7 @@ function renderSidebar() {
   const customOrder = Object.keys(counts).filter(f => !KNOWN_FOLDERS.includes(f) && f !== 'root');
   const orderedFolders = [...knownOrder, ...customOrder, ...Object.keys(counts).filter(f => f === 'root')];
 
-  const allActive = folderFilter === 'all' ? 'active' : '';
+  const allActive = folderFilter === 'all' && !activeFlow ? 'active' : '';
   let folderHTML = `<button class="nav-item ${allActive}" data-folder="all">
     <span class="nav-label">All</span>
     <span class="nav-count">${images.length}</span>
@@ -210,7 +210,7 @@ function renderSidebar() {
   orderedFolders.forEach(folder => {
     const count = counts[folder] || 0;
     if (!count) return;
-    const active = folderFilter === folder ? 'active' : '';
+    const active = folderFilter === folder && !activeFlow ? 'active' : '';
     const label = folderLabel(folder);
     const color = folderColor(folder);
     folderHTML += `<button class="nav-item ${active}" data-folder="${folder}">
@@ -236,7 +236,7 @@ function renderSidebar() {
   } else {
   tagSection.style.display = 'block';
   tagNav.innerHTML = allTagsList.map(tag => {
-    const active = tagFilter === tag ? 'active' : '';
+    const active = tagFilter === tag && !activeFlow ? 'active' : '';
     return `<button class="nav-item tag-item ${active}" data-tag="${escHtml(tag)}">
       <span class="tag-hash">#</span>
       <span class="nav-label">${escHtml(tag)}</span>

@@ -62,7 +62,7 @@ body.light {
   width: var(--sidebar-w);
   flex-shrink: 0;
   background: var(--sidebar-bg, var(--surface));
-  border-right: 1px solid var(--border-subtle);
+  border-right: 1.5px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -82,7 +82,7 @@ body.light {
   padding: 0 14px;
   height: 56px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1.5px solid var(--border);
 }
 
 .logo {
@@ -394,7 +394,7 @@ body.light {
   padding: 0 20px;
   height: 56px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1.5px solid var(--border);
   position: sticky;
   top: 0;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
@@ -1466,7 +1466,7 @@ body.light .swatch-color {
   padding: 0 20px;
   height: 56px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1.5px solid var(--border);
   position: sticky;
   top: 0;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
@@ -1701,8 +1701,8 @@ body.light .swatch-color {
 
 .flow-add-card {
   flex-shrink: 0;
-  align-self: stretch;
   width: 220px;
+  height: 252px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   display: flex;
