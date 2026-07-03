@@ -1662,8 +1662,32 @@ async function init() {
   });
 
   initTagInput();
+  initSidebarToggle();
   const session = await initAuth();
   if (session) loadData();
+}
+
+function initSidebarToggle() {
+  const app = document.getElementById('app');
+  const toggle = document.getElementById('sidebar-toggle');
+  const expand = document.getElementById('sidebar-expand');
+
+  if (localStorage.getItem('sidebar-collapsed') === 'true') {
+    app.classList.add('sidebar-collapsed');
+    expand.classList.remove('hidden');
+  }
+
+  toggle.addEventListener('click', () => {
+    app.classList.add('sidebar-collapsed');
+    expand.classList.remove('hidden');
+    localStorage.setItem('sidebar-collapsed', 'true');
+  });
+
+  expand.addEventListener('click', () => {
+    app.classList.remove('sidebar-collapsed');
+    expand.classList.add('hidden');
+    localStorage.setItem('sidebar-collapsed', 'false');
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
