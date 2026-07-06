@@ -234,7 +234,6 @@ function renderSidebar() {
   tagNav.innerHTML = allTagsList.map(tag => {
     const active = tagFilter === tag && !activeFlow ? 'active' : '';
     return `<button class="nav-item tag-item ${active}" data-tag="${escHtml(tag)}">
-      <span class="tag-hash">#</span>
       <span class="nav-label">${escHtml(tag)}</span>
     </button>`;
   }).join('');
@@ -345,8 +344,8 @@ function renderGallery() {
       </div>
       <div class="card-info">
         <div class="card-filename" title="${escAttr(img.filename)}">${escHtml(img.filename)}</div>
-        <span class="folder-badge" style="--badge-color:${color}">${label}</span>
-        ${imgTags.length ? `<div class="card-tags">${imgTags.map(t => `<span class="tag-pill">${escHtml(t)}</span>`).join('')}</div>` : ''}
+        <span class="folder-badge" style="--badge-color:${color}">${folderIcon()}${label}</span>
+        ${imgTags.length ? `<div class="card-tags">${imgTags.map(t => `<span class="tag-pill">${tagIcon()}${escHtml(t)}</span>`).join('')}</div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -418,7 +417,7 @@ function renderLightbox() {
   const otherFolders = Object.entries(folders).filter(([id]) => id !== img.folder);
   document.getElementById('lb-folder-badge-wrap').innerHTML =
     `<div class="lb-folder-section">
-      <span class="folder-badge" style="--badge-color:${color}">${label}</span>
+      <span class="folder-badge" style="--badge-color:${color}">${folderIcon()}${label}</span>
       <button class="lb-move-toggle" id="lb-move-toggle">Move to…</button>
     </div>
     <div id="lb-folder-picker" class="lb-folder-picker hidden">
@@ -475,7 +474,7 @@ function renderLightbox() {
 
   const lbTags = document.getElementById('lb-tags');
   lbTags.innerHTML = imgTags.map(tag =>
-    `<span class="tag-pill" data-tag="${escAttr(tag)}">${escHtml(tag)}<button class="tag-remove" data-tag="${escAttr(tag)}" title="Remove tag">×</button></span>`
+    `<span class="tag-pill" data-tag="${escAttr(tag)}">${tagIcon()}${escHtml(tag)}<button class="tag-remove" data-tag="${escAttr(tag)}" title="Remove tag">×</button></span>`
   ).join('');
 
   lbTags.querySelectorAll('.tag-remove').forEach(btn => {
@@ -1123,6 +1122,14 @@ function escHtml(str) {
 
 function escAttr(str) {
   return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function tagIcon() {
+  return '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13 21l-9-9V4h8z"/><circle cx="7.5" cy="7.5" r="1.3" fill="currentColor" stroke="none"/></svg>';
+}
+
+function folderIcon() {
+  return '<svg width="9" height="8" viewBox="0 0 24 22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
 }
 
 // ── Select & bulk delete ──
