@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Songwriting Tools — Word Scraps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@500;600;700;800&family=Anton&family=Special+Elite&family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="theme-switcher">
+    <button id="themeBtn" class="btn btn-ghost btn-small" aria-haspopup="true" aria-expanded="false">Style: Default ▾</button>
+    <div id="themePanel" class="export-panel" hidden>
+      <button class="export-option theme-option active" data-theme-value="default">Default</button>
+      <button class="export-option theme-option" data-theme-value="cbgb">CBGB</button>
+      <button class="export-option theme-option" data-theme-value="homespun">Homespun</button>
+    </div>
+  </div>
+
+  <div class="account-bar">
+    <div id="authLoggedOut" class="account-state">
+      <button id="loginBtn" class="btn btn-ghost btn-small">Log in</button>
+    </div>
+    <div id="authLoggedIn" class="account-state" hidden>
+      <span id="userEmailLabel" class="user-email"></span>
+      <button id="mySongsBtn" class="btn btn-ghost btn-small">My songs</button>
+      <button id="logoutBtn" class="btn btn-ghost btn-small">Log out</button>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="tape-banner">
+      <span class="tape tape-left" aria-hidden="true"></span>
+      <h1>Songwriting&nbsp;Tools</h1>
+      <span class="tape tape-right" aria-hidden="true"></span>
+    </div>
+    <p class="tagline">Paste some words. Cut them loose. Drag them into something new.</p>
+  </header>
+
+  <main>
+    <section class="input-panel" id="inputPanel">
+      <label for="textInput" class="input-label">Paste your text</label>
+      <textarea id="textInput" placeholder="Paste lyrics, a poem, a diary entry, a news article&#10;— anything with words in it will do."></textarea>
+      <button id="chopBtn" class="btn btn-primary">Chop it up!</button>
+    </section>
+
+    <section class="workspace" id="workspace" hidden>
+
+      <div class="toolbar-row">
+        <input type="text" id="songTitleInput" class="song-title-input" value="Untitled Song" maxlength="80" aria-label="Song title">
+        <div class="toolbar-actions">
+          <button id="addTextBtn" class="btn btn-ghost">+ Add text</button>
+          <button id="shuffleBtn" class="btn btn-ghost">Shuffle</button>
+          <button id="clearBoardBtn" class="btn btn-ghost">Clear board</button>
+          <div class="export-menu">
+            <button id="exportBtn" class="btn btn-ghost" aria-haspopup="true" aria-expanded="false">Export ▾</button>
+            <div id="exportPanel" class="export-panel" hidden>
+              <button id="exportCopyBtn" class="export-option">Copy text</button>
+              <button id="exportDownloadBtn" class="export-option">Save as .txt</button>
+              <button id="exportShareBtn" class="export-option" hidden>Share…</button>
+            </div>
+          </div>
+          <button id="saveSongBtn" class="btn btn-ghost">Save</button>
+          <button id="newTextBtn" class="btn btn-ghost">Start over</button>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <div class="bank-panel">
+          <h2 class="panel-label">Word bank</h2>
+          <div id="wordBank" class="word-bank"></div>
+        </div>
+
+        <div class="board-panel">
+          <h2 class="panel-label">Song board</h2>
+          <div id="board" class="board">
+            <p class="board-empty" id="boardEmpty">Drag scraps here to start building your song.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <div id="dragLayer" class="drag-layer"></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <div id="loginModal" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="loginModalClose" aria-label="Close">×</button>
+      <h2 class="modal-title">Log in</h2>
+      <p class="modal-body-text">Enter your email and we'll send you a one-time link — no password needed.</p>
+      <form id="loginForm" class="modal-form">
+        <input type="email" id="loginEmail" class="modal-input" placeholder="you@example.com" required autocomplete="email">
+        <button type="submit" class="btn btn-primary btn-small" id="loginSubmitBtn">Send login link</button>
+      </form>
+      <p class="modal-status" id="loginStatus"></p>
+    </div>
+  </div>
+
+  <div id="addTextModal" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="addTextModalClose" aria-label="Close">×</button>
+      <h2 class="modal-title">Add more text</h2>
+      <p class="modal-body-text">Paste another block of text and its words will drop into the word bank alongside what you already have.</p>
+      <textarea id="addTextInput" class="modal-input modal-textarea" placeholder="Paste another verse, a headline, anything…"></textarea>
+      <button id="addTextSubmitBtn" class="btn btn-primary btn-small">Add to word bank</button>
+    </div>
+  </div>
+
+  <div id="songsModal" class="modal-overlay" hidden>
+    <div class="modal-card">
+      <button class="modal-close" id="songsModalClose" aria-label="Close">×</button>
+      <h2 class="modal-title">My songs</h2>
+      <div class="songs-list" id="songsList"></div>
+    </div>
+  </div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
