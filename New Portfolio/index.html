@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiley Daniel Meehan — Design Leadership</title>
+  <meta name="description" content="Kiley Daniel Meehan is a strategic product and design leader. Design leadership for products people run their businesses on.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="wrap masthead-bar">
+      <h1 class="nameplate">Kiley Daniel Meehan</h1>
+      <div class="masthead-social">
+        <a class="social-link" href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+        <a class="social-link" href="mailto:kileymeehan@gmail.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <div class="wrap toc-inner">
+      <a href="#bio" class="toc-link">Profile</a>
+      <a href="work.html" class="toc-link">My Work</a>
+      <a href="writing.html" class="toc-link">Writing</a>
+      <a href="cv.html" class="toc-link">CV</a>
+      <a href="#connect" class="toc-link">Connect</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ============ PROFILE / BIO ============ -->
+    <section class="hero" id="bio">
+      <div class="wrap hero-grid">
+        <div class="hero-side">
+          <div class="portrait-module reveal">
+            <figure class="hero-portrait">
+              <div class="portrait-frame">
+                <img src="assets/kiley-portrait.jpg" alt="Portrait of Kiley Daniel Meehan" width="1600" height="1600">
+              </div>
+              <figcaption class="caption">Kiley Daniel Meehan &mdash; A Strategic Product and Design Leader</figcaption>
+            </figure>
+          </div>
+          <aside class="hero-aside reveal" aria-label="Latest writing and bookshelf">
+            <div class="aside-block">
+              <p class="facts-title">Latest Writing</p>
+              <p class="aside-meta">May 2026 &middot; Essay &middot; 8 min read</p>
+              <p class="aside-title"><a href="writing/earned-autonomy.html">Earned Autonomy</a></p>
+              <p class="aside-excerpt">A framework for working with AI without quietly handing it the keys &mdash; and what it means for the rest of us building software with it.</p>
+              <a class="aside-more" href="writing/earned-autonomy.html">Read the essay</a>
+            </div>
+            <div class="aside-block">
+              <p class="facts-title">Bookshelf</p>
+              <ul class="shelf-list">
+                <li><span class="shelf-title">Demand Side Sales 101</span><span class="shelf-author">Bob Moesta &amp; Greg Engle</span></li>
+                <li><span class="shelf-title">Designing Assistant Technology</span><span class="shelf-author">Christopher Noessel</span></li>
+                <li><span class="shelf-title">Against the Machine</span><span class="shelf-author">Paul Kingsnorth</span></li>
+                <li><span class="shelf-title">The Pyramid Principle</span><span class="shelf-author">Barbara Minto</span></li>
+                <li><span class="shelf-title">Tools for Conviviality</span><span class="shelf-author">Ivan Illich</span></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+        <div class="hero-copy reveal">
+          <p class="kicker">Profile</p>
+          <p class="hero-tagline">Design leadership for products people run their businesses&nbsp;on.</p>
+          <div class="prose">
+            <p><strong>Kiley Daniel Meehan</strong> is a strategic product and design leader. At FreshBooks, he led experience strategy across accounting, payments, platform, and operations &mdash; one connected product, not four disconnected ones.</p>
+            <p>He owned the company&rsquo;s Experience Vision and Principles, built the &ldquo;Pathways&rdquo; framework for aligning product teams around a single customer journey, and championed structured measurement &mdash; the HEART framework &mdash; over guesswork.</p>
+            <p>His mission, stated plainly on every strategy deck he shipped: <em class="accent">Making the Complex Simple.</em></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RECOMMENDATIONS ============ -->
+    <section class="recs reveal" id="recs" aria-label="Recommendations">
+      <div class="wrap">
+        <p class="kicker kicker--accent">Recommended</p>
+        <div class="recs-card">
+          <div class="recs-stack recs-in" id="recStack">
+            <span class="rec-face" id="recFace" aria-hidden="true"></span>
+            <blockquote class="rec-quote">
+              <p id="recText"></p>
+              <cite class="rec-attr" id="recAttr"></cite>
+            </blockquote>
+          </div>
+          <div class="rec-dots" id="recDots" role="tablist" aria-label="Choose recommendation"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="connect">
+    <div class="wrap">
+      <p class="kicker kicker--accent">Connect</p>
+      <p class="footer-lede">Let&rsquo;s talk about Making the Complex&nbsp;Simple.</p>
+      <a class="footer-mail" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+      <div class="folio folio--footer" role="presentation">
+        <span class="folio-item">Kiley Daniel Meehan</span>
+        <span class="folio-item folio-item--right">Set in Newsreader &amp; Archivo</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
