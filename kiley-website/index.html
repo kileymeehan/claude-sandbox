@@ -1,780 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Kiley Meehan — Product Design Leader at FreshBooks. Building software that feels human.">
-<title>Kiley Meehan · Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --cream: #F5EEDB;
-    --cream-2: #EEE7CF;
-    --ink: #1A1610;
-    --ink-soft: #2A241B;
-    --terracotta: #BB5E3E;
-    --rule: #1A1610;
-    --dark-green: #0C1A14;
-    --dark-green-2: #0A1611;
-    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
-    --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--ink); color: var(--ink); font-family: var(--mono); }
-  body { min-height: 100vh; padding: 0; }
-
-  /* ======= STICKY DARK HEADER ======= */
-  .site-header {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--dark-green);
-    color: #F5EEDB;
-    border-bottom: 1px solid #F5EEDB;
-  }
-  .hdr-inner {
-    display: grid;
-    grid-template-columns: 56px 1fr auto 56px;
-    align-items: stretch;
-    height: 72px;
-  }
-  .hdr-brand, .hdr-nav {
-    display: flex; align-items: center;
-    font-family: var(--mono);
-    font-size: 13px; letter-spacing: 0.18em;
-    text-transform: uppercase; color: #F5EEDB;
-  }
-  .hdr-brand { grid-column: 2; gap: 16px; padding-left: 28px; }
-  .hdr-nav {
-    grid-column: 3; justify-content: flex-end;
-    gap: 0; padding: 0; height: 100%;
-  }
-  .hdr-nav a {
-    color: #F5EEDB; text-decoration: none;
-    position: relative; display: flex; align-items: center;
-    height: 100%; padding: 0 28px;
-    border-left: 1px solid rgba(245,238,219,0.55);
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-  .hdr-nav a:hover { background: var(--terracotta); color: #FBF5E2; }
-
-  /* ======= GRID SHELL ======= */
-  .shell {
-    width: 100%; background: var(--cream);
-    display: grid;
-    grid-template-columns: 56px 1fr 1fr 360px 56px;
-    grid-template-rows: 1fr auto auto auto;
-    border-left: 1px solid var(--rule);
-    border-right: 1px solid var(--rule);
-  }
-
-  /* ---- rails ---- */
-  .rail {
-    border-right: 1px solid var(--rule);
-    background: var(--cream);
-    position: relative;
-  }
-  .rail-left {
-    background-image: repeating-linear-gradient(
-      135deg, transparent 0 9px, rgba(26,22,16,0.07) 9px 10px
-    );
-  }
-  .rail.right { border-right: none; border-left: 1px solid var(--rule); }
-  .rail .vlabel {
-    position: absolute; top: 64px; left: 50%;
-    transform: translateX(-50%) rotate(-90deg);
-    transform-origin: center; white-space: nowrap;
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.32em; color: var(--ink); text-transform: uppercase;
-  }
-  .rail.right .vlabel {
-    top: auto; bottom: 64px;
-    transform: translateX(-50%) rotate(-90deg);
-  }
-  .rail-left { grid-row: 1 / 5; grid-column: 1; }
-  .rail-right { grid-row: 1 / 5; grid-column: 5; }
-
-  /* ---- hero (row 1, col 2-3) ---- */
-  .hero {
-    grid-row: 1; grid-column: 2 / 4;
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    background: #0d1410 url('assets/hero-foliage.jpg') center/cover no-repeat;
-    position: relative; min-height: 640px; overflow: hidden;
-  }
-  .hero::after {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.35) 100%);
-    pointer-events: none;
-  }
-  .hero-meta {
-    position: absolute; top: 38%; left: 56px;
-    font-family: var(--mono); font-size: 12px;
-    letter-spacing: 0.22em; color: #FBF5E2;
-    text-transform: uppercase; z-index: 2;
-  }
-  .hero-meta .dot { margin: 0 14px; opacity: 0.7; }
-  .hero-title {
-    position: absolute; left: 56px; bottom: 56px;
-    color: #FBF5E2; font-family: var(--serif);
-    font-weight: 300; font-size: clamp(56px, 6.2vw, 108px);
-    line-height: 1.02; letter-spacing: -0.005em;
-    z-index: 2; max-width: 70%;
-  }
-  .hero-title em { font-style: italic; }
-
-  /* ---- portrait (row 1, col 4) ---- */
-  .portrait {
-    grid-row: 1; grid-column: 4;
-    height: 540px; align-self: start;
-    border-bottom: 1px solid var(--rule);
-    background: var(--cream);
-    position: relative; overflow: hidden;
-  }
-  .portrait-img {
-    position: absolute; inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover; object-position: 50% 30%;
-    pointer-events: none; user-select: none;
-  }
-
-  /* ---- showcase (row 2, col 2-3) ---- */
-  .showcase {
-    grid-row: 2; grid-column: 2 / 4;
-    border-right: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-    background: #1F1A12; color: #F5EEDB;
-    display: grid; grid-template-columns: 1fr 1.15fr;
-    height: 460px;
-  }
-  .showcase-quote { overflow: hidden; }
-  .showcase-quote {
-    padding: 32px 40px;
-    border-right: 1px solid rgba(245,238,219,0.28);
-    display: flex; flex-direction: column;
-    justify-content: space-between; gap: 20px;
-  }
-  .showcase-feature {
-    padding: 32px 40px;
-    display: flex; flex-direction: column;
-    justify-content: space-between; gap: 14px;
-    background-color: var(--cream);
-    background-image: radial-gradient(rgba(26,22,16,0.45) 1px, transparent 1.2px);
-    background-size: 8px 8px;
-    color: var(--ink);
-  }
-  .showcase-eyebrow {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--terracotta);
-  }
-  .showcase-eyebrow.alt { color: rgba(245,238,219,0.55); }
-  .showcase-feature .showcase-eyebrow.alt {
-    color: var(--ink); background: var(--cream);
-    padding: 4px 8px; margin: -4px -8px; align-self: flex-start;
-  }
-  .quote-stack {
-    display: grid; grid-template-columns: 84px 1fr;
-    gap: 20px; align-items: start;
-    transition: opacity 0.55s ease, transform 0.55s ease;
-  }
-  .quote-stack p, .quote-stack .attr { grid-column: 2; }
-  .showcase-face {
-    grid-column: 1; grid-row: 1 / span 2;
-    width: 84px; height: 84px;
-    object-fit: contain; object-position: center top;
-    display: block; user-select: none; pointer-events: none;
-  }
-  .quote-in  { opacity: 1; transform: translateY(0); }
-  .quote-out { opacity: 0; transform: translateY(-6px); }
-  .showcase-quote p {
-    font-family: var(--serif); font-style: italic;
-    font-weight: 400; font-size: clamp(20px, 1.5vw, 24px);
-    line-height: 1.45; color: #F5EEDB; letter-spacing: -0.005em;
-  }
-  .showcase-quote .attr {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--terracotta);
-  }
-  .showcase-quote .attr::before { content: '\2014 '; }
-  .quote-dots { display: flex; gap: 8px; align-items: center; }
-  .quote-dot {
-    width: 18px; height: 2px;
-    background: rgba(245,238,219,0.25);
-    border: 0; padding: 0; cursor: pointer;
-    transition: background 0.2s ease, width 0.2s ease;
-  }
-  .quote-dot:hover { background: rgba(245,238,219,0.5); }
-  .quote-dot.on { background: var(--terracotta); width: 28px; }
-  .showcase-feature .ftitle {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(28px, 2.4vw, 40px);
-    line-height: 1.2; letter-spacing: -0.005em;
-    color: var(--ink); max-width: 22ch; margin-top: 4px;
-    background: var(--cream); padding: 6px 10px; margin: 0 -10px;
-    align-self: flex-start;
-  }
-  .showcase-feature .flink {
-    font-family: var(--mono); font-size: 12px;
-    letter-spacing: 0.28em; color: var(--terracotta);
-    text-transform: uppercase; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 10px;
-    align-self: flex-start;
-    background: var(--cream); padding: 4px 8px; margin: 0 -8px;
-  }
-  .showcase-feature .flink::after { content: '\2192'; transition: transform 0.2s ease; }
-  .showcase-feature .flink:hover::after { transform: translateX(4px); }
-
-  /* ---- bookshelf (col 4, rows 2-3) ---- */
-  .bookshelf {
-    grid-row: 2 / 4; grid-column: 4;
-    margin-top: -100px;
-    background: color-mix(in oklab, var(--cream), white 30%);
-    padding: 20px 0 0;
-    display: flex; flex-direction: column;
-  }
-  .bookshelf-eyebrow {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--terracotta); padding: 0 28px 22px;
-    border-bottom: 1px solid rgba(26,22,16,0.18);
-  }
-  .book-list { list-style: none; display: flex; flex-direction: column; }
-  .book-row {
-    border-bottom: 1px solid rgba(26,22,16,0.18);
-    display: grid; grid-template-columns: 52px 1fr;
-    gap: 16px; padding: 18px 28px; align-items: center;
-    transition: background 0.2s;
-  }
-  .book-row:last-child { border-bottom: none; }
-  .book-row:hover { background: rgba(187,94,62,0.05); }
-  .book-cover {
-    width: 44px; height: 62px; object-fit: cover;
-    box-shadow: 2px 3px 10px rgba(26,22,16,0.2);
-    background: var(--cream-dark); flex-shrink: 0;
-    display: block;
-  }
-  .book-cover-placeholder {
-    width: 44px; height: 62px; flex-shrink: 0;
-    box-shadow: 2px 3px 10px rgba(26,22,16,0.12);
-  }
-  .book-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .book-title {
-    font-family: var(--serif); font-size: 15px; font-weight: 400;
-    line-height: 1.2; color: var(--ink); letter-spacing: -0.005em;
-  }
-  .book-author {
-    font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em;
-    color: var(--muted); text-transform: uppercase;
-  }
-
-  /* ---- bio cols (row 3, cols 2-3) ---- */
-  .col-bio-a, .col-bio-b {
-    grid-row: 3;
-    background: color-mix(in oklab, var(--cream), white 30%);
-    padding: 44px 56px 56px;
-  }
-  .col-bio-a { grid-column: 2; border-right: 1px solid var(--rule); }
-  .col-bio-b { grid-column: 3; border-right: 1px solid var(--rule); }
-  .col-bio-a p, .col-bio-b p {
-    font-family: var(--mono); font-size: 14px;
-    line-height: 1.85; color: var(--ink); max-width: 48ch;
-  }
-  .bio-a-grid {
-    display: grid; grid-template-columns: 200px 1fr;
-    gap: 28px; align-items: center;
-  }
-  .bio-a-img { width: 100%; height: auto; display: block; mix-blend-mode: multiply; }
-  .col-bio-a em, .col-bio-b em { font-style: italic; }
-
-  /* ---- accent (row 3, col 4) ---- */
-  .accent {
-    grid-row: 3; grid-column: 4 / 5;
-    background: var(--terracotta); color: #FBF5E2;
-    border-top: 1px solid var(--rule);
-    padding: 28px;
-    display: grid; grid-template-columns: 170px 1fr;
-    gap: 22px; align-items: center; position: relative;
-  }
-  .accent-img { width: 100%; height: auto; display: block; user-select: none; pointer-events: none; }
-  .accent-stack { display: flex; flex-direction: column; gap: 4px; color: #FBF5E2; line-height: 1; }
-  .accent-kicker {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: rgba(251,245,226,0.7); margin-bottom: 6px;
-  }
-  .accent-lg {
-    font-family: var(--serif); font-size: clamp(26px, 2.2vw, 34px);
-    line-height: 1; letter-spacing: -0.005em;
-  }
-  .accent-xl {
-    font-family: var(--serif); font-size: clamp(26px, 2.2vw, 34px);
-    line-height: 1; letter-spacing: -0.005em; margin-top: 2px;
-  }
-  .accent-xl em { font-style: italic; }
-  .accent-since {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: rgba(251,245,226,0.7);
-    margin-top: 12px; padding-top: 10px;
-    border-top: 1px solid rgba(251,245,226,0.25);
-    align-self: flex-start;
-  }
-
-  /* ======= WRITING (row 4, col 2-4) ======= */
-  .writing {
-    grid-row: 4; grid-column: 2 / 5;
-    border-top: 1px solid var(--rule);
-    display: grid; grid-template-columns: 360px 1fr;
-    background: var(--cream);
-  }
-  .writing-head {
-    padding: 64px 56px 56px; border-right: 1px solid var(--rule);
-    display: flex; flex-direction: column; gap: 16px;
-    background-color: var(--cream);
-    background-image: radial-gradient(rgba(26,22,16,0.45) 1px, transparent 1.2px);
-    background-size: 8px 8px;
-  }
-  .writing-head > * {
-    background: var(--cream); padding: 4px 8px;
-    margin: 0 -8px; align-self: flex-start;
-  }
-  .writing-eyebrow {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase; color: var(--terracotta);
-  }
-  .writing-title {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(48px, 4.4vw, 72px); line-height: 1;
-    letter-spacing: -0.015em; color: var(--ink); margin-top: 4px;
-  }
-  .writing-title em { font-style: italic; }
-  .writing-sub {
-    font-family: var(--mono); font-size: 13px; line-height: 1.75;
-    color: var(--ink); margin-top: 24px; max-width: 32ch;
-  }
-  .writing-link {
-    margin-top: auto; font-family: var(--mono); font-size: 12px;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--terracotta); text-decoration: none;
-    align-self: flex-start; padding-top: 36px;
-  }
-  .writing-link:hover { color: var(--ink); }
-  .writing-list { list-style: none; display: flex; flex-direction: column; }
-  .post { border-bottom: 1px solid rgba(26,22,16,0.18); }
-  .post:last-child { border-bottom: none; }
-  .post-link {
-    display: grid; grid-template-columns: 64px 1fr 32px;
-    align-items: start; gap: 32px; padding: 32px 56px;
-    color: var(--ink); text-decoration: none;
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-  .post-link:hover { background: var(--ink); color: var(--cream); }
-  .post-link:hover .post-meta,
-  .post-link:hover .post-excerpt,
-  .post-link:hover .post-num { color: var(--cream); opacity: 1; }
-  .post-link:hover .post-arrow { color: var(--terracotta); transform: translateX(4px); }
-  .post-num {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.22em; color: rgba(26,22,16,0.55); padding-top: 8px;
-  }
-  .post-body { display: flex; flex-direction: column; gap: 10px; }
-  .post-meta {
-    font-family: var(--mono); font-size: 11px;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: rgba(26,22,16,0.6); display: flex; align-items: center; gap: 12px;
-  }
-  .post-meta .sep { opacity: 0.6; }
-  .post-title {
-    font-family: var(--serif); font-weight: 400;
-    font-size: clamp(24px, 2vw, 32px); line-height: 1.2; letter-spacing: -0.005em;
-  }
-  .post-excerpt {
-    font-family: var(--mono); font-size: 13px;
-    line-height: 1.7; color: rgba(26,22,16,0.75); max-width: 56ch;
-  }
-  .post-arrow {
-    font-size: 18px; line-height: 1; padding-top: 8px;
-    color: var(--terracotta); transition: transform 0.2s ease;
-  }
-
-  /* ======= DARK FOOTER ======= */
-  .site-footer {
-    background: var(--dark-green); color: #F5EEDB;
-    border-top: 1px solid #F5EEDB;
-    padding: 80px 0 32px; font-family: var(--mono);
-  }
-  .foot-inner {
-    max-width: 100%; padding: 0 56px;
-    display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
-    gap: 56px; align-items: start;
-  }
-  .foot-col {
-    display: flex; flex-direction: column; gap: 10px;
-    font-size: 12px; letter-spacing: 0.14em;
-    text-transform: uppercase; color: #F5EEDB;
-  }
-  .foot-col a { color: #F5EEDB; text-decoration: none; transition: color 0.2s ease; }
-  .foot-col a:hover { color: var(--terracotta); }
-  .foot-label { font-size: 11px; letter-spacing: 0.28em; color: rgba(245,238,219,0.45); margin-bottom: 8px; }
-  .foot-muted { color: rgba(245,238,219,0.55); text-transform: none; letter-spacing: 0.06em; font-size: 12px; }
-  .foot-brand .foot-name {
-    font-family: var(--serif); font-size: 36px;
-    line-height: 1.05; letter-spacing: -0.01em;
-    text-transform: none; color: #F5EEDB; margin-bottom: 6px;
-  }
-  .foot-brand .foot-tag { font-size: 11px; letter-spacing: 0.22em; color: rgba(245,238,219,0.65); }
-  .foot-rule {
-    margin-top: 80px; padding: 24px 56px 0;
-    border-top: 1px solid rgba(245,238,219,0.15);
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11px; letter-spacing: 0.22em;
-    text-transform: uppercase; color: rgba(245,238,219,0.65);
-  }
-
-  /* ======= RESPONSIVE ======= */
-  @media (max-width: 1180px) {
-    .shell {
-      grid-template-columns: 40px 1fr 40px;
-      grid-template-rows: auto auto auto auto auto auto auto auto;
-    }
-    .hdr-inner { grid-template-columns: 1fr auto; height: 60px; }
-    .hdr-brand { grid-column: 1; padding-left: 14px; }
-    .hdr-nav { grid-column: 2; }
-    .hdr-nav a { padding: 0 16px; font-size: 11px; }
-    .rail-left { grid-column: 1; grid-row: 1 / 9; }
-    .rail-right { grid-column: 3; grid-row: 1 / 9; }
-    .hero { grid-column: 2; grid-row: 1; min-height: 440px; border-right: none; }
-    .portrait { grid-column: 2; grid-row: 2; border-right: none; }
-    .showcase { grid-column: 2; grid-row: 3; border-right: none; grid-template-columns: 1fr; }
-    .showcase-quote { border-right: none; border-bottom: 1px solid rgba(245,238,219,0.10); padding: 32px 24px; }
-    .showcase-feature { padding: 32px 24px; }
-    .bookshelf { grid-column: 2; grid-row: 4; border-right: none; margin-top: 0; }
-    .col-bio-a { grid-column: 2; grid-row: 5; border-right: none; }
-    .col-bio-b { grid-column: 2; grid-row: 6; border-right: none; }
-    .accent { grid-column: 2; grid-row: 7; }
-    .writing { grid-column: 2; grid-row: 8; grid-template-columns: 1fr; }
-    .writing-head { border-right: none; padding: 40px 24px; }
-    .post-link { grid-template-columns: 40px 1fr 24px; gap: 16px; padding: 24px; }
-    .col-bio-a, .col-bio-b { padding: 32px 28px; }
-    .bio-a-grid { grid-template-columns: 1fr; gap: 24px; }
-    .bio-a-img { max-width: 180px; }
-    .foot-inner { grid-template-columns: 1fr 1fr; gap: 40px; padding: 0 24px; }
-    .foot-rule { padding: 24px 24px 0; flex-direction: column; gap: 8px; align-items: flex-start; }
-  }
-
-  @media (max-width: 800px) {
-    .showcase { height: auto; min-height: 460px; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiley Daniel Meehan — Design Leadership</title>
+  <meta name="description" content="Kiley Daniel Meehan is a strategic product and design leader. Design leadership for products people run their businesses on.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="hdr-inner">
-    <div class="hdr-brand"><span>Kiley Meehan</span></div>
-    <nav class="hdr-nav">
-      <a href="#writing">Writing</a>
-      <a href="cv.html">CV</a>
-      <a href="mailto:kileymeehan@gmail.com">Contact me</a>
-    </nav>
-  </div>
-</header>
-
-<div class="shell">
-
-  <div class="rail rail-left"><div class="vlabel">Home</div></div>
-  <div class="rail rail-right right"><div class="vlabel">Ongoing</div></div>
-
-  <!-- Hero -->
-  <section class="hero" id="work" aria-label="Intro">
-    <div class="hero-meta">
-      Product Design Leader<span class="dot">·</span>FreshBooks
-    </div>
-    <h1 class="hero-title">
-      Design that<br><em>makes</em><br><em>things work.</em>
-    </h1>
-  </section>
-
-  <!-- Portrait -->
-  <aside class="portrait" aria-label="Portrait">
-    <img class="portrait-img" src="assets/portrait.png" alt="Kiley Meehan" />
-  </aside>
-
-  <!-- Showcase: rotating quotes + featured project -->
-  <section class="showcase">
-    <aside class="showcase-quote">
-      <div class="showcase-eyebrow">Said about me</div>
-      <div class="quote-stack quote-in" id="quoteStack">
-        <img class="showcase-face" id="quoteFace" src="assets/face1.png" alt="" aria-hidden="true" />
-        <p id="quoteText"></p>
-        <span class="attr" id="quoteAttr"></span>
-      </div>
-      <div class="quote-dots" id="quoteDots" aria-hidden="true"></div>
-    </aside>
-    <article class="showcase-feature">
-      <div class="showcase-eyebrow alt">Featured · 01</div>
-      <div class="ftitle">Blupi — a blueprinting canvas for teams who think in systems</div>
-      <a class="flink" href="https://blupi.io" target="_blank" rel="noopener">Discover Blupi</a>
-    </article>
-  </section>
-
-  <!-- Bookshelf -->
-  <aside class="bookshelf" aria-label="Bookshelf">
-    <div class="bookshelf-eyebrow">Bookshelf</div>
-    <ol class="book-list" id="book-list">
-      <li class="book-row">
-        <img class="book-cover" id="cover-0" alt="" />
-        <div class="book-info">
-          <span class="book-title">Demand Side Sales 101</span>
-          <span class="book-author">Bob Moesta &amp; Greg Engle</span>
-        </div>
-      </li>
-      <li class="book-row">
-        <img class="book-cover" id="cover-1" alt="" />
-        <div class="book-info">
-          <span class="book-title">Designing Assistant Technology</span>
-          <span class="book-author">Christopher Noessel</span>
-        </div>
-      </li>
-      <li class="book-row">
-        <img class="book-cover" id="cover-2" alt="" />
-        <div class="book-info">
-          <span class="book-title">Against the Machine</span>
-          <span class="book-author">Paul Kingsnorth</span>
-        </div>
-      </li>
-      <li class="book-row">
-        <img class="book-cover" id="cover-3" alt="" />
-        <div class="book-info">
-          <span class="book-title">The Pyramid Principle</span>
-          <span class="book-author">Barbara Minto</span>
-        </div>
-      </li>
-      <li class="book-row">
-        <img class="book-cover" id="cover-4" alt="" />
-        <div class="book-info">
-          <span class="book-title">Tools for Conviviality</span>
-          <span class="book-author">Ivan Illich</span>
-        </div>
-      </li>
-    </ol>
-  </aside>
-
-  <!-- Bio A -->
-  <section class="col-bio-a" id="about">
-    <div class="bio-a-grid">
-      <img class="bio-a-img" src="assets/craft.png" alt="Hands at work with mallet and chisel" />
-      <p>
-        For fifteen years I&rsquo;ve helped companies build software that doesn&rsquo;t just function &mdash; it <em>resonates</em>. I care about the craft underneath the interface: the decisions that don&rsquo;t show up in a screenshot but shape how a product feels over time.
-      </p>
-    </div>
-  </section>
-
-  <!-- Bio B -->
-  <section class="col-bio-b">
-    <p>
-      Currently Product Design Leader at FreshBooks, leading product design across the full platform. I&rsquo;m also the maker of <em>Blupi</em>, and I write <em>Of Quality</em> &mdash; a newsletter on craft and what it means to build things that last.
-    </p>
-  </section>
-
-  <!-- Accent -->
-  <section class="accent" aria-label="About">
-    <img class="accent-img" src="assets/astronaut.png" alt="" aria-hidden="true" />
-    <div class="accent-stack">
-      <span class="accent-kicker">Designing</span>
-      <span class="accent-lg">Software</span>
-      <span class="accent-xl"><em>for Humans</em></span>
-      <span class="accent-since">since 2013</span>
-    </div>
-  </section>
-
-  <!-- Writing -->
-  <section class="writing" id="writing">
-    <div class="writing-head">
-      <div class="writing-eyebrow">II · Writing</div>
-      <h2 class="writing-title">Thinky <em>things.</em></h2>
-      <p class="writing-sub">A working notebook. Essays on craft, leadership, and the long game of building software for humans.</p>
-      <a class="writing-link" href="#writing">All essays &rarr;</a>
-    </div>
-    <ol class="writing-list" id="writing-list">
-      <!-- loaded dynamically via /api/posts -->
-    </ol>
-  </section>
-
-</div>
-
-<footer class="site-footer">
-  <div class="foot-inner">
-    <div class="foot-col foot-brand">
-      <div class="foot-name">Kiley Meehan</div>
-      <div class="foot-tag">Product Design Leader · FreshBooks</div>
-    </div>
-    <div class="foot-col">
-      <div class="foot-label">Elsewhere</div>
-      <a href="https://ofquality.substack.com" target="_blank" rel="noopener">Read — Of Quality</a>
-      <a href="https://linkedin.com/in/kileymeehan" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://x.com/kileymeehan" target="_blank" rel="noopener">X / Twitter</a>
-    </div>
-    <div class="foot-col">
-      <div class="foot-label">Say hello</div>
-      <a href="mailto:kileymeehan@gmail.com">Contact me &rarr;</a>
-      <span class="foot-muted">Toronto · Ontario</span>
-      <span class="foot-muted">Open to advising</span>
-    </div>
-    <div class="foot-col">
-      <div class="foot-label">Colophon</div>
-      <span class="foot-muted">Set in Cormorant Garamond &amp; IBM Plex Mono.</span>
-      <span class="foot-muted">Hand-built. No cookies, no trackers.</span>
-    </div>
-  </div>
-  <div class="foot-rule">
-    <span>&copy; 2026 Kiley Meehan</span>
-    <span class="foot-muted">All work shown with permission.</span>
-  </div>
-</footer>
-
-<script>
-const QUOTES = [
-  { text: "A rare superpower: he creates clarity from chaos — consistently helping teams find focus in ambiguity, painting a compelling vision that connects business goals to meaningful user outcomes.", role: "Former Direct Report · Product Design Leader", face: "assets/face1.png" },
-  { text: "A unique way of bridging the gap between product and design. Openness to new ideas, humility, and a genuine sense of curiosity — teams naturally gravitate to him for guidance.", role: "Principal Product Manager", face: "assets/face2.png" },
-  { text: "The thoughtfulness and rigour with which he approaches problem solving is inspiring — a real ability to analyze, synthesize and reframe complex problems.", role: "Senior Product Designer", face: "assets/face5.png" },
-  { text: "One of the most visionary and empowering design leaders I have ever worked with — deeply versed in product craft and always pointed at where the industry is heading.", role: "Product Design Lead · Former Report", face: "assets/face6.png" },
-  { text: "A kind, compassionate leader with a true gift for operations — with him, your trains will all arrive on time, every time.", role: "Former Manager · VP, Experience", face: "assets/face8.png" },
-  { text: "An oasis of calm in a desert of chaos — and the rare designer who can hold both the system and the soul of a product at once.", role: "Product Colleague", face: "assets/face3.png" }
-];
-
-let idx = 0;
-const stack  = document.getElementById('quoteStack');
-const face   = document.getElementById('quoteFace');
-const text   = document.getElementById('quoteText');
-const attr   = document.getElementById('quoteAttr');
-const dotsEl = document.getElementById('quoteDots');
-
-function renderDots() {
-  dotsEl.innerHTML = '';
-  QUOTES.forEach((_, i) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'quote-dot' + (i === idx ? ' on' : '');
-    btn.setAttribute('aria-label', 'Quote ' + (i + 1));
-    btn.addEventListener('click', () => jumpTo(i));
-    dotsEl.appendChild(btn);
-  });
-}
-
-function jumpTo(i) {
-  stack.classList.replace('quote-in', 'quote-out');
-  setTimeout(() => {
-    idx = i;
-    showQuote();
-    stack.classList.replace('quote-out', 'quote-in');
-    renderDots();
-  }, 300);
-}
-
-function showQuote() {
-  const q = QUOTES[idx];
-  face.src = q.face;
-  text.textContent = '“' + q.text + '”';
-  attr.textContent = q.role;
-}
-
-function advance() {
-  stack.classList.replace('quote-in', 'quote-out');
-  setTimeout(() => {
-    idx = (idx + 1) % QUOTES.length;
-    showQuote();
-    stack.classList.replace('quote-out', 'quote-in');
-    renderDots();
-  }, 600);
-}
-
-showQuote();
-renderDots();
-setInterval(advance, 7500);
-
-// ── Bookshelf covers ─────────────────────────────────────
-const BOOKS = [
-  { id: 'cover-0', title: 'Demand Side Sales 101', author: 'Bob Moesta' },
-  { id: 'cover-1', title: 'Designing Assistant Technology', author: 'Christopher Noessel' },
-  { id: 'cover-2', title: 'Against the Machine', author: 'Paul Kingsnorth' },
-  { id: 'cover-3', title: 'The Pyramid Principle', author: 'Barbara Minto' },
-  { id: 'cover-4', title: 'Tools for Conviviality', author: 'Ivan Illich' },
-];
-
-const BOOK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="62" viewBox="0 0 44 62" fill="none">
-  <rect x="1" y="1" width="43" height="60" rx="1" fill="#EDE3C8" stroke="#1A1610" stroke-width="0.75"/>
-  <rect x="6" y="1" width="1.5" height="60" fill="#D4C9AC"/>
-  <line x1="6" y1="1" x2="6" y2="61" stroke="#1A1610" stroke-width="0.5"/>
-  <line x1="7.5" y1="1" x2="7.5" y2="61" stroke="rgba(26,22,16,0.15)" stroke-width="0.5"/>
-  <rect x="11" y="14" width="24" height="0.75" rx="0.375" fill="#1A1610" opacity="0.25"/>
-  <rect x="11" y="20" width="18" height="0.75" rx="0.375" fill="#1A1610" opacity="0.18"/>
-  <rect x="11" y="26" width="21" height="0.75" rx="0.375" fill="#1A1610" opacity="0.18"/>
-  <rect x="11" y="38" width="16" height="5" rx="0.5" fill="#1A1610" opacity="0.08"/>
-  <path d="M18 8 L26 8 M18 11 L30 11" stroke="#BB5E3E" stroke-width="0.75" stroke-linecap="round" opacity="0.6"/>
-</svg>`;
-
-function showBookPlaceholder(el) {
-  const svg = document.createElement('div');
-  svg.className = 'book-cover-placeholder';
-  svg.innerHTML = BOOK_SVG;
-  el.replaceWith(svg);
-}
-
-BOOKS.forEach(async (b) => {
-  const img = document.getElementById(b.id);
-  if (!img) return;
-  try {
-    const q = encodeURIComponent(b.title);
-    const a = encodeURIComponent(b.author);
-    const res = await fetch(`https://openlibrary.org/search.json?title=${q}&author=${a}&fields=cover_i&limit=1`);
-    const data = await res.json();
-    const coverId = data.docs?.[0]?.cover_i;
-    if (coverId) {
-      img.src = `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
-      img.onerror = () => showBookPlaceholder(img);
-    } else {
-      showBookPlaceholder(img);
-    }
-  } catch {
-    showBookPlaceholder(img);
-  }
-});
-
-// ── Writing list ──────────────────────────────────────────
-(async function loadWriting() {
-  const list = document.getElementById('writing-list');
-  try {
-    const res = await fetch('/api/posts');
-    const posts = await res.json();
-    if (!posts.length) { list.innerHTML = '<li style="padding:32px 56px;color:var(--ink-quiet);font-size:13px">No posts yet.</li>'; return; }
-    list.innerHTML = posts.map((p, i) => `
-      <li class="post">
-        <a href="${escHtml(p.href)}" class="post-link">
-          <div class="post-num">${String(i + 1).padStart(2, '0')}</div>
-          <div class="post-body">
-            <div class="post-meta">
-              <span>${escHtml(p.date)}</span><span class="sep">·</span>
-              <span>${escHtml(p.tag)}</span><span class="sep">·</span>
-              <span>${escHtml(p.read_time)}</span>
-            </div>
-            <h3 class="post-title">${escHtml(p.title)}</h3>
-            <p class="post-excerpt">${escHtml(p.excerpt)}</p>
-          </div>
-          <div class="post-arrow" aria-hidden="true">&rarr;</div>
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="wrap masthead-bar">
+      <h1 class="nameplate">Kiley Daniel Meehan</h1>
+      <div class="masthead-social">
+        <a class="social-link" href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
         </a>
-      </li>
-    `).join('');
-  } catch {
-    // fail silently — list stays empty
-  }
-})();
+        <a class="social-link" href="mailto:kileymeehan@gmail.com" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        </a>
+      </div>
+    </div>
+  </header>
 
-function escHtml(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-</script>
+  <nav class="toc" aria-label="Sections">
+    <div class="wrap toc-inner">
+      <a href="#bio" class="toc-link">Profile</a>
+      <a href="work.html" class="toc-link">My Work</a>
+      <a href="writing.html" class="toc-link">Writing</a>
+      <a href="cv.html" class="toc-link">CV</a>
+      <a href="#connect" class="toc-link">Connect</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ============ PROFILE / BIO ============ -->
+    <section class="hero" id="bio">
+      <div class="wrap hero-grid">
+        <div class="hero-side">
+          <div class="portrait-module reveal">
+            <figure class="hero-portrait">
+              <div class="portrait-frame">
+                <img src="assets/kiley-portrait.jpg" alt="Portrait of Kiley Daniel Meehan" width="1600" height="1600">
+              </div>
+              <figcaption class="caption">Kiley Daniel Meehan &mdash; A Strategic Product and Design Leader</figcaption>
+            </figure>
+          </div>
+          <aside class="hero-aside reveal" aria-label="Latest writing and bookshelf">
+            <div class="aside-block" id="latestWriting">
+              <p class="facts-title">Latest Writing</p>
+              <p class="aside-meta">May 2026 &middot; Essay &middot; 8 min read</p>
+              <p class="aside-title"><a href="earned-autonomy.html">Earned Autonomy</a></p>
+              <p class="aside-excerpt">A framework for working with AI without quietly handing it the keys &mdash; and what it means for the rest of us building software with it.</p>
+              <a class="aside-more" href="earned-autonomy.html">Read the essay</a>
+            </div>
+            <div class="aside-block">
+              <p class="facts-title">Bookshelf</p>
+              <ul class="shelf-list">
+                <li><span class="shelf-title">Demand Side Sales 101</span><span class="shelf-author">Bob Moesta &amp; Greg Engle</span></li>
+                <li><span class="shelf-title">Designing Assistant Technology</span><span class="shelf-author">Christopher Noessel</span></li>
+                <li><span class="shelf-title">Against the Machine</span><span class="shelf-author">Paul Kingsnorth</span></li>
+                <li><span class="shelf-title">The Pyramid Principle</span><span class="shelf-author">Barbara Minto</span></li>
+                <li><span class="shelf-title">Tools for Conviviality</span><span class="shelf-author">Ivan Illich</span></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+        <div class="hero-copy reveal">
+          <p class="kicker">Profile</p>
+          <p class="hero-tagline">Design leadership for products people run their businesses&nbsp;on.</p>
+          <div class="prose">
+            <p><strong>Kiley Daniel Meehan</strong> is a strategic product and design leader. At FreshBooks, he led experience strategy across accounting, payments, platform, and operations &mdash; one connected product, not four disconnected ones.</p>
+            <p>He owned the company&rsquo;s Experience Vision and Principles, built the &ldquo;Pathways&rdquo; framework for aligning product teams around a single customer journey, and championed structured measurement &mdash; the HEART framework &mdash; over guesswork.</p>
+            <p>His mission, stated plainly on every strategy deck he shipped: <em class="accent">Making the Complex Simple.</em></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RECOMMENDATIONS ============ -->
+    <section class="recs reveal" id="recs" aria-label="Recommendations">
+      <div class="wrap">
+        <p class="kicker kicker--accent">Recommended</p>
+        <div class="recs-card">
+          <div class="recs-stack recs-in" id="recStack">
+            <span class="rec-face" id="recFace" aria-hidden="true"></span>
+            <blockquote class="rec-quote">
+              <p id="recText"></p>
+              <cite class="rec-attr" id="recAttr"></cite>
+            </blockquote>
+          </div>
+          <div class="rec-dots" id="recDots" role="tablist" aria-label="Choose recommendation"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="connect">
+    <div class="wrap">
+      <p class="kicker kicker--accent">Connect</p>
+      <p class="footer-lede">Let&rsquo;s talk about Making the Complex&nbsp;Simple.</p>
+      <a class="footer-mail" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+      <div class="folio folio--footer" role="presentation">
+        <span class="folio-item">Kiley Daniel Meehan</span>
+        <span class="folio-item folio-item--right">Set in Newsreader &amp; Archivo</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>

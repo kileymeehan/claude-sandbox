@@ -1,0 +1,1381 @@
+/* ==========================================================================
+   Kiley Meehan — Portfolio
+   Editorial, Monocle-inflected. Serif-led, paper-toned, hairline-ruled.
+
+   Accessibility floor: NO text below 18px (1.125rem @ 16px root).
+   Every font-size in this file is >= 1.125rem. Hierarchy below the body
+   size is expressed with letter-spacing, weight, and color — never size.
+   ========================================================================== */
+
+/* ---------- Tokens ---------- */
+
+:root {
+  /* Old Rose / Rosy Taupe / Grey Olive / Dim Grey / Deep Space Blue palette,
+     laid over a kept-light paper (none of the five swatches is light enough
+     to read as a background). AA-solid:
+     --ink on --paper       ≈ 10.5:1  (Deep Space Blue #253D5B)
+     --ink-soft on --paper  ≈  5.2:1  (Dim Grey #67697C)
+     --accent on --paper    ≈  5.6:1  (Old Rose #C6878F, deepened — see below) */
+  --paper:      #faf9f5;
+  --paper-deep: #f1ece6;   /* Rosy Taupe #B79D94, washed light */
+  --ink:        #253d5b;   /* Deep Space Blue */
+  --ink-soft:   #67697c;   /* Dim Grey */
+  --accent:     #8c5560;   /* Old Rose #C6878F deepened for text-safe contrast; used sparingly */
+  --rule:       #d2d1cf;   /* Grey Olive #969696, washed light (hairlines, non-text) */
+  --ghost:      #e7e7e2;   /* Rosy Taupe, washed lighter (oversized numerals, non-text, decorative) */
+  --slate:      #253d5b;   /* Deep Space Blue, masthead only — paper on slate ≈ 10.5:1 */
+  --olive:      #969696;   /* Grey Olive, full strength — decorative only (diagram fills), not text */
+  --taupe:      #b79d94;   /* Rosy Taupe, full strength — decorative only (diagram fills), not text */
+
+  --serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --sans:  "Archivo", "Helvetica Neue", Arial, sans-serif;
+
+  /* Type scale — floor is 1.125rem (18px), with one deliberate exception:
+     --text-meta dips below it for metadata rows (dates, categories, read
+     time) that should read as quiet fine print, not as body-weight text. */
+  --text-label:   1.125rem;                        /* kickers, folio, captions, nav */
+  --text-meta:    0.8125rem;                       /* metadata rows — dates, type, read time */
+  --text-body:    1.25rem;                         /* running text */
+  --text-facts:   1.1875rem;                       /* facts-box body */
+  --text-dek:     clamp(1.375rem, 2.5vw, 1.625rem);
+  --text-tagline: clamp(1.75rem, 3.5vw, 2.5rem);
+  --text-title:   clamp(2.5rem, 6vw, 4.25rem);
+  --text-quote:   clamp(1.875rem, 4vw, 2.75rem);
+
+  --space-1: 0.75rem;
+  --space-2: 1.5rem;
+  --space-3: 2.5rem;
+  --space-4: 4rem;
+  --space-5: clamp(4.5rem, 10vw, 8rem);
+
+  --measure: 42rem;   /* body column */
+}
+
+/* ---------- Reset & base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem; /* clear the sticky toc */
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: var(--text-body);
+  line-height: 1.65;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+h1, h2, p, figure, blockquote, dl, dd, ul { margin: 0; }
+
+a { color: inherit; }
+
+::selection { background: var(--accent); color: var(--paper); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Layout primitives ---------- */
+
+.wrap {
+  max-width: 74rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3.5rem);
+}
+
+/* ---------- Shared editorial furniture ---------- */
+
+/* Kicker / eyebrow — 18px, differentiated by tracking + weight, not size */
+.kicker {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-soft);
+}
+
+.kicker--accent { color: var(--accent); }
+
+.caption {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  margin-top: var(--space-1);
+}
+
+/* Folio line — the thin ruled strip of small labels, magazine-style */
+.folio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  justify-content: space-between;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding-block: 0.6rem;
+}
+
+.folio-item {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink);
+}
+
+.folio-item--right { text-align: right; }
+
+/* ---------- Masthead ----------
+   A slim editorial flag, not a hero banner — deep slate ground, paper-white
+   nameplate, at kicker/folio scale rather than a giant display size. */
+
+.masthead {
+  padding-block: clamp(0.85rem, 2vw, 1.1rem);
+  background: var(--slate);
+  border-bottom: 1px solid var(--slate);
+}
+
+.masthead-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+  column-gap: 1.5rem;
+}
+
+.nameplate {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--paper);
+}
+
+.masthead-social {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.social-link {
+  display: flex;
+  color: var(--paper);
+  transition: color 160ms ease;
+}
+
+.social-link:hover { color: var(--accent); }
+
+.social-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ---------- Table of contents (sticky nav) ---------- */
+
+.toc {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--paper);
+  /* Subtle halftone texture, same technique as the kiley-website build's
+     dot-screened panels: a tight radial-gradient dot grid, low-opacity so
+     it reads as paper grain behind the nav links rather than a pattern. */
+  background-image: radial-gradient(rgba(37, 61, 91, 0.16) 0.6px, transparent 1px);
+  background-size: 8px 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.toc-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  column-gap: clamp(1.25rem, 3vw, 3rem);
+}
+
+.toc-link {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--ink-soft);
+  padding-block: 0.85rem;
+  border-bottom: 2px solid transparent;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+
+.toc-link:hover { color: var(--ink); }
+
+.toc-link.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.toc-no {
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 0.15em;
+}
+
+/* ---------- Hero / profile ---------- */
+
+.hero {
+  padding-block: var(--space-5);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(16rem, 5fr) 7fr;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
+}
+
+/* Portrait + caption live inside their own bordered card, matching the
+   "Latest Writing / Bookshelf" module below it — same paper-deep fill
+   and top rule, so the hero sidebar reads as a stack of two modules. */
+.portrait-module {
+  max-width: 22rem;
+  background: var(--paper-deep);
+  border-top: 2px solid var(--ink);
+  padding: var(--space-2);
+}
+
+/* Frame and caption sit side by side; decoupling the caption's width
+   from the frame's avoids the text collapsing into a single narrow,
+   unreadable column. */
+.hero-portrait {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.portrait-frame {
+  position: relative;
+  flex: none;
+  width: 6.5rem;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.portrait-frame img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: grayscale(1) contrast(1.5) brightness(1.05);
+  box-shadow: 0 1.25rem 2.5rem -1rem rgba(58, 40, 24, 0.28),
+              0 0.5rem 1rem -0.25rem rgba(58, 40, 24, 0.16);
+}
+
+/* Halftone print texture — a rotated dot screen multiplied over the
+   grayscale portrait, like a photo run through an offset press. The
+   pseudo-element is oversized and rotated freely; the parent's own
+   border-radius + overflow does the circular clipping, so the dot
+   grid itself never gets stretched into an ellipse. Dots are sized
+   up relative to the now-much-smaller portrait so the print texture
+   still reads clearly at this scale instead of dissolving into gray. */
+.portrait-frame::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background-image: radial-gradient(circle, var(--ink) 0.7px, transparent 0.7px);
+  background-size: 2.25px 2.25px;
+  transform: translate(-50%, -50%) rotate(24deg);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.hero-portrait .caption {
+  text-align: left;
+  margin-top: 0;
+}
+
+.hero-tagline {
+  font-family: var(--serif);
+  font-size: var(--text-tagline);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.25;
+  margin-block: var(--space-2) var(--space-3);
+}
+
+/* ---------- Running text ---------- */
+
+.prose {
+  max-width: var(--measure);
+  /* Without this, a grid item's automatic min-width is content-based, so a
+     wide nested element (e.g. a diagram with its own min-width safety net)
+     would balloon this column and the whole page instead of scrolling
+     inside the diagram's own overflow-x container. */
+  min-width: 0;
+}
+
+.prose p + p { margin-top: 1.4em; }
+
+.prose a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.prose strong { font-weight: 600; }
+
+em.accent {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ---------- Case studies ---------- */
+
+.case {
+  border-top: 1px solid var(--rule);
+  padding-block: var(--space-5);
+}
+
+.case:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.case-head {
+  position: relative;
+  max-width: 54rem;
+  margin-bottom: var(--space-4);
+}
+
+/* Oversized issue numeral — decorative, ghosted, aria-hidden */
+.case-ghost {
+  position: absolute;
+  top: -0.18em;
+  right: 0;
+  font-family: var(--serif);
+  font-size: clamp(8rem, 18vw, 15rem);
+  font-weight: 400;
+  line-height: 1;
+  color: var(--ghost);
+  z-index: -1;
+  user-select: none;
+}
+
+.case-title {
+  font-family: var(--serif);
+  font-size: var(--text-tagline);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-block: var(--space-1) var(--space-2);
+  max-width: 16ch;
+}
+
+.dek {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--ink-soft);
+  max-width: 34ch;
+}
+
+.case-body {
+  display: grid;
+  grid-template-columns: minmax(0, var(--measure)) minmax(15rem, 1fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: start;
+}
+
+/* ---------- Pull quotes ---------- */
+
+.pullquote {
+  margin-block: var(--space-3);
+  padding-block: var(--space-2);
+  border-top: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+}
+
+.pullquote blockquote p {
+  font-family: var(--serif);
+  font-size: var(--text-quote);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.pullquote--short blockquote p {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+}
+
+/* ---------- Diagrams ---------- */
+/* All diagram graphics (bars, circles, axes, connectors) live in an inline
+   SVG and scale with the layout. Every label is a real HTML element laid
+   over the SVG and positioned by percentage, so its font-size always comes
+   from the type scale (18px floor) — never from the SVG's coordinate
+   scaling, which would shrink text on narrow viewports. */
+
+.diagram {
+  margin-block: var(--space-3);
+  padding-block: var(--space-3);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  /* Labels are fixed-size real text, so the diagram can't shrink forever —
+     past its min-width it scrolls horizontally in its own container rather
+     than letting labels collide or clip. */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.diagram-figure {
+  position: relative;
+  width: 100%;
+  min-width: 20rem;
+}
+
+.diagram-figure--ladder { min-width: 30rem; }
+
+.diagram-figure svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.diagram-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  line-height: 1.3;
+  text-align: center;
+}
+
+.diagram-label--left {
+  transform: translate(0, -50%);
+  text-align: left;
+}
+
+.diagram-label--rotate {
+  transform: translate(-50%, -50%) rotate(-90deg);
+  white-space: nowrap;
+}
+
+.diagram-rung-no {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.diagram-rung-name {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.diagram-track-label {
+  font-weight: 500;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.diagram-quad-label {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.diagram-axis-label {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.diagram-mode-label {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.diagram-mode-label--a { color: var(--ink); }
+.diagram-mode-label--b { color: var(--accent); }
+
+.diagram-quick-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Shape styling (referenced by class from the inline SVGs) */
+.diagram-bar { fill: var(--paper-deep); stroke: var(--rule); stroke-width: 1; }
+.diagram-bar-cap { stroke: var(--accent); stroke-width: 3; }
+.diagram-baseline { stroke: var(--ink); stroke-width: 1; }
+.diagram-track-a { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 6 5; fill: none; }
+.diagram-track-b { stroke: var(--ink-soft); stroke-width: 2; stroke-dasharray: 6 5; fill: none; }
+.diagram-quad-fill { stroke: var(--rule); stroke-width: 1; }
+
+/* Shared halftone-dot fill system — a faint colour wash plus a slightly
+   stronger dot laid over it, tiled tight via an SVG <pattern> (see the
+   AP/DC quadrant figure and the Serving/Manager Mode venn figure for the
+   <defs> markup that references these). Four hues, all already in the
+   palette (see --olive/--taupe above), so any diagram can pick from the
+   same small set instead of inventing new colour per figure. */
+.diagram-dot-wash--ink     { fill: var(--ink); opacity: 0.05; }
+.diagram-dot--ink          { fill: var(--ink); opacity: 0.3; }
+.diagram-dot-wash--accent  { fill: var(--accent); opacity: 0.07; }
+.diagram-dot--accent       { fill: var(--accent); opacity: 0.32; }
+.diagram-dot-wash--olive   { fill: var(--olive); opacity: 0.05; }
+.diagram-dot--olive        { fill: var(--olive); opacity: 0.28; }
+.diagram-dot-wash--taupe   { fill: var(--taupe); opacity: 0.07; }
+.diagram-dot--taupe        { fill: var(--taupe); opacity: 0.32; }
+
+.diagram-quad-fill--prepare  { fill: url(#quadDotPrepare); }
+.diagram-quad-fill--act      { fill: url(#quadDotAct); }
+.diagram-quad-fill--consider { fill: url(#quadDotConsider); }
+.diagram-quad-fill--decide   { fill: url(#quadDotDecide); }
+
+.diagram-axis { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.diagram-circle-a { fill: url(#vennDotServing); stroke: var(--ink); stroke-width: 1.5; fill-opacity: 0.9; }
+.diagram-circle-b { fill: url(#vennDotManager); stroke: var(--accent); stroke-width: 1.5; fill-opacity: 0.55; }
+
+/* ---------- Term lists (AP/DC, Modes) ---------- */
+
+.term-list {
+  margin-block: var(--space-2);
+  border-top: 1px solid var(--rule);
+}
+
+.term {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr;
+  gap: 1.25rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.term dt {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  padding-top: 0.2rem;
+}
+
+.term dd { line-height: 1.55; }
+
+/* ---------- Facts box ("At a glance") ---------- */
+
+.facts {
+  position: sticky;
+  top: 6rem;
+  background: var(--paper-deep);
+  border-top: 2px solid var(--ink);
+  padding: var(--space-2) var(--space-2) var(--space-2);
+}
+
+.facts-title {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink);
+  margin-bottom: var(--space-2);
+}
+
+.facts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.facts-list li {
+  font-family: var(--serif);
+  font-size: var(--text-facts);
+  line-height: 1.5;
+  color: var(--ink-soft);
+  padding-block: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+
+.facts-list li:first-child { border-top: none; padding-top: 0; }
+
+.fact-lead {
+  display: block;
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 0.2rem;
+}
+
+/* ---------- Footer ---------- */
+
+.footer {
+  border-top: 1px solid var(--rule);
+  padding-block: var(--space-5) var(--space-3);
+}
+
+.footer-lede {
+  font-family: var(--serif);
+  font-size: var(--text-tagline);
+  font-style: italic;
+  line-height: 1.25;
+  margin-block: var(--space-2) var(--space-2);
+  max-width: 24ch;
+}
+
+.footer-mail {
+  display: inline-block;
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  margin-bottom: var(--space-4);
+}
+
+.folio--footer {
+  border-top: 1px solid var(--rule);
+  border-bottom: none;
+}
+
+.folio--footer .folio-item { color: var(--ink-soft); }
+
+/* ---------- Reveal on scroll (JS adds .is-visible) ---------- */
+
+.js .reveal {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Structural expansion — My Work band, Writing index, hero sidebar,
+   interior pages (essays + CV).
+   Same tokens, same 18px floor: every font-size below is >= 1.125rem.
+   ========================================================================== */
+
+/* ---------- Section bands (umbrella heads: My Work, Writing) ---------- */
+
+.work {
+  background: var(--paper-deep);
+  padding-top: var(--space-5);
+}
+
+.writing {
+  background: var(--paper-deep);
+  padding-block: var(--space-5);
+}
+
+/* ---------- Hero sidebar (latest essay + bookshelf) ---------- */
+
+.hero-side { min-width: 0; }
+
+.hero-aside {
+  max-width: 22rem;
+  margin-top: var(--space-4);
+  background: var(--paper-deep);
+  border-top: 2px solid var(--ink);
+  padding: var(--space-2);
+}
+
+.aside-block + .aside-block {
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+}
+
+.aside-meta {
+  font-family: var(--sans);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+.aside-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.aside-title a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.aside-title a:hover { color: var(--accent); }
+
+.aside-excerpt {
+  font-family: var(--serif);
+  font-size: var(--text-facts);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-top: 0.6rem;
+}
+
+.aside-more {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  margin-top: 0.75rem;
+}
+
+.shelf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shelf-list li {
+  padding-block: 0.55rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-facts);
+  line-height: 1.45;
+}
+
+.shelf-list li:first-child { border-top: none; padding-top: 0; }
+
+.shelf-title { font-style: italic; }
+
+.shelf-author {
+  display: block;
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  color: var(--ink-soft);
+}
+
+/* ---------- Writing index (main page) ---------- */
+
+.essay-index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 54rem;
+}
+
+.essay-item { border-bottom: 1px solid var(--rule); }
+
+.essay-link {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  padding-block: var(--space-2);
+  text-decoration: none;
+  color: inherit;
+}
+
+.essay-no {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--accent);
+  padding-top: 0.4rem;
+}
+
+.essay-meta {
+  display: block;
+  font-family: var(--sans);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+.essay-title {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(1.625rem, 3vw, 2.125rem);
+  font-weight: 500;
+  line-height: 1.15;
+  transition: color 160ms ease;
+}
+
+.essay-link:hover .essay-title,
+.essay-link:focus-visible .essay-title { color: var(--accent); }
+
+.essay-excerpt {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin-top: 0.6rem;
+  max-width: 58ch;
+}
+
+.essay-arrow {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  color: var(--accent);
+  align-self: center;
+}
+
+a.nameplate {
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+a.nameplate:hover { color: var(--accent); }
+
+.toc-link[aria-current="page"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.page-head {
+  padding-block: clamp(3.5rem, 9vw, 6.5rem) var(--space-3);
+}
+
+.page-head-inner {
+  max-width: var(--measure);
+}
+
+.page-title {
+  font-family: var(--serif);
+  font-size: var(--text-title);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin-block: var(--space-1) var(--space-2);
+}
+
+.page-byline {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: var(--space-2);
+  padding-top: var(--space-1);
+  border-top: 1px solid var(--rule);
+}
+
+/* ---------- Essay pages — long-form reading ---------- */
+
+.essay { padding-block: var(--space-2) var(--space-5); }
+
+.essay-prose {
+  margin-inline: auto;
+  line-height: 1.7;
+}
+
+/* Sub-heads within an essay — kicker-weight, ruled, never smaller than 18px */
+.essay-sub {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+  margin: var(--space-4) 0 var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+}
+
+/* Margin-note content folded inline as a quiet boxed aside */
+.essay-note {
+  margin-block: var(--space-3);
+  padding: var(--space-2);
+  background: var(--paper-deep);
+  border-top: 2px solid var(--ink);
+  font-size: var(--text-facts);
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.essay-note .note-label {
+  display: block;
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+/* Reading-list entries (A UX Career is a Business Career) */
+.book-head {
+  margin: var(--space-4) 0 var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+}
+
+.book-eyebrow {
+  display: block;
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+
+.book-name {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.book-author {
+  display: block;
+  font-family: var(--serif);
+  font-size: var(--text-body);
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-top: 0.25rem;
+}
+
+/* Pull-quote attribution line */
+.pullquote .attr {
+  display: block;
+  margin-top: var(--space-1);
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* End mark — the .prose p + p selector must not win over this margin */
+.prose .essay-end { margin-top: var(--space-4); }
+
+.essay-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: var(--space-4);
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.essay-end::before {
+  content: "";
+  width: 0.75rem;
+  height: 0.75rem;
+  background: var(--accent);
+}
+
+/* Next-essay hand-off */
+.essay-next {
+  max-width: var(--measure);
+  margin-inline: auto;
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--ink);
+  padding-top: var(--space-2);
+}
+
+.essay-next-title {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  font-weight: 500;
+  line-height: 1.25;
+  margin-top: 0.5rem;
+}
+
+.essay-next-title a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.essay-next-title a:hover { color: var(--accent); }
+
+/* Interior footer — lighter than the homepage Connect footer */
+.footer--page { padding-block: var(--space-4) var(--space-3); }
+
+.footer-page-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.5rem;
+  margin-bottom: var(--space-2);
+}
+
+.footer-page-link {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.footer-page-link:hover { color: var(--accent); }
+
+/* ---------- CV page ---------- */
+
+.cv-intro { padding-block: var(--space-5) var(--space-4); }
+
+.cv-section {
+  border-top: 1px solid var(--rule);
+  padding-block: var(--space-4) var(--space-5);
+}
+
+.cv-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  margin-bottom: var(--space-3);
+}
+
+.cv-section-note {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.company { max-width: 60rem; }
+
+.company + .company { margin-top: var(--space-4); }
+
+.company-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.25rem 2rem;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--rule);
+}
+
+.company-name {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  font-weight: 600;
+}
+
+.company-meta {
+  font-family: var(--sans);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  text-align: right;
+}
+
+.role {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 13rem;
+  gap: 1rem 3rem;
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.role-title {
+  font-family: var(--serif);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+}
+
+.role-bullets {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.role-bullets li {
+  font-size: var(--text-facts);
+  line-height: 1.55;
+  padding-block: 0.2rem;
+}
+
+.role-bullets li::marker { color: var(--accent); }
+
+.role-meta {
+  font-family: var(--sans);
+  font-size: var(--text-meta);
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.role-meta span { display: block; }
+
+.role-dates {
+  display: block;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cv-lead {
+  font-family: var(--serif);
+  font-size: var(--text-dek);
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 30ch;
+  margin-bottom: var(--space-2);
+}
+
+.focus-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--measure);
+}
+
+.focus-list li {
+  padding-block: 0.75rem;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-facts);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: var(--space-2);
+}
+
+.chip {
+  font-family: var(--sans);
+  font-size: var(--text-label);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+  padding: 0.25rem 0.75rem;
+}
+
+.cv-outro-copy {
+  max-width: var(--measure);
+  margin-block: var(--space-2) var(--space-3);
+  color: var(--ink-soft);
+}
+
+.facts-list a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------- Recommendations carousel ---------- */
+/* Mirrors the rotating-quote approach from the kiley-website build: an
+   illustrated line-art face, an italic quote, and a small-caps attribution,
+   auto-advancing with click-to-jump dots. Recolored for this palette: the
+   dark card reuses --ink/--slate (Deep Space Blue) rather than that
+   project's dark brown, and the attribution needs a brighter rose than
+   --accent since --accent is tuned for text on light --paper, not on this
+   dark card — plain --accent on --ink is only ~1.9:1.
+   --rec-label on --ink ≈ 4.9:1 (text-safe); face art is decorative so it
+   uses the true, undeepened Old Rose swatch. */
+
+.recs {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-deep);
+  border-top: 1px solid var(--rule);
+  padding-block: var(--space-4) var(--space-5);
+}
+
+.recs > .wrap {
+  position: relative;
+  z-index: 1;
+}
+
+.recs-card {
+  --rec-label: #d19fa5;   /* Old Rose, lightened for AA contrast on --ink */
+  background: var(--ink);
+  padding: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.recs-stack {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2) clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  transition: opacity 450ms ease, transform 450ms ease;
+}
+
+.recs-in  { opacity: 1; transform: translateY(0); }
+.recs-out { opacity: 0; transform: translateY(-0.5rem); }
+
+.rec-face {
+  grid-row: 1 / span 2;
+  width: clamp(4.5rem, 8vw, 5.5rem);
+  aspect-ratio: 477 / 455;
+  flex: none;
+  background-color: #c6878f;  /* true Old Rose swatch — decorative, non-text */
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+}
+
+.rec-quote p {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--text-dek);
+  line-height: 1.45;
+  color: var(--paper);
+}
+
+.rec-attr {
+  display: block;
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rec-label);
+  margin-top: var(--space-1);
+}
+
+.rec-attr::before { content: "\2014\0020"; }
+
+.rec-dots {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: var(--space-3);
+}
+
+.rec-dot {
+  width: 1.25rem;
+  height: 2px;
+  padding: 0;
+  border: 0;
+  background: rgba(250, 249, 245, 0.3);
+  cursor: pointer;
+  transition: background 160ms ease, width 160ms ease;
+}
+
+.rec-dot:hover { background: rgba(250, 249, 245, 0.55); }
+
+.rec-dot.is-active {
+  background: var(--rec-label);
+  width: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recs-stack { transition: none; }
+}
+
+@media (max-width: 46rem) {
+  .recs-stack { grid-template-columns: 1fr; }
+  .rec-face { grid-row: auto; }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 60rem) {
+  .case-body { grid-template-columns: 1fr; }
+
+  .facts {
+    position: static;
+    max-width: var(--measure);
+  }
+}
+
+@media (max-width: 60rem) {
+  .role { grid-template-columns: 1fr; gap: 0.75rem; }
+  .company-meta { text-align: left; }
+}
+
+@media (max-width: 46rem) {
+  .hero-grid { grid-template-columns: 1fr; }
+
+  .portrait-module { max-width: none; margin-inline: 0; }
+  .portrait-frame { width: 5.5rem; }
+
+  .toc-inner {
+    justify-content: flex-start;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .toc-inner::-webkit-scrollbar { display: none; }
+
+  .case-ghost {
+    font-size: clamp(6rem, 24vw, 8rem);
+    top: auto;
+    bottom: 100%;
+    transform: translateY(35%);
+  }
+
+  .term { grid-template-columns: 1fr; gap: 0.35rem; }
+
+  .hero-aside { max-width: var(--measure); }
+
+  .essay-link { grid-template-columns: 1fr; gap: 0.25rem; }
+  .essay-no,
+  .essay-arrow { display: none; }
+}

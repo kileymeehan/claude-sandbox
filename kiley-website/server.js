@@ -163,157 +163,103 @@ app.delete('/admin/posts/:slug', requireAuth, async (req, res) => {
 // ── RENDERERS ───────────────────────────────────────────────
 
 function renderPost(post, contentHtml) {
-  const year = new Date().getFullYear();
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escHtml(post.title)} · Kiley Meehan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escHtml(post.title)} — Kiley Daniel Meehan</title>
+<meta name="description" content="${escHtml(post.excerpt || '')}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --cream: #F5EEDB;
-    --ink: #0C0805;
-    --ink-soft: #1A1610;
-    --ink-mute: rgba(12,8,5,0.72);
-    --ink-quiet: rgba(12,8,5,0.46);
-    --terracotta: #BB5E3E;
-    --rule: #1A1610;
-    --rule-soft: rgba(26,22,16,0.18);
-    --dark-green: #0C1A14;
-    --serif: 'Cormorant Garamond', Georgia, serif;
-    --mono: 'IBM Plex Mono', monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--ink); }
-  body { font-family: var(--mono); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-
-  .site-header { position: sticky; top: 0; z-index: 100; background: var(--dark-green); color: #F5EEDB; border-bottom: 1px solid #F5EEDB; }
-  .hdr-inner { display: grid; grid-template-columns: 56px 1fr auto 56px; align-items: stretch; height: 72px; }
-  .hdr-brand, .hdr-nav { display: flex; align-items: center; font-family: var(--mono); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #F5EEDB; }
-  .hdr-brand { grid-column: 2; padding: 0 28px; }
-  .hdr-brand a { color: inherit; text-decoration: none; }
-  .hdr-nav { grid-column: 3; justify-content: flex-end; padding: 0; height: 100%; }
-  .hdr-nav a { color: #F5EEDB; text-decoration: none; display: flex; align-items: center; height: 100%; padding: 0 28px; border-left: 1px solid rgba(245,238,219,0.55); transition: background 0.2s, color 0.2s; }
-  .hdr-nav a:hover { background: var(--terracotta); color: #FBF5E2; }
-
-  .shell { background: color-mix(in oklab, var(--cream), white 18%); display: grid; grid-template-columns: 56px 1fr 56px; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); min-height: calc(100vh - 72px); }
-  .rail { position: relative; overflow: hidden; }
-  .rail.left { grid-column: 1; border-right: 1px solid var(--rule); background-image: repeating-linear-gradient(135deg, transparent 0 9px, rgba(26,22,16,0.07) 9px 10px); }
-  .rail.right { grid-column: 3; border-left: 1px solid var(--rule); }
-  .vlabel { position: absolute; top: 80px; left: 50%; transform: translateX(-50%) rotate(-90deg); white-space: nowrap; font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ink-soft); }
-  .rail.right .vlabel { top: auto; bottom: 80px; }
-
-  .article-shell { grid-column: 2; }
-
-  .crumb { border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 22px 56px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-soft); }
-  .crumb a { color: var(--ink-soft); text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: color 0.2s; }
-  .crumb a:hover { color: var(--terracotta); }
-  .crumb-right { color: var(--ink-quiet); }
-
-  .cover {
-    border-bottom: 1px solid var(--rule);
-    padding: 96px 56px 80px;
-    display: grid; grid-template-columns: 200px 1fr 200px;
-    gap: 48px; align-items: end;
-    background-color: color-mix(in oklab, var(--cream), white 18%);
-    background-image: radial-gradient(rgba(26,22,16,0.36) 1px, transparent 1.2px);
-    background-size: 8px 8px;
-  }
-  .cover-num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ink-quiet); writing-mode: vertical-lr; transform: rotate(180deg); align-self: center; }
-  .cover-center { display: flex; flex-direction: column; gap: 20px; }
-  .cover-eyebrow { background: color-mix(in oklab, var(--cream), white 18%); display: inline-block; padding: 4px 10px; margin: 0 -10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terracotta); }
-  .cover-title { font-family: var(--serif); font-weight: 300; font-size: clamp(42px, 5vw, 80px); line-height: 1.05; letter-spacing: -0.015em; color: var(--ink); }
-  .cover-title em { font-style: italic; }
-  .cover-chip { background: color-mix(in oklab, var(--cream), white 18%); display: inline; padding: 0 10px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-  .cover-meta-row { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); display: inline-flex; align-items: center; gap: 12px; background: color-mix(in oklab, var(--cream), white 18%); padding: 4px 10px; margin: 0 -10px; }
-  .cover-meta-row .sep { opacity: 0.5; }
-
-  .article-body { padding: 72px 56px 96px; max-width: 720px; }
-  .article-body p { font-family: var(--mono); font-size: 18px; line-height: 1.8; color: var(--ink); margin-bottom: 1.6em; }
-  .article-body h1, .article-body h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 3vw, 42px); line-height: 1.15; letter-spacing: -0.01em; color: var(--ink); margin: 2em 0 0.75em; }
-  .article-body h3 { font-family: var(--mono); font-size: 13px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--terracotta); margin: 2em 0 1em; }
-  .article-body blockquote { border-left: 2px solid var(--terracotta); padding-left: 28px; margin: 2.5em 0; }
-  .article-body blockquote p { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2vw, 26px); color: var(--ink-soft); margin-bottom: 0; }
-  .article-body ul, .article-body ol { padding-left: 2em; margin-bottom: 1.6em; }
-  .article-body li { font-family: var(--mono); font-size: 18px; line-height: 1.8; color: var(--ink); margin-bottom: 0.4em; }
-  .article-body a { color: var(--terracotta); text-decoration: underline; text-underline-offset: 3px; }
-  .article-body a:hover { color: var(--ink); }
-  .article-body strong { font-weight: 600; }
-  .article-body em { font-style: italic; }
-  .article-body hr { border: none; border-top: 1px solid var(--rule-soft); margin: 3em 0; }
-  .article-body pre { background: var(--ink); color: var(--cream); padding: 24px; overflow-x: auto; margin-bottom: 1.6em; font-size: 14px; line-height: 1.6; }
-  .article-body code { font-family: var(--mono); font-size: 0.9em; background: rgba(26,22,16,0.08); padding: 2px 6px; }
-  .article-body pre code { background: none; padding: 0; }
-
-  .article-footer { border-top: 1px solid var(--rule); padding: 56px; display: flex; justify-content: space-between; align-items: center; }
-  .article-footer a { font-family: var(--mono); font-size: 12px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
-  .article-footer a:hover { color: var(--terracotta); }
-
-  .site-footer { background: var(--dark-green); color: #F5EEDB; border-top: 1px solid #F5EEDB; padding: 48px 56px 32px; font-family: var(--mono); display: flex; justify-content: space-between; align-items: center; }
-  .foot-name { font-family: var(--serif); font-size: 24px; }
-  .foot-copy { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(245,238,219,0.55); }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="hdr-inner">
-    <div class="hdr-brand"><a href="/">Kiley Meehan</a></div>
-    <nav class="hdr-nav">
-      <a href="/#work">Work</a>
-      <a href="/#writing">Writing</a>
-      <a href="/cv.html">CV</a>
-      <a href="/#about">About</a>
-      <a href="mailto:kileymeehan@gmail.com">Contact me</a>
-    </nav>
+<header class="masthead">
+  <div class="wrap masthead-bar">
+    <a class="nameplate" href="/">Kiley Daniel Meehan</a>
+    <div class="masthead-social">
+      <a class="social-link" href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
+      <a class="social-link" href="mailto:kileymeehan@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+      </a>
+    </div>
   </div>
 </header>
 
-<div class="shell">
-  <div class="rail left"><div class="vlabel">Essay</div></div>
-  <div class="article-shell">
-    <div class="crumb">
-      <a href="/#writing">← Writing</a>
-      <span class="crumb-right">${escHtml(post.tag || 'Essay')} · ${escHtml(post.read_time || '')}</span>
-    </div>
-    <div class="cover">
-      <div class="cover-num">Kiley Meehan</div>
-      <div class="cover-center">
-        <span class="cover-eyebrow">${escHtml(post.tag || 'Essay')}</span>
-        <h1 class="cover-title"><span class="cover-chip">${escHtml(post.title)}</span></h1>
-        <div class="cover-meta-row">
-          <span>${escHtml(post.date || '')}</span>
-          <span class="sep">·</span>
-          <span>${escHtml(post.read_time || '')}</span>
-        </div>
+<nav class="toc" aria-label="Sections">
+  <div class="wrap toc-inner">
+    <a href="/#bio" class="toc-link">Profile</a>
+    <a href="/work.html" class="toc-link">My Work</a>
+    <a href="/writing.html" class="toc-link" aria-current="page">Writing</a>
+    <a href="/cv.html" class="toc-link">CV</a>
+    <a href="/#connect" class="toc-link">Connect</a>
+  </div>
+</nav>
+
+<main>
+  <header class="page-head">
+    <div class="wrap">
+      <div class="page-head-inner">
+        <p class="kicker kicker--accent">${escHtml(post.tag || 'Essay')}</p>
+        <h1 class="page-title">${escHtml(post.title)}</h1>
+        ${post.excerpt ? `<p class="dek">${escHtml(post.excerpt)}</p>` : ''}
+        <p class="page-byline">By Kiley Daniel Meehan &middot; ${escHtml(post.date || '')} &middot; ${escHtml(post.read_time || '')}</p>
       </div>
-      <div></div>
     </div>
-    <div class="article-body">
-      ${contentHtml}
+  </header>
+
+  <article class="essay">
+    <div class="wrap">
+      <div class="prose essay-prose">
+        ${contentHtml}
+        <p class="essay-end" aria-hidden="true">End</p>
+      </div>
     </div>
-    <div class="article-footer">
-      <a href="/#writing">← Back to writing</a>
-      <a href="/">Kiley Meehan →</a>
+  </article>
+</main>
+
+<footer class="footer footer--page">
+  <div class="wrap">
+    <div class="footer-page-links">
+      <a class="footer-page-link" href="/">Home</a>
+      <a class="footer-page-link" href="/work.html">My Work</a>
+      <a class="footer-page-link" href="/writing.html">All Writing</a>
+      <a class="footer-page-link" href="/cv.html">CV</a>
+      <a class="footer-page-link" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+    </div>
+    <div class="folio folio--footer" role="presentation">
+      <span class="folio-item">Kiley Daniel Meehan</span>
+      <span class="folio-item folio-item--right">Set in Newsreader &amp; Archivo</span>
     </div>
   </div>
-  <div class="rail right"><div class="vlabel">Ongoing</div></div>
-</div>
-
-<footer class="site-footer">
-  <span class="foot-name">Kiley Meehan</span>
-  <span class="foot-copy">© ${year}</span>
 </footer>
+
 </body>
 </html>`;
 }
 
 function notFoundPage() {
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Not found</title></head><body style="font-family:monospace;padding:56px;background:#F5EEDB">Post not found. <a href="/" style="color:#BB5E3E">← Home</a></body></html>`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Not found — Kiley Daniel Meehan</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <main class="wrap" style="padding-block: 6rem;">
+    <p class="kicker kicker--accent">404</p>
+    <h1 class="page-title">Post not found.</h1>
+    <p class="dek"><a href="/" style="color: var(--accent);">&larr; Back home</a></p>
+  </main>
+</body>
+</html>`;
 }
 
 function escHtml(str) {
