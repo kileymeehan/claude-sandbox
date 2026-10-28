@@ -1,0 +1,79 @@
+{
+  "hidden": ["__archive", "launchpad", ".claude"],
+  "projects": {
+    "Blupi-App": {
+      "title": "Blupi",
+      "description": "Collaborative product design platform — service blueprints, live cursors, Chrome capture extension.",
+      "kind": "server",
+      "port": 5001,
+      "command": "(cd ~/.blupi-localdb && npx pglite-server -d ./data -p 5433 -m 10) & sleep 2; npx -y node@22 node_modules/tsx/dist/cli.mjs --env-file-if-exists=.env server/index.ts",
+      "railway": "https://blupi-production.up.railway.app",
+      "notes": "Node 22 + local PGlite DB on :5433. Dev sign-in button on the login page."
+    },
+    "inspo-browser": {
+      "title": "SwatchBook",
+      "description": "Design inspiration browser with tags, folders, a Chrome extension and an MCP server.",
+      "kind": "server",
+      "port": 3001,
+      "command": "npm run dev"
+    },
+    "kiley-website": {
+      "title": "Kiley Website",
+      "description": "Portfolio with a markdown blog CMS and admin login (Express + Supabase).",
+      "kind": "server",
+      "port": 3003,
+      "command": "npm run dev"
+    },
+    "New Portfolio": {
+      "title": "New Portfolio",
+      "description": "Editorial-broadsheet personal site — paper, ink and clay; Newsreader + Archivo.",
+      "kind": "static",
+      "port": 8101
+    },
+    "songbook": {
+      "title": "Songbook",
+      "description": "Local-first songwriting app — lyrics, chords, albums, rhyme assistant.",
+      "kind": "server",
+      "port": 5174,
+      "command": "npx vite --port 5174 --strictPort"
+    },
+    "songwriting-tools": {
+      "title": "Songwriting Tools",
+      "description": "Drag-and-drop lyric scraps — paste text, rearrange words into songs.",
+      "kind": "static",
+      "port": 8105
+    },
+    "rank-and-file": {
+      "title": "Rank&File",
+      "description": "Record-ranking app with a Discogs proxy and Supabase sync.",
+      "kind": "server",
+      "port": 5175,
+      "command": "npx concurrently -n web,api \"npx vite --port 5175 --strictPort\" \"node server/index.js\""
+    },
+    "bookshelf": {
+      "title": "The Shelf",
+      "description": "A personal book directory.",
+      "kind": "static",
+      "port": 8102
+    },
+    "pageant-movies": {
+      "title": "Pageant Movies",
+      "description": "Site with bio, music, blog and contact pages.",
+      "kind": "static",
+      "port": 8103
+    },
+    "portfolio": {
+      "title": "Portfolio (2026 spring)",
+      "description": "Earlier kileymeehan.com — \"Building software that feels human.\"",
+      "kind": "static",
+      "port": 8104
+    },
+    "misc": {
+      "title": "Misc",
+      "description": "One-off pages — screen time & sleep brief.",
+      "kind": "static",
+      "port": 8106,
+      "path": "/screen-time-sleep-brief.html"
+    }
+  }
+}

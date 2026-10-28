@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Launchpad</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%2316150f'/><rect x='8' y='8' width='7' height='7' rx='1.5' fill='%23f3f1ec'/><rect x='17' y='8' width='7' height='7' rx='1.5' fill='%23f3f1ec'/><rect x='8' y='17' width='7' height='7' rx='1.5' fill='%23f3f1ec'/><rect x='17' y='17' width='7' height='7' rx='1.5' fill='%2334c27a'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <div>
+        <h1>Launchpad</h1>
+        <p class="summary" id="summary">Loading…</p>
+      </div>
+    </div>
+    <div class="controls">
+      <label class="search">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m14 14 4 4"/></svg>
+        <input id="search" type="search" placeholder="Search projects" autocomplete="off">
+        <kbd>/</kbd>
+      </label>
+      <div class="seg" role="radiogroup" aria-label="Sort">
+        <button data-sort="recent" class="on">Recent</button>
+        <button data-sort="name">A–Z</button>
+        <button data-sort="running">Running</button>
+      </div>
+      <button class="ghost" id="refresh" title="Rescan folders and dates">Rescan</button>
+    </div>
+  </header>
+
+  <main id="grid" class="grid" aria-live="polite"></main>
+
+  <dialog id="editDialog">
+    <form method="dialog" id="editForm">
+      <h2>Edit project</h2>
+      <p class="dir" id="editDir"></p>
+      <label>Title <input name="title"></label>
+      <label>Description <textarea name="description" rows="2"></textarea></label>
+      <label>Railway URL <input name="railway" type="url" placeholder="https://…up.railway.app"></label>
+      <div class="row">
+        <label>Type
+          <select name="kind"><option value="server">Server (runs a command)</option><option value="static">Static (served as files)</option></select>
+        </label>
+        <label>Port <input name="port" type="number" min="1" max="65535"></label>
+        <label>Open path <input name="path" placeholder="/"></label>
+      </div>
+      <label class="cmd">Start command <input name="command" placeholder="npm run dev"></label>
+      <label>Notes <textarea name="notes" rows="2" placeholder="Anything to remember next time"></textarea></label>
+      <div class="actions">
+        <button type="button" class="ghost danger" id="hideBtn">Hide from Launchpad</button>
+        <span></span>
+        <button value="cancel" class="ghost" formnovalidate>Cancel</button>
+        <button value="save" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="logDialog">
+    <div class="loghead">
+      <h2 id="logTitle">Logs</h2>
+      <form method="dialog"><button class="ghost">Close</button></form>
+    </div>
+    <pre id="logBody"></pre>
+  </dialog>
+
+  <div id="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
