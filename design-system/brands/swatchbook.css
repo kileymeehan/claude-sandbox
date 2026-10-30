@@ -1,61 +1,58 @@
-/* SwatchBook: indigo from the swatch mark for actions and hover pop.
-   The other swatch colours (pink, green, amber, cyan, purple) are for
-   content colour-coding, e.g. flows and folders. */
+/* SwatchBook: coral is the accent. The six swatches (logo, stripe and
+   content colour-coding) are the reef: coral, rose, gold, lagoon, reef
+   blue, lilac. Light mode gets a soft lagoon-to-coral chrome over a sand
+   canvas; dark mode is a night dive. */
 :root {
-  --ds-accent: #6366F1;
+  --ds-accent: #B1553E;
   --ds-accent-contrast: #FFFFFF;
-  --ds-accent-soft: rgba(99, 102, 241, 0.14);
-  --ds-pop: #6366F1;
+  --ds-accent-soft: rgba(217, 130, 107, 0.16);
+  --ds-pop: #B1553E;
   --ds-pop-contrast: #FFFFFF;
 
-  --sb-swatch-1: #6366F1;
-  --sb-swatch-2: #EC4899;
-  --sb-swatch-3: #10B981;
-  --sb-swatch-4: #F59E0B;
-  --sb-swatch-5: #06B6D4;
-  --sb-swatch-6: #A855F7;
+  --sb-swatch-1: var(--ds-reef-coral);
+  --sb-swatch-2: var(--ds-reef-rose);
+  --sb-swatch-3: var(--ds-reef-gold);
+  --sb-swatch-4: var(--ds-reef-lagoon);
+  --sb-swatch-5: var(--ds-reef-blue);
+  --sb-swatch-6: var(--ds-reef-lilac);
 
-  /* Canvas: a pale lavender page with indigo dots, and indigo-tinted card
-     frames, so the content area sits with the chrome instead of plain grey */
-  --ds-page: #F7F6FD;
-  --ds-page-dots: rgba(99, 102, 241, 0.13);
-  --ds-line-strong: #43426E;
-  --ds-shadow: #B4B5E0;
+  /* Canvas: sand with faint lagoon dots; cards framed in reef slate with
+     a coral-sand shadow */
+  --ds-page: #F7F3EE;
+  --ds-page-dots: rgba(74, 127, 166, 0.12);
+  --ds-shadow: #DCC3B6;
 
-  /* Light chrome: a pale indigo-to-pink wash instead of black */
-  --ds-chrome: #EEF0FF;
-  --ds-chrome-image: linear-gradient(160deg, #EEF0FF 0%, #F3EEFF 55%, #FCEFF6 100%);
+  /* Light chrome: a soft lagoon-to-coral wash */
+  --ds-chrome: #EAF3F2;
+  --ds-chrome-image: linear-gradient(160deg, #E8F3F3 0%, #F3EFEB 55%, #F8E9E3 100%);
   --ds-chrome-raised: #FFFFFF;
-  --ds-chrome-text: #1E1B4B;
-  --ds-chrome-soft: #3B3A6B;
-  --ds-chrome-muted: #6B6E9E;
-  --ds-chrome-faint: #A3A6CC;
-  --ds-chrome-line: rgba(99, 102, 241, 0.18);
-  --ds-chrome-line-strong: rgba(99, 102, 241, 0.45);
-  --ds-chrome-hairline: rgba(99, 102, 241, 0.1);
-  --ds-chrome-hover: rgba(99, 102, 241, 0.1);
-  --ds-chrome-sunken: rgba(99, 102, 241, 0.12);
-  /* The swatch colours as a thin stripe along the top of the app */
-  --sb-stripe: linear-gradient(90deg, #6366F1 0 16.66%, #EC4899 0 33.33%, #10B981 0 50%, #F59E0B 0 66.66%, #06B6D4 0 83.33%, #A855F7 0);
+  --ds-chrome-text: #14242E;
+  --ds-chrome-soft: #35495A;
+  --ds-chrome-muted: #54636D;
+  --ds-chrome-faint: #93A2AB;
+  --ds-chrome-line: rgba(47, 69, 83, 0.14);
+  --ds-chrome-line-strong: rgba(47, 69, 83, 0.38);
+  --ds-chrome-hairline: rgba(47, 69, 83, 0.08);
+  --ds-chrome-hover: rgba(47, 69, 83, 0.07);
+  --ds-chrome-sunken: rgba(47, 69, 83, 0.08);
+  /* The reef swatches as a thin stripe along the top of the app */
+  --sb-stripe: linear-gradient(90deg, #D9826B 0 16.66%, #C9798D 0 33.33%, #D9B455 0 50%, #6FB3BE 0 66.66%, #4A7FA6 0 83.33%, #A391C0 0);
 }
 [data-theme="dark"] {
-  --ds-accent: #818CF8;
-  --ds-accent-contrast: #0A0A0F;
-  --ds-accent-soft: rgba(129, 140, 248, 0.2);
-  --ds-pop: #818CF8;
-  --ds-pop-contrast: #0A0A0F;
-  --ds-page-dots: rgba(129, 140, 248, 0.1);
+  --ds-accent: #E0907A;
+  --ds-accent-contrast: #0D1A22;
+  --ds-accent-soft: rgba(224, 144, 122, 0.2);
+  --ds-pop: #E0907A;
+  --ds-pop-contrast: #0D1A22;
 
-  /* Dark mode keeps the dark canvas and frames (restated because the
-     light values above load after the base dark theme) */
-  --ds-page: #0A0A0F;
-  --ds-line-strong: #3A3A46;
-  --ds-shadow: #2A2A33;
+  /* Restated: the light values above load after the base dark theme */
+  --ds-page: #0D1A22;
+  --ds-page-dots: rgba(111, 179, 190, 0.08);
+  --ds-shadow: #08131A;
 
-  /* Dark mode keeps the black chrome */
-  --ds-chrome: #000000;
+  --ds-chrome: #08131A;
   --ds-chrome-image: none;
-  --ds-chrome-raised: #101016;
+  --ds-chrome-raised: #12212B;
   --ds-chrome-text: #FFFFFF;
   --ds-chrome-soft: rgba(255, 255, 255, 0.82);
   --ds-chrome-muted: rgba(255, 255, 255, 0.64);

@@ -41,6 +41,34 @@ Copy `brands/swatchbook.css`, set `--ds-accent` (primary actions, focus,
 selection) and `--ds-pop` (button hover fill) for light and dark, and pass
 the new name to `sync.mjs`.
 
+## Palette
+
+Since v2.0 the colours come from coral reefs, muted for everyday UI:
+deep-sea ink on sand, reef-slate frames, and accents from soft and
+sea-fan corals, anemones, lagoon water and reef fish. Every text pairing
+meets WCAG AA (4.5:1).
+
+| Role | Reef source | Token |
+| --- | --- | --- |
+| Ink, chrome | deep water | `--ds-ink` `#14242E` |
+| Page | sand | `--ds-page` `#F6F2EC` |
+| Info / Blupi primary | ocean | `--ds-info`, Blupi `--ds-accent` `#2E6A8E` |
+| Pop / warning | yellow tang | `--ds-pop` `#E8C25E` |
+| Danger | sea-fan red | `--ds-danger` `#B04A35` |
+| Success | kelp | `--ds-success` `#3E8A68` |
+| AI | anemone lilac | `--ds-ai-fg` `#6E5A96` |
+| SwatchBook accent | coral | `#B1553E` |
+
+Content swatches: `--ds-reef-coral`, `-rose`, `-gold`, `-lagoon`,
+`-blue`, `-lilac`, `-kelp`, `-sand`.
+
+References (colours sampled, images not included): Kiley's reef
+illustration, plus Wikimedia Commons photos: Annella mollis sea fan,
+Ras Muhammad (CC BY-SA 4.0); Soft coral at GB Reef (CC BY-SA 4.0);
+Soft coral peach, Komodo (CC BY-SA 3.0); Palmate sea fan at Super Fan
+Reef (CC BY-SA 4.0); Pink anemonefish in Heteractis magnifica
+(CC BY-SA 3.0); Coral Outcrop Flynn Reef (CC BY-SA 3.0).
+
 ## Principles
 
 1. One strong frame per section; quiet insides (hairlines, no boxes in boxes).

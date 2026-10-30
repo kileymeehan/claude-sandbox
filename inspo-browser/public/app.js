@@ -72,7 +72,8 @@ let flowDragFrom = null;
 
 const KNOWN_FOLDERS = ['components', 'layouts', 'typography', 'motion', 'color', 'empty-states', 'misc', 'inbox'];
 
-const FALLBACK_COLORS = ['#3b82f6','#10b981','#f59e0b','#a855f7','#ec4899','#6366f1','#14b8a6','#f97316','#ef4444','#06b6d4'];
+// Folder colours: the reef swatches from the design system
+const FALLBACK_COLORS = ['#4A7FA6','#7FA88E','#D9B455','#A391C0','#C9798D','#D9826B','#6FB3BE','#C49A6C','#B04A35','#5E8FA8'];
 
 const FLOW_ICON_SVGS = {
   play:     '<polygon points="5 3 19 12 5 21 5 3"/>',

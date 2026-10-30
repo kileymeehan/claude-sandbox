@@ -1,14 +1,16 @@
-/* Blupi: Bauhaus blue for primary actions, yellow hover pop */
+/* Blupi: the Bauhaus trio, drawn from the reef.
+   Reef blue for primary actions, tang gold for the hover pop,
+   sea-fan red (base --ds-danger) for destructive actions. */
 :root {
-  --ds-accent: #1976D2;
+  --ds-accent: #2E6A8E;
   --ds-accent-contrast: #FFFFFF;
-  --ds-accent-soft: rgba(25, 118, 210, 0.14);
-  --ds-pop: #FFD600;
-  --ds-pop-contrast: #0A0A0F;
+  --ds-accent-soft: rgba(46, 106, 142, 0.14);
+  --ds-pop: #E8C25E;
+  --ds-pop-contrast: #14242E;
 }
 [data-theme="dark"] {
-  --ds-accent: #1976D2;
-  --ds-accent-contrast: #FFFFFF;
-  --ds-accent-soft: rgba(25, 118, 210, 0.24);
-  --ds-page-dots: rgba(255, 214, 0, 0.15);
+  --ds-accent: #5A9BC0;
+  --ds-accent-contrast: #0D1A22;
+  --ds-accent-soft: rgba(90, 155, 192, 0.22);
+  --ds-page-dots: rgba(232, 194, 94, 0.1);
 }
