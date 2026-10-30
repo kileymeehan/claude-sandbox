@@ -135,7 +135,7 @@
 }
 
 /* ---------- dark theme ---------- */
-[data-theme="dark"] {
+[data-theme="dark"], .dark {
   /* night dive: deep ocean surfaces, reef colours as accents */
   --ds-ink: #EEF2F3;
   --ds-ink-soft: #C5D0D5;

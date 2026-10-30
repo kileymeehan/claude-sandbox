@@ -38,7 +38,7 @@
   /* The reef swatches as a thin stripe along the top of the app */
   --sb-stripe: linear-gradient(90deg, #D9826B 0 16.66%, #C9798D 0 33.33%, #D9B455 0 50%, #6FB3BE 0 66.66%, #4A7FA6 0 83.33%, #A391C0 0);
 }
-[data-theme="dark"] {
+[data-theme="dark"], .dark {
   --ds-accent: #E0907A;
   --ds-accent-contrast: #0D1A22;
   --ds-accent-soft: rgba(224, 144, 122, 0.2);

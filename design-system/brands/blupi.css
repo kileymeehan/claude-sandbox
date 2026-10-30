@@ -8,7 +8,7 @@
   --ds-pop: #E8C25E;
   --ds-pop-contrast: #14242E;
 }
-[data-theme="dark"] {
+[data-theme="dark"], .dark {
   --ds-accent: #5A9BC0;
   --ds-accent-contrast: #0D1A22;
   --ds-accent-soft: rgba(90, 155, 192, 0.22);

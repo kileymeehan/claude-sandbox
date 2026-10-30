@@ -29,7 +29,7 @@ node scripts/sync.mjs ../inspo-browser/public/ds.css swatchbook
 <body class="ds-root ds-page">
 ```
 
-Dark mode: set `data-theme="dark"` on `<html>`.
+Dark mode: set `data-theme="dark"` on `<html>` (or add the `dark` class, for Tailwind/shadcn apps).
 
 Each app gets a copy rather than a link so it deploys on its own. The
 copy's first line records the design-system version. After changing
@@ -82,4 +82,4 @@ Reef (CC BY-SA 4.0); Pink anemonefish in Heteractis magnifica
 | App | Brand | Copy |
 | --- | --- | --- |
 | SwatchBook (`inspo-browser`) | `swatchbook` | `public/ds.css` |
-| Blupi | `blupi` | Source of these patterns. Its own CSS predates the system; migrate to `ds.css` + the Tailwind preset when convenient. |
+| Blupi | `blupi` | `client/src/ds.css` and `chrome-extension/ds.css`. shadcn theme variables mirror the tokens as HSL; Tailwind has a `ds-*` colour namespace plus reef gray/status scales in `tailwind.config.ts`. |
