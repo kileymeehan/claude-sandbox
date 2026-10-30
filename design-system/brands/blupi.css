@@ -1,0 +1,14 @@
+/* Blupi: Bauhaus blue for primary actions, yellow hover pop */
+:root {
+  --ds-accent: #1976D2;
+  --ds-accent-contrast: #FFFFFF;
+  --ds-accent-soft: rgba(25, 118, 210, 0.14);
+  --ds-pop: #FFD600;
+  --ds-pop-contrast: #0A0A0F;
+}
+[data-theme="dark"] {
+  --ds-accent: #1976D2;
+  --ds-accent-contrast: #FFFFFF;
+  --ds-accent-soft: rgba(25, 118, 210, 0.24);
+  --ds-page-dots: rgba(255, 214, 0, 0.15);
+}

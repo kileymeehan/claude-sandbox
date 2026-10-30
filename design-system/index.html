@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design System</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="brands/blupi.css" id="brand-css">
+  <style>
+    body { margin: 0; min-height: 100vh; }
+    .guide-bar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: var(--ds-space-4); height: 60px; padding: 0 var(--ds-space-8); }
+    .guide-bar h1 { margin: 0; font-size: var(--ds-text-base); font-weight: 700; letter-spacing: var(--ds-tracking-label); text-transform: uppercase; }
+    .guide-bar .spacer { flex: 1; }
+    .guide-bar .ds-segmented { background: var(--ds-chrome-sunken); }
+    .guide-bar .ds-segmented > button { color: var(--ds-chrome-muted); }
+    .guide-bar .ds-segmented > button[aria-pressed="true"] { background: var(--ds-pop); color: var(--ds-pop-contrast); }
+    .guide-layout { display: grid; grid-template-columns: 200px 1fr; gap: var(--ds-space-8); max-width: 1240px; margin: 0 auto; padding: var(--ds-space-8); }
+    .guide-toc { position: sticky; top: 92px; align-self: start; display: flex; flex-direction: column; gap: 2px; }
+    .guide-toc a { color: var(--ds-ink-soft); text-decoration: none; font-size: var(--ds-text-sm); padding: 4px 8px; border-radius: var(--ds-radius-sm); }
+    .guide-toc a:hover { background: var(--ds-surface-hover); color: var(--ds-ink); }
+    .guide-toc .ds-label { padding: 12px 8px 4px; }
+    main { display: flex; flex-direction: column; gap: var(--ds-space-8); min-width: 0; }
+    section > .ds-card-header { margin-bottom: var(--ds-space-2); }
+    .lede { margin: 0 0 var(--ds-space-5); color: var(--ds-ink-soft); max-width: 70ch; }
+    .demo { display: flex; flex-wrap: wrap; align-items: center; gap: var(--ds-space-3); padding: var(--ds-space-5); border: 1px dashed var(--ds-line); border-radius: var(--ds-radius-md); background: var(--ds-surface); }
+    .demo:has(> .ds-card), .demo:has(> .ds-chrome) { background: var(--ds-page); background-image: radial-gradient(var(--ds-page-dots) 1px, transparent 1px); background-size: 16px 16px; }
+    .demo--column { flex-direction: column; align-items: stretch; }
+    .example + .example { margin-top: var(--ds-space-6); }
+    .example > .ds-label { display: block; margin-bottom: var(--ds-space-2); }
+    .example > p { margin: 0 0 var(--ds-space-3); font-size: var(--ds-text-sm); color: var(--ds-ink-soft); max-width: 70ch; }
+    details { margin-top: var(--ds-space-2); }
+    summary { cursor: pointer; font-size: var(--ds-text-sm); color: var(--ds-ink-muted); }
+    pre { margin: var(--ds-space-2) 0 0; padding: var(--ds-space-4); overflow: auto; border-radius: var(--ds-radius-md); background: var(--ds-chrome); color: #E8E4DA; font: 12px/1.6 var(--ds-font-mono); }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--ds-space-3); }
+    .swatch { border: 1px solid var(--ds-line); border-radius: var(--ds-radius-md); overflow: hidden; background: var(--ds-surface); }
+    .swatch > div:first-child { height: 52px; border-bottom: 1px solid var(--ds-line); }
+    .swatch > div:last-child { padding: 8px 10px; font-size: 12px; }
+    .swatch code { display: block; color: var(--ds-ink-muted); font-family: var(--ds-font-mono); font-size: 11px; }
+    .type-row { display: grid; grid-template-columns: 170px 1fr; align-items: baseline; gap: var(--ds-space-4); padding: var(--ds-space-3) 0; border-bottom: 1px solid var(--ds-hairline); }
+    .type-row:last-child { border-bottom: 0; }
+    .space-row { display: flex; align-items: center; gap: var(--ds-space-4); font-size: 12px; }
+    .space-row > span:first-child { width: 110px; font-family: var(--ds-font-mono); color: var(--ds-ink-muted); }
+    .space-row > span:last-child { height: 12px; background: var(--ds-accent); border-radius: 2px; }
+    .do-dont { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ds-space-4); }
+    .do-dont .ds-label { display: block; margin-bottom: var(--ds-space-2); }
+    .demo-sidebar { width: 240px; padding: var(--ds-space-3); border-radius: var(--ds-radius-md); }
+    .boxy-row { padding: 12px; border: 2px solid var(--ds-line-strong); border-radius: 4px; box-shadow: 2px 2px 0 var(--ds-shadow); margin-bottom: 10px; text-transform: uppercase; font-weight: 700; color: var(--ds-info); letter-spacing: .1em; font-size: 13px; background: var(--ds-surface); }
+    @media (max-width: 900px) { .guide-layout { grid-template-columns: 1fr; } .guide-toc { display: none; } .do-dont { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body class="ds-root ds-page">
+  <header class="guide-bar ds-chrome">
+    <h1>Design System</h1>
+    <span class="ds-small ds-muted" id="version"></span>
+    <span class="spacer"></span>
+    <div class="ds-segmented" role="group" aria-label="Brand">
+      <button aria-pressed="true" data-brand="blupi">Blupi</button>
+      <button aria-pressed="false" data-brand="swatchbook">SwatchBook</button>
+    </div>
+    <div class="ds-segmented" role="group" aria-label="Theme">
+      <button aria-pressed="true" data-theme-choice="light">Light</button>
+      <button aria-pressed="false" data-theme-choice="dark">Dark</button>
+    </div>
+  </header>
+
+  <div class="guide-layout">
+    <nav class="guide-toc" aria-label="Contents">
+      <span class="ds-label">Start</span>
+      <a href="#principles">Principles</a>
+      <a href="#install">Using it</a>
+      <span class="ds-label">Foundations</span>
+      <a href="#colour">Colour</a>
+      <a href="#type">Type</a>
+      <a href="#space">Space &amp; shape</a>
+      <span class="ds-label">Components</span>
+      <a href="#buttons">Buttons</a>
+      <a href="#forms">Forms</a>
+      <a href="#cards">Cards</a>
+      <a href="#tables">Tables &amp; lists</a>
+      <a href="#pills">Pills, tags, chips</a>
+      <a href="#overlays">Menus &amp; dialogs</a>
+      <a href="#chrome">App chrome</a>
+      <span class="ds-label">Patterns</span>
+      <a href="#patterns">Calm sections</a>
+    </nav>
+
+    <main>
+      <!-- Principles -->
+      <section class="ds-card" id="principles">
+        <div class="ds-card-header"><h2 class="ds-section-title">Principles</h2></div>
+        <p class="lede">A shared system for Blupi, SwatchBook and the apps that come after them. Bold frames, calm insides: the Bauhaus outline and offset shadow give each section presence, and everything inside stays quiet so content leads.</p>
+        <ol class="ds-list" style="counter-reset: p">
+          <li><div class="ds-stack"><span>One strong frame per section</span><span>Cards get the heavy outline and offset shadow. Inside them, use hairlines and spacing, never boxes inside boxes.</span></div></li>
+          <li><div class="ds-stack"><span>One loud action per section</span><span>A single framed button per section. Secondary actions are ghost buttons or icon buttons that stay grey until hovered.</span></div></li>
+          <li><div class="ds-stack"><span>Uppercase is for structure, not content</span><span>Section titles, labels and buttons are uppercase and tracked. Names, descriptions and data stay in sentence case.</span></div></li>
+          <li><div class="ds-stack"><span>Colour means something</span><span>Status, AI, danger and the brand accent. Neutrals do everything else.</span></div></li>
+          <li><div class="ds-stack"><span>Each app keeps its own accent</span><span>Apps share shapes, type and spacing, and override only the brand tokens: Blupi's blue and yellow, SwatchBook's indigo.</span></div></li>
+        </ol>
+      </section>
+
+      <!-- Install -->
+      <section class="ds-card" id="install">
+        <div class="ds-card-header"><h2 class="ds-section-title">Using it</h2></div>
+        <p class="lede">Each app gets its own copy, one CSS file generated for its brand, so it deploys independently. Re-run the sync after changing the design system.</p>
+        <pre>cd claude-sandbox/design-system
+node scripts/sync.mjs ../inspo-browser/public/ds.css swatchbook</pre>
+        <p class="lede" style="margin-top: var(--ds-space-4)">Then link it and opt the page in:</p>
+        <pre>&lt;link rel="stylesheet" href="ds.css"&gt;
+&lt;body class="ds-root ds-page"&gt;            &lt;!-- add data-theme="dark" on &lt;html&gt; for dark --&gt;</pre>
+        <p class="lede" style="margin-top: var(--ds-space-4)">React and Tailwind apps can use the same classes, or map Tailwind colours to the tokens with <code class="ds-mono">tailwind-preset.cjs</code>.</p>
+      </section>
+
+      <!-- Colour -->
+      <section class="ds-card" id="colour">
+        <div class="ds-card-header"><h2 class="ds-section-title">Colour</h2></div>
+        <p class="lede">Values update with the brand and theme switches above. Names are CSS variables.</p>
+        <div class="example"><span class="ds-label">Neutrals</span><div class="swatches" data-swatches="--ds-ink --ds-ink-soft --ds-ink-muted --ds-ink-faint --ds-page --ds-surface --ds-surface-sunken --ds-line-strong --ds-shadow --ds-line --ds-hairline"></div></div>
+        <div class="example"><span class="ds-label">Chrome</span><div class="swatches" data-swatches="--ds-chrome --ds-chrome-raised --ds-chrome-text"></div></div>
+        <div class="example"><span class="ds-label">Brand</span><div class="swatches" data-swatches="--ds-accent --ds-accent-contrast --ds-accent-soft --ds-pop --ds-pop-contrast"></div></div>
+        <div class="example"><span class="ds-label">Meaning</span><div class="swatches" data-swatches="--ds-info --ds-danger --ds-success --ds-ai-fg"></div></div>
+      </section>
+
+      <!-- Type -->
+      <section class="ds-card" id="type">
+        <div class="ds-card-header"><h2 class="ds-section-title">Type</h2></div>
+        <p class="lede">Space Grotesk for everything; Montserrat only for page titles.</p>
+        <div class="type-row"><span class="ds-label">.ds-page-title</span><span class="ds-page-title">Test project</span></div>
+        <div class="type-row"><span class="ds-label">.ds-section-title</span><span class="ds-section-title">Blueprints</span></div>
+        <div class="type-row"><span class="ds-label">.ds-title</span><span class="ds-title">AI draft test: Taskly trial sign-up</span></div>
+        <div class="type-row"><span class="ds-label">body</span><span>Captured from taskly.example with the Blupi Chrome extension.</span></div>
+        <div class="type-row"><span class="ds-label">.ds-small .ds-muted</span><span class="ds-small ds-muted">Updated 14 hours ago</span></div>
+        <div class="type-row"><span class="ds-label">.ds-label</span><span class="ds-label">Status</span></div>
+      </section>
+
+      <!-- Space & shape -->
+      <section class="ds-card" id="space">
+        <div class="ds-card-header"><h2 class="ds-section-title">Space &amp; shape</h2></div>
+        <p class="lede">A 4px grid. Cards pad 24px; rows pad 12px; related controls sit 8px apart.</p>
+        <div class="demo demo--column" style="gap: 8px">
+          <div class="space-row"><span>--ds-space-1</span><span style="width:4px"></span></div>
+          <div class="space-row"><span>--ds-space-2</span><span style="width:8px"></span></div>
+          <div class="space-row"><span>--ds-space-3</span><span style="width:12px"></span></div>
+          <div class="space-row"><span>--ds-space-4</span><span style="width:16px"></span></div>
+          <div class="space-row"><span>--ds-space-6</span><span style="width:24px"></span></div>
+          <div class="space-row"><span>--ds-space-8</span><span style="width:32px"></span></div>
+          <div class="space-row"><span>--ds-space-12</span><span style="width:48px"></span></div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Frames</span>
+          <div class="demo">
+            <div class="ds-card ds-card--tight" style="width:200px"><span class="ds-small">Card: 2px outline, 4px offset shadow</span></div>
+            <div class="ds-card ds-card--flat ds-card--tight" style="width:200px"><span class="ds-small">Flat card: 1px line, no shadow</span></div>
+            <button class="ds-btn">Button: 2px offset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Buttons -->
+      <section class="ds-card" id="buttons">
+        <div class="ds-card-header"><h2 class="ds-section-title">Buttons</h2></div>
+        <div class="example">
+          <span class="ds-label">Variants</span>
+          <p>Hovering presses the button into its shadow and fills it with the brand's pop colour. Use one framed button per section.</p>
+          <div class="demo" data-code>
+            <button class="ds-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create new blueprint</button>
+            <button class="ds-btn ds-btn--primary">Draft with AI</button>
+            <button class="ds-btn ds-btn--ghost">Cancel</button>
+            <button class="ds-btn ds-btn--danger">Delete</button>
+            <button class="ds-btn" disabled>Disabled</button>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Small and icon-only</span>
+          <p>Icon buttons stay grey until hovered. Always give them an aria-label.</p>
+          <div class="demo" data-code>
+            <button class="ds-btn ds-btn--sm">View</button>
+            <button class="ds-icon-btn" aria-label="Add link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button class="ds-icon-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+            <button class="ds-icon-btn ds-icon-btn--danger" aria-label="Remove"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Forms -->
+      <section class="ds-card" id="forms">
+        <div class="ds-card-header"><h2 class="ds-section-title">Forms</h2></div>
+        <div class="example">
+          <span class="ds-label">Fields</span>
+          <p>Thin 1px borders; the accent shows on focus. Labels are small uppercase.</p>
+          <div class="demo demo--column" data-code>
+            <label class="ds-field"><span class="ds-label">Email</span><input class="ds-input" placeholder="name@company.com"></label>
+            <label class="ds-field"><span class="ds-label">Project description</span><textarea class="ds-textarea" placeholder="Describe your project goals, scope, and objectives…"></textarea><span class="ds-help">Saves automatically.</span></label>
+            <label class="ds-field"><span class="ds-label">Role</span><select class="ds-select"><option>Member</option><option>Admin</option></select></label>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Search and segmented control</span>
+          <div class="demo" data-code>
+            <label class="ds-search" style="width:280px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="ds-input" placeholder="Search images" aria-label="Search"></label>
+            <div class="ds-segmented" role="group" aria-label="Sort"><button aria-pressed="true">Recent</button><button aria-pressed="false">A–Z</button><button aria-pressed="false">Running</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cards -->
+      <section class="ds-card" id="cards">
+        <div class="ds-card-header"><h2 class="ds-section-title">Cards</h2></div>
+        <div class="example">
+          <span class="ds-label">Section card</span>
+          <p>Title on the left, the section's one strong action on the right.</p>
+          <div class="demo demo--column" data-code>
+            <div class="ds-card">
+              <div class="ds-card-header">
+                <h3 class="ds-section-title">Blueprints</h3>
+                <button class="ds-btn">Create new blueprint</button>
+              </div>
+              <p class="ds-small ds-muted" style="margin:0">Content goes here: a table, a list or a grid.</p>
+            </div>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Sidebar card</span>
+          <p>In narrow columns, use the small title and an icon button for the action.</p>
+          <div class="demo" data-code>
+            <div class="ds-card" style="width:300px">
+              <div class="ds-card-header">
+                <h3 class="ds-section-title ds-section-title--sm">Documents &amp; links</h3>
+                <button class="ds-icon-btn" aria-label="Add link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+              </div>
+              <ul class="ds-list">
+                <li><div class="ds-stack"><span>Research notes</span><span>Google Drive</span></div></li>
+                <li><div class="ds-stack"><span>Kickoff brief</span><span>External link</span></div></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Interactive tile</span>
+          <div class="demo" data-code>
+            <div class="ds-card ds-card--flush ds-card--interactive" style="width:220px">
+              <div style="height:110px; background: linear-gradient(135deg, var(--ds-accent-soft), var(--ds-surface-sunken))"></div>
+              <div style="padding: 12px">
+                <div class="ds-title ds-truncate">basecamp sidebar.png</div>
+                <div style="display:flex; gap:6px; margin-top:8px"><span class="ds-chip">Inbox</span><span class="ds-chip">basecamp</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tables -->
+      <section class="ds-card" id="tables">
+        <div class="ds-card-header"><h2 class="ds-section-title">Tables &amp; lists</h2></div>
+        <div class="example">
+          <span class="ds-label">Table</span>
+          <p>Hairline rows, uppercase column labels, the whole row clickable. Secondary actions sit in a grey ⋯ menu.</p>
+          <div class="demo demo--column" data-code>
+            <table class="ds-table ds-table--interactive">
+              <thead><tr><th>Name</th><th style="width:140px">Status</th><th style="width:130px">Updated</th><th style="width:48px"></th></tr></thead>
+              <tbody>
+                <tr><td><div class="ds-stack"><span>AI draft test: Taskly trial sign-up</span><span class="ds-truncate">Captured from taskly.example with the Chrome extension</span></div></td><td><span class="ds-pill">Draft</span></td><td class="ds-small ds-muted">14 hours ago</td><td><button class="ds-icon-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></td></tr>
+                <tr><td><div class="ds-stack"><span>Test blueprint: new customer onboarding <span class="ds-tag ds-tag--ai" style="vertical-align:2px">Future</span></span><span>Every common block type across four phases</span></div></td><td><span class="ds-pill ds-pill--info">In progress</span></td><td class="ds-small ds-muted">20 hours ago</td><td><button class="ds-icon-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">List with avatars</span>
+          <div class="demo demo--column" data-code>
+            <ul class="ds-list">
+              <li><span class="ds-avatar">T</span><div class="ds-stack" style="flex:1"><span>test2</span><span>test+2@blupi.local</span></div><span class="ds-small ds-muted">Editor</span></li>
+              <li><span class="ds-avatar">D</span><div class="ds-stack" style="flex:1"><span>designer</span><span>designer@blupi.local</span></div><span class="ds-small ds-muted">Member</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pills -->
+      <section class="ds-card" id="pills">
+        <div class="ds-card-header"><h2 class="ds-section-title">Pills, tags, chips</h2></div>
+        <div class="example">
+          <span class="ds-label">Status pills</span>
+          <p>Soft fill, no border. Make it a button when it opens a picker.</p>
+          <div class="demo" data-code>
+            <span class="ds-pill">Draft</span>
+            <span class="ds-pill ds-pill--info">In progress</span>
+            <span class="ds-pill ds-pill--warning">Review</span>
+            <span class="ds-pill ds-pill--success">Complete</span>
+            <span class="ds-pill ds-pill--danger">Crashed</span>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Tags</span>
+          <p>Tiny markers on content. AI marks machine-written content until a person edits it.</p>
+          <div class="demo" data-code>
+            <span class="ds-tag ds-tag--ai">AI</span>
+            <span class="ds-tag ds-tag--ai">Future</span>
+            <span class="ds-tag ds-tag--success">Fixes 2</span>
+            <span class="ds-tag">Owner</span>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Chips, counts, keys</span>
+          <div class="demo" data-code>
+            <button class="ds-chip">onboarding</button>
+            <button class="ds-chip ds-chip--selected">basecamp</button>
+            <span class="ds-count">11</span>
+            <span class="ds-kbd">/</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Overlays -->
+      <section class="ds-card" id="overlays">
+        <div class="ds-card-header"><h2 class="ds-section-title">Menus &amp; dialogs</h2></div>
+        <div class="example">
+          <span class="ds-label">Menu</span>
+          <div class="demo" data-code>
+            <div class="ds-menu" role="menu">
+              <button class="ds-menu__item" role="menuitem">Retake thumbnail</button>
+              <button class="ds-menu__item" role="menuitem">View logs</button>
+              <hr class="ds-menu__separator">
+              <button class="ds-menu__item ds-menu__item--danger" role="menuitem">Delete</button>
+            </div>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Dialog</span>
+          <p>Works on a native &lt;dialog&gt;. One primary action, a ghost Cancel.</p>
+          <div class="demo" data-code>
+            <button class="ds-btn" onclick="document.getElementById('demo-dialog').showModal()">Open dialog</button>
+            <dialog class="ds-dialog" id="demo-dialog">
+              <form method="dialog">
+                <h3 class="ds-dialog__title">Invite people</h3>
+                <p class="ds-dialog__description">They'll join this workspace and can be added to its projects.</p>
+                <div class="ds-dialog__body">
+                  <label class="ds-field"><span class="ds-label">Email</span><input class="ds-input" placeholder="name@company.com"></label>
+                </div>
+                <div class="ds-dialog__actions">
+                  <button class="ds-btn ds-btn--ghost" value="cancel">Cancel</button>
+                  <button class="ds-btn ds-btn--primary" value="ok">Create invite</button>
+                </div>
+              </form>
+            </dialog>
+          </div>
+        </div>
+        <div class="example">
+          <span class="ds-label">Toast and empty state</span>
+          <div class="demo" data-code>
+            <div class="ds-toast">Saved to projects.json</div>
+            <div class="ds-empty" style="flex:1"><div class="ds-empty__title">No documents yet</div>Add a link to keep briefs and research next to the project.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Chrome -->
+      <section class="ds-card" id="chrome">
+        <div class="ds-card-header"><h2 class="ds-section-title">App chrome</h2></div>
+        <p class="lede">Top bars and sidebars use the dark chrome in both themes. Anything inside <code class="ds-mono">.ds-chrome</code> picks up light-on-dark colours automatically, including buttons, counts and nav items.</p>
+        <div class="demo" data-code>
+          <nav class="ds-chrome demo-sidebar" aria-label="Example sidebar">
+            <div class="ds-label" style="padding: 8px 12px 6px">Folders</div>
+            <button class="ds-nav-item is-active">All <span class="ds-count">11</span></button>
+            <button class="ds-nav-item">Inbox <span class="ds-count">11</span></button>
+            <button class="ds-nav-item">Onboarding <span class="ds-count">4</span></button>
+            <hr class="ds-menu__separator" style="margin: 10px 0">
+            <button class="ds-btn ds-btn--ghost ds-btn--sm">Sign out</button>
+          </nav>
+        </div>
+      </section>
+
+      <!-- Patterns -->
+      <section class="ds-card" id="patterns">
+        <div class="ds-card-header"><h2 class="ds-section-title">Calm sections</h2></div>
+        <p class="lede">The change that made Blupi's project page readable: keep the frame, quiet the rows.</p>
+        <div class="do-dont">
+          <div>
+            <span class="ds-label" style="color: var(--ds-danger)">Avoid</span>
+            <div class="demo demo--column">
+              <div class="boxy-row">AI draft test: Taskly trial…</div>
+              <div class="boxy-row">Captured: example sign-up</div>
+            </div>
+            <p class="ds-small ds-muted">Framed rows inside a framed card, uppercase content, a framed button on every row.</p>
+          </div>
+          <div>
+            <span class="ds-label" style="color: var(--ds-success)">Prefer</span>
+            <div class="demo demo--column">
+              <ul class="ds-list">
+                <li><div class="ds-stack" style="flex:1"><span>AI draft test: Taskly trial sign-up</span><span>Draft · 14 hours ago</span></div></li>
+                <li><div class="ds-stack" style="flex:1"><span>Captured: example sign-up</span><span>Draft · 19 hours ago</span></div></li>
+              </ul>
+            </div>
+            <p class="ds-small ds-muted">Hairlines between rows, sentence-case names, the whole row clickable.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Code snippets come from the live demos so they can't drift
+    const indent = (html) => html.replace(/^\n+|\s+$/g, '').replace(/^ {10}/gm, '');
+    document.querySelectorAll('.demo[data-code]').forEach((demo) => {
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = 'Code';
+      const pre = document.createElement('pre');
+      pre.textContent = indent(demo.innerHTML);
+      details.append(summary, pre);
+      demo.after(details);
+    });
+
+    function renderSwatches() {
+      const styles = getComputedStyle(document.documentElement);
+      document.querySelectorAll('[data-swatches]').forEach((grid) => {
+        grid.innerHTML = '';
+        grid.dataset.swatches.split(' ').forEach((name) => {
+          const value = styles.getPropertyValue(name).trim();
+          const el = document.createElement('div');
+          el.className = 'swatch';
+          el.innerHTML = `<div style="background: var(${name})"></div><div><strong></strong><code></code></div>`;
+          el.querySelector('strong').textContent = name.replace('--ds-', '');
+          el.querySelector('code').textContent = value;
+          grid.append(el);
+        });
+      });
+    }
+
+    const brandLink = document.getElementById('brand-css');
+    function choose(groupAttr, value) {
+      document.querySelectorAll(`[${groupAttr}]`).forEach((b) => b.setAttribute('aria-pressed', String(b.getAttribute(groupAttr) === value)));
+    }
+    document.querySelectorAll('[data-brand]').forEach((b) => b.addEventListener('click', () => {
+      brandLink.href = `brands/${b.dataset.brand}.css`;
+      choose('data-brand', b.dataset.brand);
+      localStorage.setItem('ds-brand', b.dataset.brand);
+      brandLink.onload = renderSwatches;
+    }));
+    document.querySelectorAll('[data-theme-choice]').forEach((b) => b.addEventListener('click', () => {
+      const dark = b.dataset.themeChoice === 'dark';
+      document.documentElement.toggleAttribute('data-theme', dark);
+      if (dark) document.documentElement.dataset.theme = 'dark';
+      choose('data-theme-choice', b.dataset.themeChoice);
+      localStorage.setItem('ds-theme', b.dataset.themeChoice);
+      renderSwatches();
+    }));
+
+    const savedBrand = localStorage.getItem('ds-brand');
+    const savedTheme = localStorage.getItem('ds-theme');
+    if (savedBrand) document.querySelector(`[data-brand="${savedBrand}"]`)?.click();
+    if (savedTheme) document.querySelector(`[data-theme-choice="${savedTheme}"]`)?.click();
+    renderSwatches();
+    fetch('package.json').then((r) => r.json()).then((p) => { document.getElementById('version').textContent = 'v' + p.version; }).catch(() => {});
+  </script>
+</body>
+</html>

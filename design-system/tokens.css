@@ -1,0 +1,159 @@
+/*
+ * Design tokens
+ *
+ * Extracted from Blupi. Every component in components.css is built from
+ * these variables, so an app changes its look by overriding tokens, not
+ * by restyling components:
+ *   - brand: set --ds-accent* (see brands/*.css)
+ *   - theme: light is the default; dark applies under [data-theme="dark"]
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Montserrat:wght@700;800;900&display=swap');
+
+:root {
+  /* ---------- type ---------- */
+  --ds-font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ds-font-display: 'Montserrat', var(--ds-font-sans);   /* page titles only */
+  --ds-font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --ds-text-label: 11px;   /* uppercase labels, table headers, tags */
+  --ds-text-sm: 13px;      /* secondary text, descriptions, metadata */
+  --ds-text-base: 15px;    /* body */
+  --ds-text-md: 17px;      /* card titles */
+  --ds-text-lg: 20px;      /* section titles */
+  --ds-text-xl: 28px;
+  --ds-text-display: 44px; /* page titles */
+
+  --ds-leading-tight: 1.2;
+  --ds-leading: 1.5;
+  --ds-tracking-label: 0.1em;    /* uppercase labels and section titles */
+  --ds-tracking-button: 0.06em;  /* uppercase buttons */
+  --ds-tracking-display: -0.03em;
+
+  /* ---------- space (4px grid) ---------- */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 12px;
+  --ds-space-4: 16px;
+  --ds-space-5: 20px;
+  --ds-space-6: 24px;
+  --ds-space-8: 32px;
+  --ds-space-10: 40px;
+  --ds-space-12: 48px;
+
+  /* ---------- shape ---------- */
+  --ds-radius-sm: 4px;     /* buttons, cards, inputs */
+  --ds-radius-md: 6px;
+  --ds-radius-lg: 10px;    /* dialogs, menus */
+  --ds-radius-pill: 999px;
+  --ds-border-strong: 2px; /* cards and buttons */
+  --ds-offset-sm: 2px;     /* button shadow offset */
+  --ds-offset-lg: 4px;     /* card shadow offset */
+
+  /* ---------- motion ---------- */
+  --ds-ease: cubic-bezier(0.2, 0, 0, 1);
+  --ds-fast: 120ms;
+  --ds-base: 200ms;
+
+  /* ---------- colour: neutrals (light) ---------- */
+  --ds-ink: #0A0A0F;                 /* primary text */
+  --ds-ink-soft: #4B5563;            /* secondary text */
+  --ds-ink-muted: #6B7280;           /* labels, metadata */
+  --ds-ink-faint: #9CA3AF;           /* placeholders, idle icons */
+
+  --ds-page: #F5F5F5;                /* app background */
+  --ds-page-dots: rgba(10, 10, 15, 0.08);
+  --ds-surface: #FFFFFF;             /* cards, dialogs, inputs */
+  --ds-surface-sunken: #F3F4F6;      /* wells, avatars, neutral pills */
+  --ds-surface-hover: rgba(10, 10, 15, 0.05);
+
+  --ds-line-strong: #475569;         /* card and button outlines */
+  --ds-shadow: #94A3B8;              /* hard offset shadows */
+  --ds-line: #E5E7EB;                /* table header rules, input borders */
+  --ds-hairline: #F0F1F3;            /* dividers between rows */
+
+  /* App chrome (top bars, sidebars). Dark by default; a brand can make it
+     light or coloured by overriding these (see brands/swatchbook.css). */
+  --ds-chrome: #0A0A0F;
+  --ds-chrome-image: none;                         /* optional gradient over --ds-chrome */
+  --ds-chrome-raised: #17171F;                     /* menus and fields inside chrome */
+  --ds-chrome-text: #FFFFFF;
+  --ds-chrome-soft: rgba(255, 255, 255, 0.82);
+  --ds-chrome-muted: rgba(255, 255, 255, 0.64);
+  --ds-chrome-faint: rgba(255, 255, 255, 0.4);
+  --ds-chrome-line: rgba(255, 255, 255, 0.12);
+  --ds-chrome-line-strong: rgba(255, 255, 255, 0.3);
+  --ds-chrome-hairline: rgba(255, 255, 255, 0.06);
+  --ds-chrome-hover: rgba(255, 255, 255, 0.08);
+  --ds-chrome-sunken: rgba(255, 255, 255, 0.08);   /* counts, search fields */
+
+  /* Toasts stay dark whatever the chrome looks like */
+  --ds-toast-bg: #0A0A0F;
+  --ds-toast-text: #FFFFFF;
+
+  /* ---------- colour: brand (override per app) ---------- */
+  --ds-accent: #0A0A0F;              /* primary buttons, selected states, focus */
+  --ds-accent-contrast: #FFFFFF;
+  --ds-accent-soft: rgba(10, 10, 15, 0.08);
+  --ds-pop: #FFD600;                 /* button hover fill, highlights */
+  --ds-pop-contrast: #0A0A0F;
+
+  /* ---------- colour: meaning ---------- */
+  --ds-info: #1976D2;
+  --ds-danger: #E53935;
+  --ds-danger-soft: #FEF2F2;
+  --ds-success: #16A34A;
+
+  /* Soft status pairs: background / text (pills, tags) */
+  --ds-neutral-bg: #F3F4F6;  --ds-neutral-fg: #374151;
+  --ds-info-bg: #DBEAFE;     --ds-info-fg: #1D4ED8;
+  --ds-warning-bg: #FEF3C7;  --ds-warning-fg: #92400E;
+  --ds-success-bg: #DCFCE7;  --ds-success-fg: #15803D;
+  --ds-danger-bg: #FEE2E2;   --ds-danger-fg: #B91C1C;
+  --ds-ai-bg: #F5F3FF;       --ds-ai-fg: #6D28D9;   --ds-ai-line: #DDD6FE;
+
+  --ds-focus: var(--ds-accent);
+  --ds-backdrop: rgba(10, 10, 15, 0.45);
+  --ds-overlay-shadow: 0 24px 60px -24px rgba(10, 10, 15, 0.45);
+
+  color-scheme: light;
+}
+
+/* ---------- dark theme ---------- */
+[data-theme="dark"] {
+  --ds-ink: #F5F5F7;
+  --ds-ink-soft: #C4C4CC;
+  --ds-ink-muted: #9A9AA6;
+  --ds-ink-faint: #66666F;
+
+  --ds-page: #0A0A0F;
+  --ds-page-dots: rgba(255, 255, 255, 0.06);
+  --ds-surface: #12121A;
+  --ds-surface-sunken: #1C1C25;
+  --ds-surface-hover: rgba(255, 255, 255, 0.06);
+
+  --ds-line-strong: #3A3A46;
+  --ds-shadow: #2A2A33;
+  --ds-line: #2A2A33;
+  --ds-hairline: #1E1E27;
+
+  --ds-chrome: #000000;
+  --ds-chrome-raised: #101016;
+
+  --ds-accent: #F5F5F7;
+  --ds-accent-contrast: #0A0A0F;
+  --ds-accent-soft: rgba(255, 255, 255, 0.1);
+
+  --ds-danger-soft: rgba(229, 57, 53, 0.12);
+  --ds-neutral-bg: rgba(255, 255, 255, 0.08);  --ds-neutral-fg: #D4D4DC;
+  --ds-info-bg: rgba(59, 130, 246, 0.18);      --ds-info-fg: #93C5FD;
+  --ds-warning-bg: rgba(245, 158, 11, 0.18);   --ds-warning-fg: #FCD34D;
+  --ds-success-bg: rgba(34, 197, 94, 0.16);    --ds-success-fg: #86EFAC;
+  --ds-danger-bg: rgba(239, 68, 68, 0.16);     --ds-danger-fg: #FCA5A5;
+  --ds-ai-bg: rgba(139, 92, 246, 0.16);        --ds-ai-fg: #C4B5FD;   --ds-ai-line: rgba(139, 92, 246, 0.35);
+
+  --ds-backdrop: rgba(0, 0, 0, 0.6);
+  --ds-overlay-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8);
+
+  color-scheme: dark;
+}
