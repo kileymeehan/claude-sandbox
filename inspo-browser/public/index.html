@@ -8,10 +8,15 @@
   <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Shared design system (generated from claude-sandbox/design-system), then app styles -->
+  <link rel="stylesheet" href="ds.css">
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Apply the saved theme before first paint (light is the default)
+    if (localStorage.getItem('inspo-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
+  </script>
 </head>
-<body>
+<body class="ds-root ds-page">
   <div id="app">
     <aside id="sidebar">
       <div class="sidebar-header">

@@ -2,207 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- Shared design system (generated from claude-sandbox/design-system) -->
+  <link rel="stylesheet" href="ds.css">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      width: 260px;
-      background: #111118;
-      color: #e2e2f0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 13px;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 16px 10px;
-      border-bottom: 1px solid #1f1f2e;
-    }
-    .logo {
-      font-size: 15px;
-      font-weight: 600;
-      color: #e2e2f0;
-      letter-spacing: -0.01em;
-    }
-    .logo span { color: #6366f1; }
-    .gear-btn {
-      margin-left: auto;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #4b5563;
-      padding: 3px;
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-    }
-    .gear-btn:hover { color: #e2e2f0; }
-    .gear-btn.active { color: #6366f1; }
-
-    .section { padding: 14px 16px; }
-
-    .pick-btn {
-      width: 100%;
-      background: #6366f1;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 9px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      transition: background 0.1s;
-    }
-    .pick-btn:hover { background: #4f52e0; }
-    .pick-btn:disabled { background: #2a2a3e; color: #4b5563; cursor: default; }
-
-    .divider {
-      height: 1px;
-      background: #1f1f2e;
-      margin: 10px 0;
-    }
-
-    .shot-row {
-      display: flex;
-      gap: 7px;
-    }
-
-    .shot-btn {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      background: #1a1a2e;
-      border: 1px solid #2a2a3e;
-      border-radius: 8px;
-      color: #a5b4fc;
-      font-size: 12px;
-      font-weight: 500;
-      padding: 8px 6px;
-      cursor: pointer;
-      transition: background 0.1s, border-color 0.1s;
-    }
-    .shot-btn:hover { background: #2a2a3e; border-color: #6366f1; }
-
-    .hint {
-      margin-top: 10px;
-      font-size: 11px;
-      color: #4b5563;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .settings { display: none; padding: 14px 16px; border-top: 1px solid #1f1f2e; }
-    .settings.open { display: block; }
-
-    label {
-      display: block;
-      font-size: 11px;
-      font-weight: 500;
-      color: #6b7280;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    input {
-      width: 100%;
-      background: #1a1a2e;
-      border: 1px solid #2a2a3e;
-      border-radius: 6px;
-      color: #e2e2f0;
-      font-size: 12px;
-      padding: 7px 9px;
-      outline: none;
-      margin-bottom: 10px;
-      font-family: inherit;
-    }
-    input:focus { border-color: #6366f1; }
-    input::placeholder { color: #374151; }
-
-    .save-btn {
-      width: 100%;
-      background: #1f1f2e;
-      border: 1px solid #2a2a3e;
-      border-radius: 6px;
-      color: #a5b4fc;
-      font-size: 12px;
-      font-weight: 500;
-      padding: 7px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .save-btn:hover { background: #2a2a3e; }
-
-    .status {
-      margin-top: 8px;
-      font-size: 11px;
-      text-align: center;
-      color: #6366f1;
-      min-height: 14px;
-    }
-
-    .flow-select-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #6b7280;
-      font-size: 11.5px;
-    }
-    .flow-select-label { white-space: nowrap; }
-    .flow-select-row select {
-      flex: 1;
-      background: #1a1a2e;
-      border: 1px solid #2a2a3e;
-      border-radius: 5px;
-      color: #e2e2f0;
-      font-size: 11.5px;
-      padding: 4px 6px;
-      outline: none;
-      cursor: pointer;
-    }
-    .flow-select-row select:focus { border-color: #6366f1; }
-
-    .tag-input-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 8px;
-      color: #6b7280;
-    }
-    .tag-input-row input {
-      flex: 1;
-      background: #1a1a2e;
-      border: 1px solid #2a2a3e;
-      border-radius: 5px;
-      color: #e2e2f0;
-      font-size: 11.5px;
-      padding: 4px 6px;
-      outline: none;
-    }
-    .tag-input-row input:focus { border-color: #6366f1; }
-    .tag-input-row input::placeholder { color: #374151; }
-
-    .not-configured {
-      padding: 16px;
-      text-align: center;
-      color: #4b5563;
-      line-height: 1.6;
-      font-size: 12px;
-    }
-    .not-configured strong { color: #a5b4fc; display: block; margin-bottom: 4px; }
+    body { width: 280px; margin: 0; background: var(--ds-surface); font-size: var(--ds-text-sm); }
+    .header { display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 8px 0 14px; }
+    .logo { font-family: var(--ds-font-display); font-size: 15px; font-weight: 800; letter-spacing: -0.02em; }
+    .logo span { color: var(--ds-chrome-muted); }
+    .gear-btn { margin-left: auto; color: var(--ds-chrome-muted); }
+    .gear-btn:hover, .gear-btn.active { color: var(--ds-chrome-text); background: var(--ds-chrome-hover); }
+    .section { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .shot-row { display: flex; gap: 8px; }
+    .shot-row .ds-btn { flex: 1; min-width: 0; height: auto; min-height: 34px; padding: 6px 8px; white-space: normal; line-height: 1.2; letter-spacing: 0.03em; }
+    .hint { margin: 2px 0 0; text-align: center; }
+    .divider { height: 1px; background: var(--ds-hairline); border: 0; margin: 4px 0; }
+    .field-row { display: flex; align-items: center; gap: 8px; color: var(--ds-ink-muted); }
+    .field-row .ds-input, .field-row .ds-select { flex: 1; padding: 6px 8px; font-size: var(--ds-text-sm); }
+    .field-row .ds-label { width: 44px; flex-shrink: 0; }
+    .settings { display: none; padding: 16px; border-top: 1px solid var(--ds-line); }
+    .settings.open { display: flex; flex-direction: column; gap: 10px; }
+    .status { min-height: 16px; text-align: center; font-size: 12px; color: var(--ds-success-fg); }
+    .not-configured { padding: 20px 16px; text-align: center; }
   </style>
 </head>
-<body>
-  <div class="header">
-    <img src="icon48.png" width="18" height="18" style="border-radius:4px">
+<body class="ds-root">
+  <div class="header ds-chrome">
+    <img src="icon48.png" width="18" height="18" alt="" style="border-radius:4px">
     <span class="logo">Swatch<span>Book</span></span>
-    <button class="gear-btn" id="gear-btn" title="Settings">
+    <button class="gear-btn ds-icon-btn" id="gear-btn" title="Settings" aria-label="Settings">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -211,7 +38,7 @@
   </div>
 
   <div id="main-section" class="section" style="display:none">
-    <button class="pick-btn" id="pick-btn">
+    <button class="pick-btn ds-btn ds-btn--primary ds-btn--block" id="pick-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
@@ -219,10 +46,10 @@
       Pick images from this page
     </button>
 
-    <div class="divider"></div>
+    <hr class="divider">
 
     <div class="shot-row">
-      <button class="shot-btn" id="shot-full-btn">
+      <button class="shot-btn ds-btn ds-btn--sm" id="shot-full-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -230,7 +57,7 @@
         </svg>
         Screenshot view
       </button>
-      <button class="shot-btn" id="shot-area-btn">
+      <button class="shot-btn ds-btn ds-btn--sm" id="shot-area-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
         </svg>
@@ -238,38 +65,38 @@
       </button>
     </div>
 
-    <p class="hint">Or right-click any image → <strong>Save to SwatchBook</strong></p>
-    <div class="divider"></div>
-    <div id="folder-selector-row" class="flow-select-row" style="display:none">
+    <p class="hint ds-small ds-muted">Or right-click any image → <strong>Save to SwatchBook</strong></p>
+    <hr class="divider">
+    <div id="folder-selector-row" class="field-row" style="display:none">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span class="flow-select-label">Folder</span>
-      <select id="folder-select"></select>
+      <span class="ds-label">Folder</span>
+      <select id="folder-select" class="ds-select"></select>
     </div>
-    <div class="tag-input-row">
+    <div class="field-row">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-      <input id="tag-input" type="text" placeholder="Tags (optional, comma separated)">
+      <input id="tag-input" class="ds-input" type="text" placeholder="Tags, comma separated (optional)" aria-label="Tags">
     </div>
-    <div class="divider"></div>
-    <div id="flow-selector-row" class="flow-select-row" style="display:none">
+    <hr class="divider">
+    <div id="flow-selector-row" class="field-row" style="display:none">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      <span class="flow-select-label">Flow</span>
-      <select id="flow-select">
+      <span class="ds-label">Flow</span>
+      <select id="flow-select" class="ds-select">
         <option value="">None</option>
       </select>
     </div>
   </div>
 
-  <div id="setup-section" class="not-configured" style="display:none">
-    <strong>Set up SwatchBook</strong>
+  <div id="setup-section" class="not-configured ds-empty" style="display:none">
+    <div class="ds-empty__title">Set up SwatchBook</div>
     Open settings (gear icon) to add your server URL and API token.
   </div>
 
   <div class="settings" id="settings-panel">
-    <label>Server URL</label>
-    <input id="server-url" type="url" placeholder="https://your-app.railway.app">
-    <label>API Token</label>
-    <input id="api-token" type="password" placeholder="Your INSPO_API_TOKEN">
-    <button class="save-btn" id="save-btn">Save settings</button>
+    <label class="ds-field"><span class="ds-label">Server URL</span>
+      <input id="server-url" class="ds-input" type="url" placeholder="https://your-app.railway.app"></label>
+    <label class="ds-field"><span class="ds-label">API token</span>
+      <input id="api-token" class="ds-input" type="password" placeholder="Your INSPO_API_TOKEN"></label>
+    <button class="save-btn ds-btn ds-btn--block" id="save-btn">Save settings</button>
     <div class="status" id="status"></div>
   </div>
 

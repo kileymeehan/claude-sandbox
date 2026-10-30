@@ -1613,6 +1613,8 @@ function initCollapsible() {
 
 function applyTheme(light) {
   document.body.classList.toggle('light', light);
+  if (light) delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = 'dark';
   document.getElementById('theme-icon-dark').style.display = light ? 'none' : '';
   document.getElementById('theme-icon-light').style.display = light ? '' : 'none';
   const lbl = document.getElementById('theme-label');
@@ -1621,7 +1623,7 @@ function applyTheme(light) {
 
 function initTheme() {
   const saved = localStorage.getItem('inspo-theme');
-  const light = saved ? saved === 'light' : false;
+  const light = saved ? saved === 'light' : true; // light by default, like the rest of the design system
   applyTheme(light);
   document.getElementById('theme-btn').addEventListener('click', () => {
     const isLight = document.body.classList.toggle('light');
