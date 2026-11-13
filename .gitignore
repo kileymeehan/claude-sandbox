@@ -1,3 +1,6 @@
 .DS_Store
 *.local
 .env
+
+# Own private repo (github.com/kileymeehan/case-stories): confidential, keep out of this public repo
+case-stories/
