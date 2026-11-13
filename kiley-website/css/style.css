@@ -162,6 +162,8 @@ header.top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340p
 .intro h1 em, .page-title em { font-style: italic; color: var(--accent); }
 .intro p { color: var(--muted); font-size: 18px; max-width: 58ch; }
 .intro p strong { color: var(--fg); font-weight: 500; }
+.intro p.intro-note { font-size: 15px; line-height: 1.55; max-width: 54ch; padding-left: 14px; border-left: 2px solid var(--accent); }
+.intro-note .label { display: block; margin-bottom: 3px; color: var(--accent); }
 .intro-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
 @media (max-width: 860px) { header.top { grid-template-columns: minmax(0, 1fr); gap: 32px; } .profile { max-width: 420px; width: 100%; } }
 
