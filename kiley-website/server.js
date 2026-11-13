@@ -162,55 +162,69 @@ app.delete('/admin/posts/:slug', requireAuth, async (req, res) => {
 
 // ── RENDERERS ───────────────────────────────────────────────
 
+const FONTS = `<script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="/css/style.css">`;
+
+function siteBar(current) {
+  const link = (href, label, key) =>
+    `<a href="${href}"${key === current ? ' aria-current="page"' : ''}>${label}</a>`;
+  return `<a class="skip" href="#main">Skip to content</a>
+<header class="site-bar">
+  <div class="wrap bar">
+    <a class="brand" href="/"><video class="brand-av" src="/assets/kiley-avatar.mp4" poster="/assets/kiley-avatar.webp" autoplay muted loop playsinline aria-hidden="true" width="42" height="42"></video>Kiley Daniel Meehan</a>
+    <nav class="site-nav" aria-label="Site">
+      <a class="nav-locked" data-story="index.html" href="https://stories.kileymeehan.com/">Case stories<svg class="nav-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="visually-hidden"> (password protected)</span></a>
+      ${link('/apps.html', 'My apps', 'apps')}
+      ${link('/writing.html', 'Writing', 'writing')}
+      ${link('/cv.html', 'CV', 'cv')}
+    </nav>
+    <button class="theme-btn" type="button" aria-label="Switch colour theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16z"/></svg></button>
+  </div>
+</header>`;
+}
+
+const SITE_FOOT = `<footer class="site-foot" id="connect">
+  <div class="wrap">
+    <div class="connect">
+      <span class="label">Connect</span>
+      <h2>Let&rsquo;s talk about making the complex <em>simple</em>.</h2>
+      <div class="intro-links">
+        <a class="btn btn--solid" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+        <a class="btn" href="/writing.html">All writing</a>
+      </div>
+      <span class="footer-cat" aria-hidden="true" title="Shh, sleeping"><img class="cat-sleep" src="/assets/cat-sleep.webp" alt="" width="760" height="583" loading="lazy"><img class="cat-awake" src="/assets/cat-awake.webp" alt="" width="760" height="583" loading="lazy"></span>
+    </div>
+    <div class="foot-row">
+      <span>Kiley Daniel Meehan</span>
+      <nav aria-label="Footer"><a data-story="index.html" href="https://stories.kileymeehan.com/">Case stories</a><a href="/apps.html">My apps</a><a href="/writing.html">Writing</a><a href="/cv.html">CV</a></nav>
+    </div>
+  </div>
+</footer>
+<script src="/js/main.js"></script>`;
+
 function renderPost(post, contentHtml) {
+  const meta = [post.date, post.read_time].filter(Boolean).map(escHtml).join(' &middot; ');
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${escHtml(post.title)} — Kiley Daniel Meehan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(post.title)} · Kiley Daniel Meehan</title>
 <meta name="description" content="${escHtml(post.excerpt || '')}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+${FONTS}
 </head>
 <body>
+${siteBar('writing')}
 
-<header class="masthead">
-  <div class="wrap masthead-bar">
-    <a class="nameplate" href="/">Kiley Daniel Meehan</a>
-    <div class="masthead-social">
-      <a class="social-link" href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-      </a>
-      <a class="social-link" href="mailto:kileymeehan@gmail.com" aria-label="Email">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-      </a>
-    </div>
-  </div>
-</header>
-
-<nav class="toc" aria-label="Sections">
-  <div class="wrap toc-inner">
-    <a href="/#bio" class="toc-link">Profile</a>
-    <a href="/work.html" class="toc-link">My Work</a>
-    <a href="/writing.html" class="toc-link" aria-current="page">Writing</a>
-    <a href="/cv.html" class="toc-link">CV</a>
-    <a href="/#connect" class="toc-link">Connect</a>
-  </div>
-</nav>
-
-<main>
+<main class="page wrap" id="main">
   <header class="page-head">
-    <div class="wrap">
-      <div class="page-head-inner">
-        <p class="kicker kicker--accent">${escHtml(post.tag || 'Essay')}</p>
-        <h1 class="page-title">${escHtml(post.title)}</h1>
-        ${post.excerpt ? `<p class="dek">${escHtml(post.excerpt)}</p>` : ''}
-        <p class="page-byline">By Kiley Daniel Meehan &middot; ${escHtml(post.date || '')} &middot; ${escHtml(post.read_time || '')}</p>
-      </div>
-    </div>
+    <p class="kicker kicker--accent">${escHtml(post.tag || 'Essay')}</p>
+    <h1 class="page-title">${escHtml(post.title)}</h1>
+    ${post.excerpt ? `<p class="dek">${escHtml(post.excerpt)}</p>` : ''}
+    <p class="page-byline">By Kiley Daniel Meehan${meta ? ' &middot; ' + meta : ''}</p>
   </header>
 
   <article class="essay">
@@ -223,22 +237,7 @@ function renderPost(post, contentHtml) {
   </article>
 </main>
 
-<footer class="footer footer--page">
-  <div class="wrap">
-    <div class="footer-page-links">
-      <a class="footer-page-link" href="/">Home</a>
-      <a class="footer-page-link" href="/work.html">My Work</a>
-      <a class="footer-page-link" href="/writing.html">All Writing</a>
-      <a class="footer-page-link" href="/cv.html">CV</a>
-      <a class="footer-page-link" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
-    </div>
-    <div class="folio folio--footer" role="presentation">
-      <span class="folio-item">Kiley Daniel Meehan</span>
-      <span class="folio-item folio-item--right">Set in Newsreader &amp; Archivo</span>
-    </div>
-  </div>
-</footer>
-
+${SITE_FOOT}
 </body>
 </html>`;
 }
@@ -248,16 +247,20 @@ function notFoundPage() {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Not found — Kiley Daniel Meehan</title>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not found · Kiley Daniel Meehan</title>
+${FONTS}
 </head>
 <body>
-  <main class="wrap" style="padding-block: 6rem;">
-    <p class="kicker kicker--accent">404</p>
+${siteBar('writing')}
+<main class="page wrap" id="main">
+  <header class="page-head">
+    <span class="label">404</span>
     <h1 class="page-title">Post not found.</h1>
-    <p class="dek"><a href="/" style="color: var(--accent);">&larr; Back home</a></p>
-  </main>
+    <p class="dek"><a href="/writing.html">&larr; Back to all writing</a></p>
+  </header>
+</main>
+${SITE_FOOT}
 </body>
 </html>`;
 }

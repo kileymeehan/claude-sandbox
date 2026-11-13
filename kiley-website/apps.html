@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Apps · Kiley Daniel Meehan</title>
+  <meta name="description" content="Apps Kiley Daniel Meehan designs and builds: Blupi, a collaborative service blueprinting tool, and SwatchBook, a design inspiration library.">
+  <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-bar">
+    <div class="wrap bar">
+      <a class="brand" href="index.html"><video class="brand-av" src="assets/kiley-avatar.mp4" poster="assets/kiley-avatar.webp" autoplay muted loop playsinline aria-hidden="true" width="42" height="42"></video>Kiley Daniel Meehan</a>
+      <nav class="site-nav" aria-label="Site">
+        <a class="nav-locked" data-story="index.html" href="https://stories.kileymeehan.com/">Case stories<svg class="nav-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="visually-hidden"> (password protected)</span></a>
+        <a href="apps.html" aria-current="page">My apps</a>
+        <a href="writing.html">Writing</a>
+        <a href="cv.html">CV</a>
+      </nav>
+      <button class="theme-btn" type="button" aria-label="Switch colour theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16z"/></svg></button>
+    </div>
+  </header>
+
+  <main class="page wrap" id="main">
+
+    <header class="page-head">
+      <span class="label">My apps</span>
+      <h1 class="page-title">Tools I design and build for the way design teams <em>actually</em> work.</h1>
+      <p class="dek">Two working products, built on one shared design system, each with its own&nbsp;accent.</p>
+    </header>
+
+    <div class="cases">
+
+    <!-- ============ 01 · BLUPI ============ -->
+    <!-- Walkthrough video: replace the <img> in .app-shot with
+         <video src="assets/apps/blupi-walkthrough.mp4" poster="assets/apps/blupi-blueprint.jpg" controls playsinline preload="none"></video>
+         and remove the .app-soon pill. -->
+    <article class="case app reveal" id="blupi" style="--hue: #6fa6c8">
+      <header class="case-head">
+        <div class="case-head-text">
+          <span class="label">01 · Service blueprinting</span>
+          <h2 class="case-title">Blupi</h2>
+          <p class="dek">See the whole service on one board: what the customer goes through, and everything behind&nbsp;it.</p>
+        </div>
+        <a class="btn" href="https://blupi-production.up.railway.app" target="_blank" rel="noopener">Open Blupi <span aria-hidden="true">&nearr;</span></a>
+      </header>
+
+      <figure class="app-shot">
+        <div class="app-frame">
+          <div class="app-chrome" aria-hidden="true"><i></i><i></i><i></i><span>blupi</span></div>
+          <img src="assets/apps/blupi-blueprint.jpg" alt="A Blupi blueprint called Self-Serve Trial to Day-One Value. Phases run across the top, steps in columns below, each with stacked cards describing what happens at that step." width="2000" height="1250" loading="lazy">
+        </div>
+        <figcaption><span class="caption">A future-state blueprint, with cards drafted by Claude from captured screens.</span><span class="pill app-soon">Walkthrough video soon</span></figcaption>
+      </figure>
+
+      <div class="case-body">
+        <div class="prose">
+          <p>Blupi is a collaborative service blueprinting tool. Teams lay out a customer journey as phases and steps, then stack what happens at each step underneath it: the touchpoint, the people and process behind it, the friction, the policy, the technology. The part customers see and the part they don&rsquo;t end up on the same board.</p>
+          <p>I built it because blueprints usually die in a slide deck. In Blupi they stay alive. Teams edit together with live cursors, keep a current-state and a future-state version of the same journey and compare them side by side, and capture real flows straight from the browser with a Chrome extension. Claude drafts a first pass of the board from the captured screens, so the team starts with something to argue with instead of a blank wall.</p>
+        </div>
+
+        <aside class="facts" aria-label="Blupi at a glance">
+          <p class="facts-title">What it does</p>
+          <ul class="facts-list">
+            <li><span class="fact-lead">Live collaboration</span> Shared workspaces, live cursors and editing outlines</li>
+            <li><span class="fact-lead">Current vs. future</span> Two states of one journey, compared side by side</li>
+            <li><span class="fact-lead">Capture</span> A Chrome extension records real flows as steps</li>
+            <li><span class="fact-lead">AI first draft</span> Claude turns captured screens into blueprint cards</li>
+          </ul>
+          <div class="chip-row">
+            <span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Postgres</span><span class="chip">WebSockets</span><span class="chip">Claude API</span>
+          </div>
+        </aside>
+      </div>
+    </article>
+
+    <!-- ============ 02 · SWATCHBOOK ============ -->
+    <!-- Walkthrough video: same swap as Blupi above (assets/apps/swatchbook-walkthrough.mp4). -->
+    <article class="case app reveal" id="swatchbook" style="--hue: #d98a74">
+      <header class="case-head">
+        <div class="case-head-text">
+          <span class="label">02 · Design inspiration</span>
+          <h2 class="case-title">SwatchBook</h2>
+          <p class="dek">A design inspiration library that files itself, and that Claude can search while I&nbsp;work.</p>
+        </div>
+      </header>
+
+      <figure class="app-shot">
+        <div class="app-frame">
+          <div class="app-chrome" aria-hidden="true"><i></i><i></i><i></i><span>swatchbook</span></div>
+          <img src="assets/apps/swatchbook-library.jpg" alt="The SwatchBook library: a grid of saved design screenshots, with folders, tags and flows in the sidebar." width="2000" height="1250" loading="lazy">
+        </div>
+        <figcaption><span class="caption">The library, with folders, tags and flows in the sidebar.</span><span class="pill app-soon">Walkthrough video soon</span></figcaption>
+      </figure>
+
+      <div class="case-body">
+        <div class="prose">
+          <p>SwatchBook is where my design inspiration lives. A Chrome extension saves screenshots and images from any page into an inbox. Claude looks at each one, tags it (typography, colour, layout, and so on) and files it into the right folder. Screens can be strung together into flows, so a whole onboarding sequence stays together instead of living as twelve loose files.</p>
+          <p>It also runs an MCP server, so Claude can search the library while I&rsquo;m designing: asking for pricing pages or empty states pulls straight from what I&rsquo;ve collected. It sits on the same shared design system as Blupi, with its own coral accent.</p>
+        </div>
+
+        <aside class="facts" aria-label="SwatchBook at a glance">
+          <p class="facts-title">What it does</p>
+          <ul class="facts-list">
+            <li><span class="fact-lead">One-click capture</span> A Chrome extension saves from any page</li>
+            <li><span class="fact-lead">Files itself</span> Claude tags each image and sorts the inbox</li>
+            <li><span class="fact-lead">Flows</span> Sequences of screens kept in order, with comments</li>
+            <li><span class="fact-lead">MCP server</span> Claude can search the library by project or tag</li>
+          </ul>
+          <div class="chip-row">
+            <span class="chip">Node</span><span class="chip">Supabase</span><span class="chip">Chrome extension</span><span class="chip">MCP</span><span class="chip">Claude API</span>
+          </div>
+        </aside>
+      </div>
+    </article>
+
+    </div>
+  </main>
+
+  <footer class="site-foot" id="connect">
+    <div class="wrap">
+      <div class="connect">
+        <span class="label">Connect</span>
+        <h2>Let&rsquo;s talk about making the complex <em>simple</em>.</h2>
+        <div class="intro-links">
+          <a class="btn btn--solid" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <span class="footer-cat" aria-hidden="true" title="Shh, sleeping"><img class="cat-sleep" src="assets/cat-sleep.webp" alt="" width="760" height="583" loading="lazy"><img class="cat-awake" src="assets/cat-awake.webp" alt="" width="760" height="583" loading="lazy"></span>
+      </div>
+      <div class="foot-row">
+        <span>Kiley Daniel Meehan</span>
+        <nav aria-label="Footer"><a data-story="index.html" href="https://stories.kileymeehan.com/">Case stories</a><a href="apps.html">My apps</a><a href="writing.html">Writing</a><a href="cv.html">CV</a></nav>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

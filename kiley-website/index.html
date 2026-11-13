@@ -2,115 +2,167 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiley Daniel Meehan — Design Leadership</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kiley Daniel Meehan · Design Leadership</title>
   <meta name="description" content="Kiley Daniel Meehan is a strategic product and design leader. Design leadership for products people run their businesses on.">
+  <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <!-- ============ MASTHEAD ============ -->
-  <header class="masthead">
-    <div class="wrap masthead-bar">
-      <h1 class="nameplate">Kiley Daniel Meehan</h1>
-      <div class="masthead-social">
-        <a class="social-link" href="#" aria-label="LinkedIn" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-        </a>
-        <a class="social-link" href="mailto:kileymeehan@gmail.com" aria-label="Email">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-        </a>
-      </div>
+  <header class="site-bar">
+    <div class="wrap bar">
+      <a class="brand" href="index.html"><video class="brand-av" src="assets/kiley-avatar.mp4" poster="assets/kiley-avatar.webp" autoplay muted loop playsinline aria-hidden="true" width="42" height="42"></video>Kiley Daniel Meehan</a>
+      <nav class="site-nav" aria-label="Site">
+        <a class="nav-locked" data-story="index.html" href="https://stories.kileymeehan.com/">Case stories<svg class="nav-lock" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span class="visually-hidden"> (password protected)</span></a>
+        <a href="apps.html">My apps</a>
+        <a href="writing.html">Writing</a>
+        <a href="cv.html">CV</a>
+      </nav>
+      <button class="theme-btn" type="button" aria-label="Switch colour theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path class="half" d="M12 4a8 8 0 0 1 0 16z"/></svg></button>
     </div>
   </header>
 
-  <nav class="toc" aria-label="Sections">
-    <div class="wrap toc-inner">
-      <a href="#bio" class="toc-link">Profile</a>
-      <a href="work.html" class="toc-link">My Work</a>
-      <a href="writing.html" class="toc-link">Writing</a>
-      <a href="cv.html" class="toc-link">CV</a>
-      <a href="#connect" class="toc-link">Connect</a>
-    </div>
-  </nav>
+  <main class="page wrap" id="main">
 
-  <main>
-
-    <!-- ============ PROFILE / BIO ============ -->
-    <section class="hero" id="bio">
-      <div class="wrap hero-grid">
-        <div class="hero-side">
-          <div class="portrait-module reveal">
-            <figure class="hero-portrait">
-              <div class="portrait-frame">
-                <img src="assets/kiley-portrait.jpg" alt="Portrait of Kiley Daniel Meehan" width="1600" height="1600">
-              </div>
-              <figcaption class="caption">Kiley Daniel Meehan &mdash; A Strategic Product and Design Leader</figcaption>
-            </figure>
-          </div>
-          <aside class="hero-aside reveal" aria-label="Latest writing and bookshelf">
-            <div class="aside-block" id="latestWriting">
-              <p class="facts-title">Latest Writing</p>
-              <p class="aside-meta">May 2026 &middot; Essay &middot; 8 min read</p>
-              <p class="aside-title"><a href="earned-autonomy.html">Earned Autonomy</a></p>
-              <p class="aside-excerpt">A framework for working with AI without quietly handing it the keys &mdash; and what it means for the rest of us building software with it.</p>
-              <a class="aside-more" href="earned-autonomy.html">Read the essay</a>
-            </div>
-            <div class="aside-block">
-              <p class="facts-title">Bookshelf</p>
-              <ul class="shelf-list">
-                <li><span class="shelf-title">Demand Side Sales 101</span><span class="shelf-author">Bob Moesta &amp; Greg Engle</span></li>
-                <li><span class="shelf-title">Designing Assistant Technology</span><span class="shelf-author">Christopher Noessel</span></li>
-                <li><span class="shelf-title">Against the Machine</span><span class="shelf-author">Paul Kingsnorth</span></li>
-                <li><span class="shelf-title">The Pyramid Principle</span><span class="shelf-author">Barbara Minto</span></li>
-                <li><span class="shelf-title">Tools for Conviviality</span><span class="shelf-author">Ivan Illich</span></li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-        <div class="hero-copy reveal">
-          <p class="kicker">Profile</p>
-          <p class="hero-tagline">Design leadership for products people run their businesses&nbsp;on.</p>
-          <div class="prose">
-            <p><strong>Kiley Daniel Meehan</strong> is a strategic product and design leader. At FreshBooks, he led experience strategy across accounting, payments, platform, and operations &mdash; one connected product, not four disconnected ones.</p>
-            <p>He owned the company&rsquo;s Experience Vision and Principles, built the &ldquo;Pathways&rdquo; framework for aligning product teams around a single customer journey, and championed structured measurement &mdash; the HEART framework &mdash; over guesswork.</p>
-            <p>His mission, stated plainly on every strategy deck he shipped: <em class="accent">Making the Complex Simple.</em></p>
-          </div>
+    <!-- ============ INTRO + PROFILE ============ -->
+    <header class="top" id="bio">
+      <div class="intro">
+        <span class="label">Design leadership</span>
+        <h1>Making the complex <em>simple</em>, for products people run their businesses&nbsp;on.</h1>
+        <p>For twelve years at FreshBooks I led experience strategy across accounting, payments, platform and operations: <strong>one connected product, not four disconnected ones.</strong></p>
+        <p>I owned the company&rsquo;s Experience Vision and Principles, built the Pathways framework for aligning product teams around a single customer journey, and pushed for structured measurement (the HEART framework) over guesswork.</p>
+        <div class="intro-links">
+          <a class="btn btn--solid" href="apps.html">See my apps <span aria-hidden="true">&rarr;</span></a>
+          <a class="btn" href="mailto:kileymeehan@gmail.com">Email me</a>
         </div>
       </div>
+
+      <aside class="profile" aria-label="About Kiley Daniel Meehan">
+        <div class="flip-inner">
+          <div class="face front">
+            <video class="pav-lg" src="assets/kiley-avatar.mp4" poster="assets/kiley-avatar.webp" autoplay muted loop playsinline role="img" aria-label="Illustrated portrait of Kiley Daniel Meehan" width="96" height="96"></video>
+            <b class="pname">Kiley Daniel Meehan</b>
+            <span class="ptitle">Senior Director, Product Design<br>FreshBooks, 2014 to 2026</span>
+            <span class="pill">Open to new roles</span>
+            <button class="flip-btn" type="button" aria-label="Show résumé"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span>Résumé</span></button>
+          </div>
+          <div class="face back" inert>
+            <span class="label">Experience</span>
+            <ul class="cv-mini">
+              <li><b>FreshBooks</b><span>Senior Director, Product Design · 12 years</span></li>
+              <li><b>CBC</b><span>1.5 years</span></li>
+              <li><b>BrainStation</b><span>Taught design</span></li>
+              <li><b>Springboard</b><span>1:1 coaching</span></li>
+            </ul>
+            <span class="label">Key points</span>
+            <ul class="hl">
+              <li>Led design teams of 20+</li>
+              <li>Promoted designers into leadership</li>
+              <li>Developed our research program</li>
+              <li>Coaches and mentors designers</li>
+            </ul>
+            <a class="site" href="cv.html">Full CV &rarr;</a>
+            <button class="flip-btn" type="button" aria-label="Show profile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8.7"/><path d="M20 4v4.7h-4.7"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15.3"/><path d="M4 20v-4.7h4.7"/></svg><span>Back</span></button>
+          </div>
+        </div>
+      </aside>
+    </header>
+
+    <!-- ============ WRITING ============ -->
+    <section id="writing" aria-labelledby="writing-h">
+      <div class="section-head">
+        <span class="label" id="writing-h">Latest writing</span>
+        <a class="more" href="writing.html">All writing &rarr;</a>
+      </div>
+      <!-- Fallback markup; replaced from /api/posts (CMS) by js/main.js -->
+      <ol class="posts reveal" data-posts data-limit="4">
+        <li><a class="post" style="--hue: #8fc4f0" href="earned-autonomy.html">
+          <span class="post-art" aria-hidden="true"><img src="assets/writing/earned-autonomy.jpg" alt="" width="720" height="720" loading="lazy"></span>
+          <span class="post-body">
+          <span class="label">May 2026 · Essay · 8 min read</span>
+          <h3>Earned Autonomy <span class="go">&rarr;</span></h3>
+          <p class="sum">A framework for working with AI without quietly handing it the keys, and what it means for the rest of us building software with it.</p>
+        </span>
+        </a></li>
+        <li><a class="post" style="--hue: #ecd27a" href="ux-career.html">
+          <span class="post-art" aria-hidden="true"><img src="assets/writing/ux-career.jpg" alt="" width="720" height="720" loading="lazy"></span>
+          <span class="post-body">
+          <span class="label">2018 · Essay · 9 min read</span>
+          <h3>A UX Career is a Business Career <span class="go">&rarr;</span></h3>
+          <p class="sum">A mini-curriculum to boost your business savviness: the books, courses, and frameworks that turned business from a black box into a tool.</p>
+        </span>
+        </a></li>
+        <li><a class="post" style="--hue: #9fdcb8" href="late-bloomers.html">
+          <span class="post-art" aria-hidden="true"><img src="assets/writing/late-bloomers.jpg" alt="" width="720" height="720" loading="lazy"></span>
+          <span class="post-body">
+          <span class="label">2020 · Essay · 6 min read</span>
+          <h3>Late Bloomers and Product Design <span class="go">&rarr;</span></h3>
+          <p class="sum">On wandering paths, generalists, and the quiet virtue of arriving late. Why product design is a destination for the well-travelled mind.</p>
+        </span>
+        </a></li>
+        <li><a class="post" style="--hue: #f19fb0" href="email-love-story.html">
+          <span class="post-art" aria-hidden="true"><img src="assets/writing/email-love-story.jpg" alt="" width="720" height="720" loading="lazy"></span>
+          <span class="post-body">
+          <span class="label">Jun 2020 · Essay · 4 min read</span>
+          <h3>An Email Love Story <span class="go">&rarr;</span></h3>
+          <p class="sum">My oddly passionate submission to HEY.com&rsquo;s invite request, on long emails, lonely libraries, and the inbox as an accidental archive of the self.</p>
+        </span>
+        </a></li>
+      </ol>
     </section>
 
-    <!-- ============ RECOMMENDATIONS ============ -->
-    <section class="recs reveal" id="recs" aria-label="Recommendations">
-      <div class="wrap">
-        <p class="kicker kicker--accent">Recommended</p>
-        <div class="recs-card">
-          <div class="recs-stack recs-in" id="recStack">
-            <span class="rec-face" id="recFace" aria-hidden="true"></span>
-            <blockquote class="rec-quote">
-              <p id="recText"></p>
-              <cite class="rec-attr" id="recAttr"></cite>
-            </blockquote>
-          </div>
-          <div class="rec-dots" id="recDots" role="tablist" aria-label="Choose recommendation"></div>
+    <!-- ============ RECOMMENDED + BOOKSHELF ============ -->
+    <section aria-labelledby="aside-h">
+      <div class="section-head">
+        <span class="label" id="aside-h">Kind words &amp; reading</span>
+      </div>
+      <div class="pair reveal">
+      <div class="panel recs" id="recs">
+        <span class="label">What colleagues say</span>
+        <div class="recs-stack recs-in" id="recStack">
+          <canvas class="rec-face" id="recFace" width="480" height="480" aria-hidden="true"></canvas>
+          <blockquote class="rec-quote">
+            <p id="recText"></p>
+            <cite class="rec-attr" id="recAttr"></cite>
+          </blockquote>
         </div>
+        <div class="rec-dots" id="recDots" role="group" aria-label="Choose recommendation"></div>
+      </div>
+
+      <div class="panel">
+        <span class="label">On the bookshelf</span>
+        <ul class="shelf">
+          <li><span class="shelf-title">Demand Side Sales 101</span><span class="shelf-author">Bob Moesta &amp; Greg Engle</span></li>
+          <li><span class="shelf-title">Designing Assistant Technology</span><span class="shelf-author">Christopher Noessel</span></li>
+          <li><span class="shelf-title">Against the Machine</span><span class="shelf-author">Paul Kingsnorth</span></li>
+          <li><span class="shelf-title">The Pyramid Principle</span><span class="shelf-author">Barbara Minto</span></li>
+          <li><span class="shelf-title">Tools for Conviviality</span><span class="shelf-author">Ivan Illich</span></li>
+        </ul>
+      </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ============ FOOTER ============ -->
-  <footer class="footer" id="connect">
+  <footer class="site-foot" id="connect">
     <div class="wrap">
-      <p class="kicker kicker--accent">Connect</p>
-      <p class="footer-lede">Let&rsquo;s talk about Making the Complex&nbsp;Simple.</p>
-      <a class="footer-mail" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
-      <div class="folio folio--footer" role="presentation">
-        <span class="folio-item">Kiley Daniel Meehan</span>
-        <span class="folio-item folio-item--right">Set in Newsreader &amp; Archivo</span>
+      <div class="connect">
+        <span class="label">Connect</span>
+        <h2>Let&rsquo;s talk about making the complex <em>simple</em>.</h2>
+        <div class="intro-links">
+          <a class="btn btn--solid" href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+          <a class="btn" href="#" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <span class="footer-cat" aria-hidden="true" title="Shh, sleeping"><img class="cat-sleep" src="assets/cat-sleep.webp" alt="" width="760" height="583" loading="lazy"><img class="cat-awake" src="assets/cat-awake.webp" alt="" width="760" height="583" loading="lazy"></span>
+      </div>
+      <div class="foot-row">
+        <span>Kiley Daniel Meehan</span>
+        <nav aria-label="Footer"><a data-story="index.html" href="https://stories.kileymeehan.com/">Case stories</a><a href="apps.html">My apps</a><a href="writing.html">Writing</a><a href="cv.html">CV</a></nav>
       </div>
     </div>
   </footer>

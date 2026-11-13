@@ -7,7 +7,7 @@
   "projects": {
     "Blupi-App": {
       "title": "Blupi",
-      "description": "Collaborative product design platform \u2014 service blueprints, live cursors, Chrome capture extension.",
+      "description": "Collaborative product design platform — service blueprints, live cursors, Chrome capture extension.",
       "kind": "server",
       "port": 5001,
       "command": "(cd ~/.blupi-localdb && npx pglite-server -d ./data -p 5433 -m 10) & sleep 2; npx -y node@22 node_modules/tsx/dist/cli.mjs --env-file-if-exists=.env server/index.ts",
@@ -23,27 +23,27 @@
     },
     "kiley-website": {
       "title": "Kiley Website",
-      "description": "Portfolio with a markdown blog CMS and admin login (Express + Supabase).",
+      "description": "Portfolio with a markdown blog CMS (Express + Supabase), restyled to match the case stories: ink + dot grid, Newsreader + IBM Plex.",
       "kind": "server",
       "port": 3003,
       "command": "npm run dev"
     },
     "New Portfolio": {
       "title": "New Portfolio",
-      "description": "Editorial-broadsheet personal site \u2014 paper, ink and clay; Newsreader + Archivo.",
+      "description": "Editorial-broadsheet personal site — paper, ink and clay; Newsreader + Archivo.",
       "kind": "static",
       "port": 8101
     },
     "songbook": {
       "title": "Songbook",
-      "description": "Local-first songwriting app \u2014 lyrics, chords, albums, rhyme assistant.",
+      "description": "Local-first songwriting app — lyrics, chords, albums, rhyme assistant.",
       "kind": "server",
       "port": 5174,
       "command": "npx vite --port 5174 --strictPort"
     },
     "songwriting-tools": {
       "title": "Songwriting Tools",
-      "description": "Drag-and-drop lyric scraps \u2014 paste text, rearrange words into songs.",
+      "description": "Drag-and-drop lyric scraps — paste text, rearrange words into songs.",
       "kind": "static",
       "port": 8105
     },
@@ -68,13 +68,13 @@
     },
     "portfolio": {
       "title": "Portfolio (2026 spring)",
-      "description": "Earlier kileymeehan.com \u2014 \"Building software that feels human.\"",
+      "description": "Earlier kileymeehan.com — \"Building software that feels human.\"",
       "kind": "static",
       "port": 8104
     },
     "misc": {
       "title": "Misc",
-      "description": "One-off pages \u2014 screen time & sleep brief.",
+      "description": "One-off pages — screen time & sleep brief.",
       "kind": "static",
       "port": 8106,
       "path": "/screen-time-sleep-brief.html"
@@ -85,6 +85,15 @@
       "kind": "static",
       "port": 8110,
       "notes": "Sync into an app: node scripts/sync.mjs <app>/ds.css <brand>. Used by SwatchBook."
+    },
+    "case-stories": {
+      "title": "Case Stories",
+      "description": "Six interactive FreshBooks case-study presentations. Password-protected subdomain (stories.kileymeehan.com) via a Netlify edge function.",
+      "kind": "server",
+      "port": 8107,
+      "path": "/",
+      "notes": "Password gate on (password is in case-stories/README.md). Rebuild with python3 build.py. kiley-website links here on localhost.",
+      "command": "python3 serve.py 8107"
     }
   }
 }
