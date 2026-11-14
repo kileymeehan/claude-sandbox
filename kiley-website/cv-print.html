@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kiley Daniel Meehan · CV</title>
+<!--
+  Print source for assets/kiley-daniel-meehan-cv.pdf (US Letter, 2 pages).
+  Keep in sync with cv.html. To regenerate the PDF, run: node scripts/build-cv-pdf.mjs
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  @page { size: Letter; margin: 0.9in 0.7in 0.6in; }
+  @page :first { margin-top: 0.65in; }
+  @page :first { @top-left { content: none; } @top-right { content: none; } }
+  @page { @top-left { content: "Kiley Daniel Meehan"; font: 500 8pt "IBM Plex Mono", monospace; color: #474b57; letter-spacing: .06em; vertical-align: bottom; padding-bottom: 18px; }
+          @top-right { content: "CV · page " counter(page) " of 2"; font: 400 8pt "IBM Plex Mono", monospace; color: #474b57; vertical-align: bottom; padding-bottom: 18px; } }
+  :root {
+    --ink: #141c30;        /* body text: 16.6:1 on white */
+    --soft: #474b57;       /* secondary text: 8.6:1 */
+    --accent: #136b52;     /* labels and rules: 6.6:1 */
+    --rule: #cfd4dc;
+    --tint: #eef5f1;
+    --display: "Newsreader", Georgia, serif;
+    --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono: "IBM Plex Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; color: var(--ink); font: 10pt/1.55 var(--body); }
+  h1, h2, h3, p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+
+  /* On screen, show it as a sheet of paper */
+  @media screen {
+    body { background: #e9e8e4; padding: 32px 0; }
+    .sheet { width: 8.5in; margin: 0 auto; background: #fff; padding: 0.65in 0.7in; box-shadow: 0 10px 30px -12px rgba(20,28,48,.35); }
+  }
+
+  .label { font: 500 7.2pt/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+
+  /* Header */
+  .top { display: grid; grid-template-columns: 64px 1fr auto; gap: 18px; align-items: center; padding-bottom: 18px; border-bottom: 2px solid var(--ink); }
+  .av { width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--accent); background: #f3efe9; display: block; }
+  .name { font: 500 26pt/1 var(--display); letter-spacing: -.01em; }
+  .role { margin-top: 5px; font-size: 10.5pt; color: var(--soft); }
+  .contact { display: grid; gap: 3px; justify-items: end; font: 400 8.4pt/1.35 var(--mono); color: var(--ink); text-align: right; }
+  .contact .note { font-size: 7.4pt; color: var(--soft); }
+  .contact .open { margin-top: 3px; font-weight: 500; color: var(--accent); }
+
+  .summary { margin: 18px 0 24px; font: 400 11.5pt/1.55 var(--display); color: var(--ink); max-width: 6.6in; }
+
+  /* Two columns */
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) 2.1in; gap: 32px; }
+  .sec-h { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .sec-h::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+  section + section { margin-top: 24px; }
+
+  .company { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 8px; margin-bottom: 6px; border-bottom: 1px solid var(--rule); }
+  .company h2 { font: 500 15pt/1.1 var(--display); }
+  .company--next { margin-top: 22px; }
+  .company span { font: 400 8pt/1.3 var(--mono); color: var(--soft); text-align: right; }
+
+  .job { padding: 12px 0 14px; break-inside: avoid; }
+  .job + .job { border-top: 1px solid var(--rule); }
+  .job-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 7px; }
+  .job h3 { font: 600 10.6pt/1.25 var(--body); }
+  .dates { flex: none; font: 500 8pt/1.3 var(--mono); color: var(--accent); white-space: nowrap; }
+  .dates em { font-style: normal; color: var(--soft); font-weight: 400; }
+  .job li, .side li { position: relative; padding-left: 12px; color: var(--ink); }
+  .job li + li { margin-top: 5px; }
+  .job li::before, .side li::before { content: ""; position: absolute; left: 1px; top: .58em; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+  /* Side column */
+  .side { font-size: 9.3pt; }
+  .side section + section { margin-top: 24px; }
+  .side section { break-inside: avoid; }
+  .sec-h { break-after: avoid; }
+  .company { break-after: avoid; }
+  .lead { font: italic 400 11.5pt/1.4 var(--display); margin-bottom: 10px; }
+  .lead b { font-weight: 500; color: var(--accent); }
+  .side li + li { margin-top: 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips span { font: 500 7.8pt/1 var(--body); padding: 4px 7px; border-radius: 999px; background: var(--tint); border: 1px solid #b9d6c9; color: var(--ink); }
+  .item { break-inside: avoid; }
+  .item + .item { margin-top: 16px; }
+  .item h3 { font: 600 9.8pt/1.25 var(--body); }
+  .item .meta { margin: 2px 0 4px; font: 400 7.8pt/1.35 var(--mono); color: var(--soft); }
+  .glance { display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--tint); }
+  .glance div { display: grid; gap: 1px; }
+  .glance b { font: 500 7pt/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+  .foot { margin-top: 20px; padding-top: 8px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font: 400 7.6pt/1.3 var(--mono); color: var(--soft); }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="top">
+    <img class="av" src="assets/kiley-avatar.webp" alt="" width="62" height="62">
+    <div>
+      <h1 class="name">Kiley Daniel Meehan</h1>
+      <p class="role">Product design leader · Senior Director, Product Design</p>
+    </div>
+    <div class="contact">
+      <a href="mailto:kileymeehan@gmail.com">kileymeehan@gmail.com</a>
+      <a href="https://www.kileymeehan.com">www.kileymeehan.com</a>
+      <span>Toronto, Ontario</span>
+      <span class="open">Open to new opportunities</span>
+    </div>
+  </header>
+
+  <p class="summary">Product design leader with thirteen years building software that earns the trust of the people who use it daily. At FreshBooks from 2014 to 2026 as a designer, then a manager, then a director within the same company, growing the team and the craft together.</p>
+
+  <div class="cols">
+    <main>
+      <section>
+        <div class="sec-h"><span class="label">Experience</span></div>
+        <div class="company"><h2>FreshBooks</h2><span>Toronto, Ontario · Hybrid<br>Sep 2014 to Jun 2026 · 11 yrs 10 mos</span></div>
+
+        <div class="job">
+          <div class="job-h"><h3>Senior Director, Product Design</h3><span class="dates">Jun 2023 to Jun 2026 <em>· 3 yrs</em></span></div>
+          <ul>
+            <li>Led product design across the full FreshBooks platform: web, mobile, payments, and the AI surface area.</li>
+            <li>Set the design organization&rsquo;s operating model, hiring bar, and growth ladder.</li>
+            <li>Partnered with Product and Engineering leadership on long-range platform strategy.</li>
+            <li>Scaled the team from 10 to 20+, including the hiring of Principal and leadership roles.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-h"><h3>Director, Product Design</h3><span class="dates">Apr 2021 to Jun 2023 <em>· 2 yrs 3 mos</em></span></div>
+          <ul>
+            <li>Stewarded design quality and consistency across all product areas through a period of rapid platform expansion.</li>
+            <li>Built the design management layer, coaching the first generation of Product Design Managers at FreshBooks.</li>
+            <li>Led the modernization of the design system and the operating cadence between Design, Product and Research.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-h"><h3>Associate Director, Product Design</h3><span class="dates">Jun 2020 to Apr 2021 <em>· 11 mos</em></span></div>
+          <ul>
+            <li>Owned design for the platform pillar: payments, banking, accounting surfaces.</li>
+            <li>Drove the shift from feature-team thinking to outcome-team thinking across the org.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-h"><h3>Product Design Lead &amp; Manager</h3><span class="dates">Sep 2018 to Jun 2020 <em>· 1 yr 10 mos</em></span></div>
+          <ul>
+            <li>Coached and managed a team of world-class Product Designers.</li>
+            <li>Design strategy and leadership across major business mandates.</li>
+            <li>Stood up the first cross-team design crit, research ops, and hiring rubric.</li>
+          </ul>
+        </div>
+
+        <div class="job">
+          <div class="job-h"><h3>Senior Product Designer</h3><span class="dates">Sep 2014 to Sep 2018 <em>· 4 yrs 1 mo</em></span></div>
+          <ul>
+            <li>Lead UX designer for the new FreshBooks iOS and Android apps.</li>
+            <li>Lead UX designer for the FreshBooks Card Reader mobile payments experience.</li>
+            <li>Designed and conducted research to drive product strategy and roadmaps.</li>
+            <li>Active in shaping UX research practices and initiatives across the org.</li>
+            <li>Interim Product Manager (May to July 2018).</li>
+          </ul>
+        </div>
+
+        <div class="company company--next"><h2>CBC</h2><span>May 2013 to Sep 2014 · 1 yr 4 mos</span></div>
+        <div class="job">
+          <div class="job-h"><h3>Interaction / UX Designer</h3><span class="dates">May 2013 to Sep 2014</span></div>
+          <ul>
+            <li>Worked primarily on CBC&rsquo;s video streaming app and the CBC News app.</li>
+          </ul>
+        </div>
+
+        <div class="company company--next"><h2>Tamm+Kit</h2><span>Jan 2009 to May 2013 · 4 yrs 4 mos</span></div>
+        <div class="job">
+          <div class="job-h"><h3>Web Director</h3><span class="dates">Jan 2009 to May 2013</span></div>
+          <ul>
+            <li>Built custom websites from the ground up for wineries, breweries and healthcare companies.</li>
+            <li>A department of one, handling design, development and ongoing maintenance.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section>
+        <div class="sec-h"><span class="label">Focus &amp; craft</span></div>
+        <p class="lead">Building teams that <b>compound</b>, where craft, clarity, and care are the operating system.</p>
+        <ul>
+          <li>Org design for product design: ladders, rituals, hiring bars, growth maps.</li>
+          <li>Translating fuzzy business mandates into legible, sequenced product bets.</li>
+          <li>Coaching managers and senior ICs through ambiguity and scale.</li>
+          <li>Bridging Product, Engineering and Design at the platform and roadmap level.</li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="sec-h"><span class="label">Skills &amp; practices</span></div>
+        <div class="chips">
+          <span>Org Design</span><span>Design Systems</span><span>Product Strategy</span><span>Service Blueprinting</span><span>Hiring &amp; Calibration</span><span>Coaching</span><span>Research Ops</span><span>Cross-functional Leadership</span><span>Roadmap Shaping</span><span>Writing &amp; Storytelling</span>
+        </div>
+      </section>
+
+      <section>
+        <div class="sec-h"><span class="label">Teaching &amp; mentorship</span></div>
+        <div class="item">
+          <h3>BrainStation</h3>
+          <p class="meta">Educator, UX Design<br>2015 to 2019</p>
+          <ul>
+            <li>Taught working professionals the fundamentals and applied craft of UX design.</li>
+          </ul>
+        </div>
+        <div class="item">
+          <h3>Springboard</h3>
+          <p class="meta">Design Mentor<br>2021 to 2023</p>
+          <ul>
+            <li>1:1 mentorship for new designers entering the field.</li>
+          </ul>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+
+</div>
+</body>
+</html>
