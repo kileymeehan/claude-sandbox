@@ -188,7 +188,7 @@ header.top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340p
   padding: 24px 22px 56px; position: relative; display: grid; align-content: start; gap: 8px;
 }
 .face.front { justify-items: center; text-align: center; align-content: center; gap: 6px; }
-.face.back { transform: rotateY(180deg); padding: 18px 20px 54px; }
+.face.back { transform: rotateY(180deg); padding: 18px 20px 74px; }
 .pav-lg {
   width: 96px; height: 96px; border-radius: 50%; border: 2px solid var(--accent); background: #f3efe9;
   margin-bottom: 6px; box-shadow: 0 0 0 4px var(--card); object-fit: cover;
@@ -221,7 +221,8 @@ header.top { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340p
 .hl { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 13.5px; }
 .hl li { display: flex; gap: 10px; align-items: baseline; }
 .hl li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; transform: translateY(-1px); }
-.face.back .site { position: absolute; left: 20px; bottom: 21px; color: var(--accent); text-decoration: none; font-family: var(--font-mono); font-size: 13px; }
+.face.back .site-links { position: absolute; left: 20px; bottom: 16px; display: grid; gap: 4px; justify-items: start; }
+.face.back .site { color: var(--accent); text-decoration: none; font-family: var(--font-mono); font-size: 13px; }
 .face.back .site:hover { text-decoration: underline; }
 
 /* ---------- Pills / tags ---------- */
