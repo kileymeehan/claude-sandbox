@@ -434,6 +434,7 @@ a:hover .go { transform: translateX(5px); color: var(--accent); }
 .app-chrome span { margin-left: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
 .app-frame img, .app-frame video { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; background: var(--ground-2); }
 .app-shot figcaption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.app-shot .caption { font-family: var(--font-display); font-style: italic; font-size: 15px; line-height: 1.4; color: var(--muted); }
 .app .facts .chip-row { padding-top: 12px; border-top: 1px solid color-mix(in srgb, var(--hue) 30%, var(--line)); }
 
 /* ---------- CV ---------- */
